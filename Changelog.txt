@@ -1,0 +1,29 @@
+# Changes:
+# v 6.15 - Added Category to all plugins and features to vCheckUtils script for Categorys.
+# v 6.14 - Fixed a bug where a plugin was resetting the $VM variable so later plugins were not working :(
+# v 6.13 - Fixed issue with plugins 63 and 65 not using the days
+# v 6.12 - Changed Version to PluginVersion in each Plugin as the word Version is very hard to isolate!
+# v 6.11 - Fixed a copy and paste mistake and plugin issues.
+# v 6.10 - Fixed multiple spelling mistakes and small plugin issues
+# v 6.9 - Fixed VMKernel logs but had to remove date/Time parser due to inconsistent VMKernel Log entries
+# v 6.8 - Added Creator of snapshots back in due to popular demand
+# v 6.7 - Added Multiple plugins from contributors - Thanks!
+# V 6.6 - Tech Support Mode Plugin fixed to work with 5.0 hosts
+# V 6.5 - HW Version plugin fixed due to string output
+# V 6.4 - Added a 00 plugin and VeryLastPlugin for vCenter connection info to separate the report entirely from VMware if needed.
+# V 6.3 - Changed the format of each Plugin so you can include a count for each header and altered plugin layout for each plugin.
+# V 6.2 - Added Time to Run section based on TimeToBuild by Frederic Martin
+# V 6.1 - Bug fixes, filter for ps1 files only in the plugins folder so other files can be kept in the plugins folder.
+# V 6.0 - Moved plugins into seperate scripts to make it easier to expand vCheck and fixed issues + lots lots more !
+# V 5.1 - Code Fixes and ability to change colour for title text to fix issue with Outlook 2007/10 not displaying correctly
+# V 5.0 - Changed the order and a few titles etc, tidy up !
+# V 4.9 - Added Inacessable VMs
+# V 4.8 - Added HA VM restarts and resets
+# V 4.7 - VMTools Issues
+# V 4.6 - Added VCB Garbage
+# V 4.5 - Added Host config issues
+# V 4.4 - Added Disk Overcommit check
+# V 4.3 - Added vSwitch free ports check
+# V 4.2 - Added General Capacity Information based on CPU and MEM ussage per cluster
+# V 4.1 - Added the ability to change the colours of the report.
+# V 4.0 - HTML Tidy up, comments added for each item and the ability to enable/disable comments.

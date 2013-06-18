@@ -6,12 +6,15 @@ foreach ($clusview in $clusviews) {
 	if ($clusview.ConfigurationEx.VmSwapPlacement -eq "hostLocal") {
 		$CluNodes = Get-VMHost -Location $clusview.name
 		foreach ($CluNode in $CluNodes) {
-			if ($CluNode.ExtensionData.Config.LocalSwapDatastore.Value) {
-				$Details = "" | Select-Object Cluster, Host, Message
-				$Details.cluster = $clusview.name
-				$Details.host = $CluNode.name
-				$Details.Message = "Swapfile location NOT SET"
-				$cluswap += $Details
+			if ($CluNode.VMSwapfileDatastore.Name -ne $null){}
+				else {	
+				if ($CluNode.ExtensionData.Config.LocalSwapDatastore.Value) {
+					$Details = "" | Select-Object Cluster, Host, Message
+					$Details.cluster = $clusview.name
+					$Details.host = $CluNode.name
+					$Details.Message = "Swapfile location NOT SET"
+					$cluswap += $Details
+				}	
 			}
 		}
 	}

@@ -10,5 +10,5 @@ $PluginVersion = 1.1
 $SyslogServer ="syslogserver"
 # End of Settings
 
-@($VMH | Where-Object {$_.ExtensionData.Summary.Config.Product.Name -eq 'VMware ESXi'} | Select-Object Name,@{Name='SyslogServer';Expression = {($_ | Get-VMHostSysLogServer).Host}} | Where-Object {$_.SyslogServer -ne $syslogserver})
+@($VMH | Where-Object {$_.ExtensionData.Summary.Config.Product.Name -eq 'VMware ESXi'} | Select-Object Name,@{Name='SyslogSetting';Expression = {(Get-VMHostAdvancedConfiguration -VMHost $_ -Name Syslog.Local.DatastorePath).Values| Where {$_ isnotnullempty}}})
 $PluginCategory = "vSphere"

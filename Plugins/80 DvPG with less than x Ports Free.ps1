@@ -1,5 +1,5 @@
 # Start of Settings 
-# Distributed PortGroup Ports Left
+# Distributed vSwitch PortGroup Ports Left
 $DvSwitchLeft = 10
 # End of Settings
 
@@ -8,8 +8,9 @@ $ImpactedDVS = @()
 
 Foreach ($i in $vdspg | where {$_.IsUplink -ne 'True' -and $_.PortBinding -ne 'Ephemeral'} ) {
 
-$NumPorts = (Get-VDPortgroup $i).NumPorts
-$NumVMs = (Get-VDPortgroup $i | Get-VM).Count
+$PG = Get-VDPortgroup $i
+$NumPorts = $PG.NumPorts
+$NumVMs = ($PG.ExtensionData.VM).Count
 $OpenPorts = $NumPorts - $NumVMs
 
 If ($OpenPorts -lt $DvSwitchLeft) {
@@ -33,5 +34,5 @@ $Header =  "Distributed vSwitch Port Groups with less than $vSwitchLeft Port(s) 
 $Comments = "The following Distributed vSwitch Port Groups have less than $vSwitchLeft left"
 $Display = "Table"
 $Author = "Kyle Ruddy"
-$PluginVersion = 1.0
+$PluginVersion = 1.1
 $PluginCategory = "vSphere"

@@ -3,7 +3,12 @@
 $HAVMresetold =5
 # End of Settings
 
-$HAVMresetlist = @(Get-VIEvent -maxsamples 100000 -Start ($Date).AddDays(-$HAVMresetold) -type info | Where {$_.FullFormattedMessage -match "reset due to a guest OS error"} |select CreatedTime,FullFormattedMessage |sort CreatedTime -Descending)
+$EventFilterSpec = New-Object VMware.Vim.EventFilterSpec
+$EventFilterSpec.Category = "info"
+$EventFilterSpec.Time = New-Object VMware.Vim.EventFilterSpecByTime
+$EventFilterSpec.Time.beginTime = (get-date).adddays(-$HAVMresetold)
+$EventFilterSpec.eventTypeId = "TaskEvent"
+$HAVMresetlist = @((get-view (get-view ServiceInstance -Property Content.EventManager).Content.EventManager).QueryEvents($EventFilterSpec) | ?{$_.FullFormattedMessage -match "reset due to a guest OS error"} |select CreatedTime,FullFormattedMessage |sort CreatedTime -Descending)
 $HAVMresetlist
 
 $Title = "VMs restarted due to Guest OS Error"

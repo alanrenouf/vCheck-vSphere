@@ -7,5 +7,5 @@ $PluginVersion = 1.0
 
 # Start of Settings 
 # End of Settings
-@($VM | Get-VMResourceConfiguration | where {$_.CPUReservationMhz -ne '0' -or $_.MemReservationMB -ne '-1'} | Select-Object VM,CPUReservationMhz,MemReservationMB)
+@($FullVM | ?{$_.config.cpuallocation.Reservation -ne "0" -or $_.config.memoryallocation.Reservation -ne "0"} | Select Name, @{Name="CPUReservationMhz";E={$_.config.cpuallocation.Reservation}}, @{Name="MemReservationMB";E={$_.config.memoryallocation.Reservation}})
 $PluginCategory = "vSphere"

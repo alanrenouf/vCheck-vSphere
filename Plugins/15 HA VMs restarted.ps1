@@ -3,7 +3,12 @@
 $HAVMrestartold =5
 # End of Settings
 
-$HAVMrestartlist = @(Get-VIEvent -maxsamples 100000 -Start ($Date).AddDays(-$HAVMrestartold) -type info | Where {$_.FullFormattedMessage -match "was restarted"} |select CreatedTime,FullFormattedMessage |sort CreatedTime -Descending)
+$EventFilterSpec = New-Object VMware.Vim.EventFilterSpec
+$EventFilterSpec.Category = "info"
+$EventFilterSpec.Time = New-Object VMware.Vim.EventFilterSpecByTime
+$EventFilterSpec.Time.beginTime = (get-date).adddays(-$HAVMrestartold)
+$EventFilterSpec.eventTypeId = "TaskEvent"
+$HAVMrestartlist = @((get-view (get-view ServiceInstance -Property Content.EventManager).Content.EventManager).QueryEvents($EventFilterSpec) | ?{$_.FullFormattedMessage -match "was restarted"} |select CreatedTime,FullFormattedMessage |sort CreatedTime -Descending)
 $HAVMrestartlist
 
 $Title = "HA VMs restarted"

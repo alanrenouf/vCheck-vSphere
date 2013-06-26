@@ -1,7 +1,9 @@
 # Start of Settings 
 # End of Settings 
 
-$Consol = $VM | where {$_.VMHost.ApiVersion.Split('.')[0] -ge 5 -and $_.ExtensionData.Runtime.consolidationNeeded} | Sort-Object -Property Name | Select Name,@{N="Consolidation needed";E={$_.ExtensionData.Runtime.consolidationNeeded}}
+$htabHostVersion = @{}
+$HostsViews | %{$htabHostVersion.Add($_.MoRef,$_.config.product.version)}
+$Consol = $FullVM | ?{$htabHostVersion[$_.runtime.host].Split('.')[0] -ge 5} -and $_.runtime.consolidationNeeded | Sort-Object -Property Name | Select Name,@{N="Consolidation needed";E={$_.Runtime.consolidationNeeded}}
 $Consol
 
 $Title = "VMs needing snapshot consolidation"

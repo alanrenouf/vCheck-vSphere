@@ -7,5 +7,6 @@ $PluginVersion = 1.1
 
 # Start of Settings 
 # End of Settings
-@($VM | Get-VMResourceConfiguration | Where-Object {$_.CpuLimitMHZ -ne '-1' -or $_.MemLimitMB -ne ‘-1‘} | Select-Object VM,CpuLimitMhz,MemLimitMB)
+#@($VM | Get-VMResourceConfiguration | Where-Object {$_.CpuLimitMHZ -ne '-1' -or $_.MemLimitMB -ne ï¿½-1ï¿½} | Select-Object VM,CpuLimitMhz,MemLimitMB)
+@($FullVM | ?{$_.config.cpuallocation.limit -ne "-1" -or $_.config.memoryallocation.limit -ne "-1"} | Select Name, @{Name="CpuLimitMhz";E={$_.config.cpuallocation.limit}}, @{Name="MemLimitMB";E={$_.config.memoryallocation.limit}})
 $PluginCategory = "vSphere"

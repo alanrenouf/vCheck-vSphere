@@ -2,20 +2,16 @@
 # End of Settings
 
 $VMsNetworkNotConnected = @()
-foreach ($myVM in $VM) {
-    # Check only on powered on VMs
-    if ($myVM.PowerState -eq "PoweredOn") {
-        foreach ($myCard in $myVM | Get-NetworkAdapter) {
-            # The network card is not connected. Warn user
-            if (! $myCard.ConnectionState.Connected) {
-            	$vmNetworkNotConnected = "" | Select-Object VM, vmNetworkAdapter, State
-                $vmNetworkNotConnected.VM = $myVM.Name
-                $vmNetworkNotConnected.vmNetworkAdapter = $myCard.Name
-                $vmNetworkNotConnected.State = "Disconnected"
-            	$VMsNetworkNotConnected += $vmNetworkNotConnected
-            }
-        }
-    }
+# Check only on powered on VMs
+foreach ($myVM in $FullVM | ?{$_.runtime.powerState -eq "PoweredOn"}) {
+    foreach ($myCard in $myVM.config.hardware.device | ?{$_ -is [VMware.Vim.VirtualEthernetCard]} | ?{-Not $_.connectable.connected}) {
+		# The network card is not connected. Warn user
+		$vmNetworkNotConnected = "" | Select-Object VM, vmNetworkAdapter, State
+		$vmNetworkNotConnected.VM = $myVM.Name
+		$vmNetworkNotConnected.vmNetworkAdapter = $myCard.deviceInfo.label
+		$vmNetworkNotConnected.State = "Disconnected"
+		$VMsNetworkNotConnected += $vmNetworkNotConnected
+	}
 }
 
 $VMsNetworkNotConnected

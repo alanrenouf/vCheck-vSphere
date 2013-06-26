@@ -1,7 +1,7 @@
 # Start of Settings 
 # End of Settings 
 
-$Result = $VM | Where {$_.Guest.State -eq "Running" -And ($_.Guest.OSFullName -eq $NULL -or $_.Guest.IPAddress -eq $NULL -or $_.Guest.HostName -eq $NULL -or $_.Guest.Disks -eq $NULL -or $_.Guest.Nics -eq $NULL)} |select -ExpandProperty Guest |select VMName , @{N= "IPAddress";E={$_.IPAddress[0]}},OSFullName,HostName,@{N="NetworkLabel";E={$_.nics[0].NetworkName}} -ErrorAction SilentlyContinue|sort VmName
+$Result = $FullVM | Where {$_.Guest.GuestState -eq "Running" -And ($_.Guest.GuestFullName -eq $NULL -or $_.Guest.IPAddress -eq $NULL -or $_.Guest.HostName -eq $NULL -or $_.Guest.Disk -eq $NULL -or $_.Guest.Net -eq $NULL)} | select Name, @{N="IPAddress";E={$_.Guest.IPAddress[0]}},@{n="OSFullName";E={$_.Guest.GuestFullName}},@{n="HostName";e={$_.guest.hostname}},@{N="NetworkLabel";E={$_.guest.Net[0].Network}} -ErrorAction SilentlyContinue |sort Name
 $Result
 
 $Title = "VM Tools Issues"

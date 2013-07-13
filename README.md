@@ -14,3 +14,5 @@ This script is not to be confused with an Audit script, although the reporting f
 
 
 For more information please read here: http://www.virtu-al.net/vcheck-pluginsheaders/vcheck/
+
+For an example vSphere output (Doesnt contain all info) click here http://virtu-al.net/Downloads/vCheck/vCheck.htm

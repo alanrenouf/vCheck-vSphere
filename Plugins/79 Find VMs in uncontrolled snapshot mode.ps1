@@ -7,7 +7,8 @@ foreach ($vm in $FullVM) {
       if (!$snapList) { # Only process VMs without snapshots
             $Path = ($vm.Summary.Config.VmPathName).Split('/')[0] -replace "[\[\]]", "" -replace " ", "\"
             $dc = Get-Datacenter -VM $vm.Name
-            $fileList = Get-ChildItem "vmstores:\lacvcenter1@443\$dc\$Path"
+            $gciloc = (get-childitem vmstores: | Select -first 1).Name
+            $fileList = Get-ChildItem "vmstores:\$gciloc\$dc\$Path"
             foreach ($file in $fileList) {
                   if ($file -contains '-delta.vmdk' -or $file -like '-*-flat.vmdk') {
                         $Details = "" | Select-Object VM, Datacenter, Path

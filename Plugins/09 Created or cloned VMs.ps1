@@ -3,7 +3,7 @@
 $VMsNewRemovedAge =5
 # End of Settings
 
-$VIEvent = Get-VIEvent -maxsamples 10000 -Start ($Date).AddDays(-$VMsNewRemovedAge)
+$VIEvent = Get-VIEvent -maxsamples $MaxSampleVIEvent -Start ($Date).AddDays(-$VMsNewRemovedAge)
 $OutputCreatedVMs = @($VIEvent | where {$_.Gettype().Name -eq "VmCreatedEvent" -or $_.Gettype().Name -eq "VmBeingClonedEvent" -or $_.Gettype().Name -eq "VmBeingDeployedEvent"} | Select createdTime, UserName, fullFormattedMessage)
 $OutputCreatedVMs
 

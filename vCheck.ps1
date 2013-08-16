@@ -64,13 +64,6 @@ $PluginsFolder = $ScriptPath + "\Plugins\"
 $Plugins = Get-ChildItem -Path $PluginsFolder -filter "*.ps1" | Sort Name
 $GlobalVariables = $ScriptPath + "\GlobalVariables.ps1"
 
-if($Style -eq $null) { $Style = "Default" }
-$StylePath = $ScriptPath + "\Styles\" + $Style
-if(!(Test-Path ($StylePath))) {
-	# The path is not valid
-	# Use the default style
-	$StylePath = $ScriptPath + "\Styles\Default"
-}
 
 
 $file = Get-Content $GlobalVariables
@@ -102,6 +95,15 @@ If ($SetupSetting) {
 }
 
 . $GlobalVariables
+
+$StylePath = $ScriptPath + "\Styles\" + $Style
+if(!(Test-Path ($StylePath))) {
+	# The path is not valid
+	# Use the default style
+	Write-Debug "Style path ($($StylePath)) is not valid"
+	$StylePath = $ScriptPath + "\Styles\Default"
+	Write-Debug "Using $($StylePath)"
+}
 
 # Import the Style
 . ("$($StylePath)\Style.ps1")
@@ -154,8 +156,8 @@ Function Get-HTMLTable {
 	$HTMLTable = $HTMLTable -Replace '<TABLE>', $HTMLTableReplace
 	$HTMLTable = $HTMLTable -Replace '<td>', $HTMLTdReplace
 	$HTMLTable = $HTMLTable -Replace '<th>', $HTMLThReplace
-	$HTMLTable = $HTMLTable -replace '&lt;', $HTMLLtReplace
-	$HTMLTable = $HTMLTable -replace '&gt;', $HTMLGtReplace
+	$HTMLTable = $HTMLTable -replace '&lt;', '<'
+	$HTMLTable = $HTMLTable -replace '&gt;', '>'
 	Return $HTMLTable
 }
 

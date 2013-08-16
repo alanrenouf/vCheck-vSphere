@@ -21,9 +21,15 @@ if (!(get-pssnapin -name VMware.VimAutomation.Core -erroraction silentlycontinue
 	add-pssnapin VMware.VimAutomation.Core
 }
 
-Write-CustomOut "Connecting to VI Server"
+$OpenConnection = $global:DefaultVIServers | where { $_.Name -eq $VIServer }
+if($OpenConnection.Connected) {
+	Write-CustomOut "Re-using connection to VI Server"
+	$VIConnection = $OpenConnection
+} else {
+	Write-CustomOut "Connecting to VI Server"
+	$VIConnection = Connect-VIServer $VIServer
+}
 
-$VIConnection = Connect-VIServer $VIServer
 if (-not $VIConnection.IsConnected) {
 	Write-Host "Unable to connect to vCenter, please ensure you have altered the vCenter server address correctly "
 	Write-Host " to specify a username and password edit the connection string in the file $GlobalVariables"

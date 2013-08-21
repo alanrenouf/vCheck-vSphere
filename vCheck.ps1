@@ -196,7 +196,7 @@ $Plugins | Foreach {
 	}
 }	
 $MyReport += Get-CustomHeader ("This report took " + [math]::round(((Get-Date) - $Date).TotalMinutes,2) + " minutes to run all checks.") "The following plugins took longer than $PluginSeconds seconds to run, there may be a way to optimize these or remove them if not needed"
-$TTRReport = $TTRReport | Where { $_.TimeToRun -gt $PluginSeconds }
+$TTRReport = $TTRReport | Where { $_.TimeToRun -gt $PluginSeconds } | Sort-Object TimeToRun -Descending
 $TTRReport |  Foreach {$MyReport += Get-HTMLDetail $_.Plugin $_.TimeToRun}
 $MyReport += Get-CustomHeaderClose
 $MyReport += Get-CustomHeader0Close

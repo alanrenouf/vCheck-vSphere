@@ -1,5 +1,5 @@
 # Start of Settings
-# Do not report on any datastores who are defined here
+# Do not report on any Datastores that are defined here (Datastore Consistency Plugin)
 $DSDoNotInclude ="LOCAL*|datastore*"
 # End of Settings
 

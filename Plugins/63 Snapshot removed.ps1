@@ -1,7 +1,7 @@
 # Start of Settings 
-# Set the number of days to show VMs created for
+# Set the number of days to show Snapshots removed for
 $VMsNewRemovedAge = 5
-# User exception for Snapshot created/removed
+# User exception for Snapshot removed
 $snapshotUserException = "s-veeam"
 # End of Settings
 

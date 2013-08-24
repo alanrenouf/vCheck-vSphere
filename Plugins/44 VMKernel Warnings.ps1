@@ -28,10 +28,10 @@ foreach ($VMHost in ($HostsViews)){
 			$VMKernelWarnings += $VMKernelWarning | Sort-Object -Property Length -Unique |select VMHost, Message, KBSearch, Google
 		}	
 	} else {
-		$Warnings = (Get-Log –VMHost ($VMHost.Name) -Key vmkernel -ErrorAction SilentlyContinue).Entries | where {$_ -match "warning"}
+		$Warnings = (Get-Log -VMHost ($VMHost.Name) -Key vmkernel -ErrorAction SilentlyContinue).Entries | where {$_ -match "warning"}
 		if ($Warnings -ne $null) {
 			$VMKernelWarning = @()
-			$Warnings | % {
+			$Warnings | Foreach {
 				if ($simpleWarning) {
 					$Details = "" | Select-Object VMHost, Message
 					$Details.VMHost = $VMHost.Name
@@ -58,5 +58,5 @@ $Header =  "ESX/ESXi VMKernel Warnings: $(@($VMKernelWarnings).Count)"
 $Comments = "The following VMKernel issues were found, it is suggested all unknown issues are explored on the VMware Knowledge Base. Use the below links to automatically search for the string"
 $Display = "Table"
 $Author = "Alan Renouf, Frederic Martin"
-$PluginVersion = 1.2
+$PluginVersion = 1.3
 $PluginCategory = "vSphere"

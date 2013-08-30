@@ -5,10 +5,9 @@ $InodeThreshold = 40
 
 $Result = @($VMH | Where-Object {$_.Version -match "^5\."} | Sort-Object | % {
 	$EsxCli = Get-EsxCli -VMHost $_
-	$EsxCli.system.visorfs.get() | Where-Object {$_.FreeInodePercent -lt $InodeThreshold} | Add-Member -MemberType NoteProperty -Name VMHost -Value $_.Name -PassThru | Select-Object VMHost, FreeInodePercent, TotalInodes, UsedInodes
+	$EsxCli.system.visorfs.get() | Where-Object {[int]$_.FreeInodePercent -lt $InodeThreshold} | Add-Member -MemberType NoteProperty -Name VMHost -Value $_.Name -PassThru | Select-Object VMHost, FreeInodePercent, TotalInodes, UsedInodes
 })
 $Result
-
 
 $Title = "ESXi Inode Exhaustion"
 $Header = "Hosts with excessive Inode usage (> ${InodeThreshold}%) on the local ESXi visorfs: $(@($Result).count)"

@@ -3,7 +3,7 @@
 $InodeThreshold = 40
 # End of Settings
 
-$Result = @($VMH | Where-Object {$_.Version -match "^5\."} | Sort-Object | % {
+$Result = @($VMH | Where-Object {$_.Version -match "^5\."} | Sort-Object | ForEach-Object {
 	$EsxCli = Get-EsxCli -VMHost $_
 	$EsxCli.system.visorfs.get() | Where-Object {[int]$_.FreeInodePercent -lt $InodeThreshold} | Add-Member -MemberType NoteProperty -Name VMHost -Value $_.Name -PassThru | Select-Object VMHost, FreeInodePercent, TotalInodes, UsedInodes
 })

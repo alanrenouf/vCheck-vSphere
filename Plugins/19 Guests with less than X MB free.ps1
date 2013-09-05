@@ -16,10 +16,11 @@ ForEach ($VMdsk in $SortedVMs){
 			$Details | Add-Member -Name "Disk$($DiskNum)Capacity(MB)" -MemberType NoteProperty -Value ([math]::Round($disk.Capacity/ 1MB))
 			$Details | Add-Member -Name "Disk$($DiskNum)FreeSpace(MB)" -MemberType NoteProperty -Value ([math]::Round($disk.FreeSpace / 1MB))
 			$DiskNum++
-			$MyCollection += $Details
 			}
 	}
-	
+	if ($DiskNum -gt 0){
+		$MyCollection += $Details
+	}
 }
 $MyCollection
 

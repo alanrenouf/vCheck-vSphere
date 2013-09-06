@@ -1,11 +1,11 @@
-﻿param ([Switch]$config, $Outputpath)
+param ([Switch]$config, $Outputpath)
 ###############################
 # vCheck - Daily Error Report # 
 ###############################
 # Thanks to all who have commented on my blog to help improve this project
 # all beta testers and previous contributors to this script.
 #
-$Version = "6.15"
+$Version = "6.15-JS"
 
 function Write-CustomOut ($Details){
 	$LogDate = Get-Date -Format T
@@ -105,16 +105,14 @@ if(!(Test-Path ($StylePath))) {
 	Write-Debug "Using $($StylePath)"
 }
 
-# Import the Style
-. ("$($StylePath)\Style.ps1")
-
-
 Function Get-Base64Image ($Path) {
 	$pic = Get-Content $Path -Encoding Byte
 	[Convert]::ToBase64String($pic)
 }
 
 $HeaderImg = Get-Base64Image ("$($StylePath)\Header.jpg")
+# Import the Style
+. ("$($StylePath)\Style.ps1")
 
 Function Get-CustomHTML ($Header){
 	$Report = $HTMLHeader -replace "_HEADER_", $Header
@@ -151,14 +149,46 @@ Function Get-CustomHTMLClose{
 }
 
 Function Get-HTMLTable {
-	param([array]$Content)
-	$HTMLTable = $Content | ConvertTo-Html -Fragment
-	$HTMLTable = $HTMLTable -Replace '<TABLE>', $HTMLTableReplace
-	$HTMLTable = $HTMLTable -Replace '<td>', $HTMLTdReplace
-	$HTMLTable = $HTMLTable -Replace '<th>', $HTMLThReplace
-	$HTMLTable = $HTMLTable -replace '&lt;', '<'
-	$HTMLTable = $HTMLTable -replace '&gt;', '>'
-	Return $HTMLTable
+	param([array]$Content, [array]$FormatRules)
+	
+	# If format rules are specified
+	if ($FormatRules) {
+		# Use an XML object for ease of use
+		$XMLTable = [xml]($content | ConvertTo-Html -Fragment)
+		$XMLTable.table.RemoveChild($XMLTable.table.colgroup) | out-null
+		
+		# Check each cell to see if there are any format rules
+		for ($RowN = 1; $RowN -lt $XMLTable.table.tr.count; $RowN++) {
+			for ($ColN = 0; $ColN -lt $XMLTable.table.tr[$RowN].td.count; $ColN++) {
+				if ( $Tableformat.keys -contains $XMLTable.table.tr[0].th[$ColN]) {
+					# Current cell has a rule, test to see if they are valid
+					foreach ( $rule in $Tableformat[$XMLTable.table.tr[0].th[$ColN]] ) {
+						if ( ([string]$rule.Keys -eq "") -or (Invoke-Expression ("`$XMLTable.table.tr[`$RowN].td[`$ColN] {0}" -f [string]$rule.Keys) )) {
+							# Find what to 
+							$RuleScope = ([string]$rule.Values).split(",")[0]
+							$RuleActions = ([string]$rule.Values).split(",")[1].split("|")
+							
+							switch ($RuleScope) {
+								"Row"  { $XMLTable.table.tr[$RowN].SetAttribute($RuleActions[0], $RuleActions[1]) }
+								"Cell" { $XMLTable.table.tr[$RowN].selectSingleNode("td[$($ColN+1)]").SetAttribute($RuleActions[0], $RuleActions[1]) }
+								"Col"  { $XMLTable.table.tr[$RowN].selectSingleNode("td[$($ColN+1)]").SetAttribute($RuleActions[0], $RuleActions[1]) }
+							}
+						}
+					}
+				}
+			}	
+		}
+		return [string]($XMLTable.OuterXml)
+	}
+	else {
+		$HTMLTable = $Content | ConvertTo-Html -Fragment
+		$HTMLTable = $HTMLTable -Replace '<TABLE>', $HTMLTableReplace
+		$HTMLTable = $HTMLTable -Replace '<td>', $HTMLTdReplace
+		$HTMLTable = $HTMLTable -Replace '<th>', $HTMLThReplace
+		$HTMLTable = $HTMLTable -replace '&lt;', '<'
+		$HTMLTable = $HTMLTable -replace '&gt;', '>'
+		Return $HTMLTable
+	}
 }
 
 Function Get-HTMLDetail ($Heading, $Detail){
@@ -171,6 +201,7 @@ $TTRReport = @()
 $MyReport = Get-CustomHTML "$Server vCheck"
 $MyReport += Get-CustomHeader0 ($Server)
 $Plugins | Foreach {
+	$TableFormat = $null
 	$TTR = [math]::round((Measure-Command {$Details = . $_.FullName}).TotalSeconds, 2)
 	$TTRTable = "" | Select Plugin, TimeToRun
 	$TTRTable.Plugin = $_.Name
@@ -190,7 +221,7 @@ $Plugins | Foreach {
 		}
 		If ($Display -eq "Table") {
 			$MyReport += Get-CustomHeader $Header $Comments
-			$MyReport += Get-HTMLTable $Details
+			$MyReport += Get-HTMLTable $Details $TableFormat
 			$MyReport += Get-CustomHeaderClose
 		}
 	}

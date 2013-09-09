@@ -1,6 +1,12 @@
 # Start of Settings 
 # End of Settings 
 
+# Note: This plugin needs the vCenter Update Manager PowerCLI snap-in installed
+# https://communities.vmware.com/community/vmtn/automationtools/powercli/updatemanager
+# (Current version 5.1 locks up in powershell v3; use "-version 2" when launching.)
+
+$Results = @()
+
 If (Get-PSSnapin Vmware.VumAutomation -ErrorAction SilentlyContinue) {
 	foreach($esx in $VMH){
 		foreach($baseline in (Get-Compliance -Entity $esx -Detailed | where {$_.Status -eq "NotCompliant"})){

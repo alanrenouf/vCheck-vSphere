@@ -24,7 +24,7 @@ foreach ($esxhost in ($HostsViews | where {$_.Runtime.ConnectionState -match "Co
 
 	#Create report for ESX host
 	foreach ($lun in $lun_array) {
-		if ($lun[1] -ge $RecLUNPaths) {
+		if ($lun[1] -lt $RecLUNPaths) {
 			#Write-Host "Alerting due to lack of paths (" $lun[1] "looking for" $RecLUNPaths "), for LUN: " $lun[0]
 			$myObj = "" | Select ESXHost, LUN , Paths
 			$myObj.ESXHost = $esxhost.Name

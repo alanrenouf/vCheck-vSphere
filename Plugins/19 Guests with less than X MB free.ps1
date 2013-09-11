@@ -1,6 +1,7 @@
 # Start of Settings 
 # VM Disk space left, set the amount you would like to report on
 $MBFree =1024
+$MBDiskMinSize = 1024
 # End of Settings
 
 $MyCollection = @()
@@ -11,7 +12,7 @@ ForEach ($VMdsk in $SortedVMs){
 	$DiskNum = 0
 	$Details | Add-Member -Name Name -Value $VMdsk.name -Membertype NoteProperty
 	Foreach ($disk in $VMdsk.Guest.Disk){
-		if (([math]::Round($disk.FreeSpace / 1MB)) -lt $MBFree){
+		if ((([math]::Round($disk.Capacity / 1MB)) -gt $MBDiskMinSize) -and (([math]::Round($disk.FreeSpace / 1MB)) -lt $MBFree)){
 			$Details | Add-Member -Name "Disk$($DiskNum)path" -MemberType NoteProperty -Value $Disk.DiskPath
 			$Details | Add-Member -Name "Disk$($DiskNum)Capacity(MB)" -MemberType NoteProperty -Value ([math]::Round($disk.Capacity/ 1MB))
 			$Details | Add-Member -Name "Disk$($DiskNum)FreeSpace(MB)" -MemberType NoteProperty -Value ([math]::Round($disk.FreeSpace / 1MB))

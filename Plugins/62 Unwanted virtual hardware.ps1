@@ -1,6 +1,6 @@
 # Start of Settings
 # Find unwanted virtual hardware
-$unwantedHardware =" VirtualUSBController|VirtualParallelPort|VirtualSerialPort"
+$unwantedHardware ="VirtualUSBController|VirtualParallelPort|VirtualSerialPort"
 # End of Settings
 
 #Thanks to @lucd http://communities.vmware.com/message/1546618

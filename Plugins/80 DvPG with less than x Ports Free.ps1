@@ -3,31 +3,35 @@
 $DvSwitchLeft = 10
 # End of Settings
 
-$vdspg = Get-VDSwitch | sort Name | Get-VDPortgroup
-$ImpactedDVS = @() 
+if (Get-PSSnapin VMware.VimAutomation.Vds -ErrorAction SilentlyContinue){
 
-Foreach ($i in $vdspg | where {$_.IsUplink -ne 'True' -and $_.PortBinding -ne 'Ephemeral'} ) {
+        if ($vdspg = Get-VDSwitch | sort Name | Get-VDPortgroup){
+        $ImpactedDVS = @() 
 
-$PG = Get-VDPortgroup $i
-$NumPorts = $PG.NumPorts
-$NumVMs = ($PG.ExtensionData.VM).Count
-$OpenPorts = $NumPorts - $NumVMs
+        Foreach ($i in $vdspg | where {$_.IsUplink -ne 'True' -and $_.PortBinding -ne 'Ephemeral'} ) {
 
-If ($OpenPorts -lt $DvSwitchLeft) {
+        $PG = Get-VDPortgroup $i
+        $NumPorts = $PG.NumPorts
+        $NumVMs = ($PG.ExtensionData.VM).Count
+        $OpenPorts = $NumPorts - $NumVMs
+
+        If ($OpenPorts -lt $DvSwitchLeft) {
 
 
-$myObj = "" | select vDSwitch,Name,OpenPorts
-$myObj.vDSwitch = $i.VDSwitch
-$myObj.Name = $i.Name
-$myObj.OpenPorts = $OpenPorts
+        $myObj = "" | select vDSwitch,Name,OpenPorts
+        $myObj.vDSwitch = $i.VDSwitch
+        $myObj.Name = $i.Name
+        $myObj.OpenPorts = $OpenPorts
 
-$ImpactedDVS += $myObj
+        $ImpactedDVS += $myObj
 
+        }
+
+        }
+
+        $ImpactedDVS
+    }
 }
-
-}
-
-$ImpactedDVS
 
 $Title = "Checking Distributed vSwitch Port Groups for Ports Free"
 $Header =  "Distributed vSwitch Port Groups with less than $vSwitchLeft Port(s) Free: $(@($ImpactedDVS).Count)"

@@ -1,7 +1,6 @@
 # Start of Settings 
 # VM Disk space left, set the amount you would like to report on
 $MBFree =1024
-# Minimum size VM Disk must be to report free space
 $MBDiskMinSize = 1024
 # End of Settings
 

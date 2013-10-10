@@ -114,10 +114,9 @@ Function Get-Base64Image ($Path) {
 	[Convert]::ToBase64String($pic)
 }
 
-$HeaderImg = Get-Base64Image ("$($StylePath)\Header.jpg")
-
-Function Get-CustomHTML ($Header){
+Function Get-CustomHTML ($Header, $HeaderImg){
 	$Report = $HTMLHeader -replace "_HEADER_", $Header
+    $Report = $Report -replace "_HEADERIMG_", $HeaderImg
 	Return $Report
 }
 

@@ -109,7 +109,7 @@ $dspcont ="
 
 $HTMLHeader = @"
 <!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Frameset//EN' 'http://www.w3.org/TR/html4/frameset.dtd'>
-<html><head><title>$($Header)</title>
+<html><head><title>_HEADER_</title>
 		<META http-equiv=Content-Type content='text/html; charset=windows-1252'>
 		<style type='text/css'>
 		TABLE 		{
@@ -145,7 +145,7 @@ $HTMLHeader = @"
 	<H1><FONT COLOR='White'>vCheck</Font></H1>
 <![endif]-->
 <!--[if !mso]><!-->
-	<IMG SRC='data:image/jpg;base64,$($HeaderImg)' ALT='vCheck'>
+	<IMG SRC='data:image/jpg;base64,_HEADERIMG_' ALT='vCheck'>
 <!--<![endif]-->
 </p>
 </center></div>

@@ -96,6 +96,16 @@ If ($SetupSetting) {
 
 . $GlobalVariables
 
+$vcvars = @("SetupWizard" , "Server" , "SMTPSRV" , "EmailFrom" , "EmailTo" , "EmailSubject", "DisplaytoScreen" , "SendEmail" , "SendAttachment" , "Colour1" , "Colour2" , "TitleTxtColour" , "TimeToRun" , "PluginSeconds" , "Style" , "Date")
+foreach($vcvar in $vcvars) {
+	if (!($(Get-Variable -Name "$vcvar" -erroraction 'silentlycontinue'))) {
+		Write-Host "Variable `$$vcvar is not defined in GlobalVariables.ps1" -foregroundcolor "Red"
+		Write-Host "Press any key to exit ..."
+		$x = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+		Exit
+	} 
+}
+
 $StylePath = $ScriptPath + "\Styles\" + $Style
 if(!(Test-Path ($StylePath))) {
 	# The path is not valid

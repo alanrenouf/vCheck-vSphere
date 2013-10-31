@@ -77,7 +77,7 @@ New-VIProperty -Name PercentFree -ObjectType Datastore -Value {
 New-VIProperty -Name "HWVersion" -ObjectType VirtualMachine -Value {
 	param($vm)
 
-	$vm.ExtensionData.Config.Version[5-6]
+	$vm.ExtensionData.Config.Version.Substring(4)
 } -BasedOnExtensionProperty "Config.Version" -Force | Out-Null
 
 Write-CustomOut "Collecting VM Objects"

@@ -1,9 +1,14 @@
 # Start of Settings 
 # Hardware Version to check for at least
 $HWVers =8
+
+#Adding filter for dsvas, vShield appliances or any other vms that will remain on a lower HW version - using same technique as some other pluggings
+
+$vmIgnore = "vShield*|dsva*"
+
 # End of Settings
 
-$HWver = @($VM | Select Name, HWVersion | Where {[INT]($_.HWVersion).ToString() -lt $HWVers})
+$HWver = @($VM | Where-Object {$_.Name -notmatch $vmIgnore} | Select-Object Name, HWVersion | Where-Object {[INT]($_.HWVersion).ToString() -lt $HWVers})
 $HWVer				
 
 $Title = "Checking VM Hardware Version"

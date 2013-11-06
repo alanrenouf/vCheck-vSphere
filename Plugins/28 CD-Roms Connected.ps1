@@ -7,7 +7,7 @@ $Result = @($FullVM | ?{$_.runtime.powerState -eq "PoweredOn" -And $_.Name -notm
 $Result
 
 $Title = "CD-Roms Connected"
-$Header =  "VM: CD-ROM Connected - VMotion Violation: $(@($Result).Count)"
+$Header =  "VM: CD-ROM Connected - vMotion Violation: $(@($Result).Count)"
 $Comments = "The following VMs have a CD-ROM connected, this may cause issues if this machine needs to be migrated to a different host"
 $Display = "Table"
 $Author = "Alan Renouf, Frederic Martin"

@@ -1,7 +1,7 @@
 # Start of Settings
 # End of Settings
  
-$Result = @( $VM | Get-View |`
+$Result = @( $FullVM |`
   Where-Object {$_.Guest.GuestId -and $_.Guest.GuestId -ne $_.Config.GuestId} | `
   Select-Object -Property Name,@{N="GuestId";E={$_.Guest.GuestId}},
     @{N="Guest OS";E={$_.Guest.GuestFullName}},

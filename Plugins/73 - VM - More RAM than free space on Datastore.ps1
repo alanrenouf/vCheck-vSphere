@@ -6,7 +6,7 @@ Foreach($Machine in $VM | Where {$_.PowerState -eq "PoweredOn"}) {
     $Details = "" | Select Name, MemoryMB, FreeSpaceMB
     $Details.Name = $Machine.Name
     $Details.MemoryMB = $Machine.MemoryMB
-    $Details.FreeSpaceMB = (Get-Datastore (($Machine.ExtensionData.Config.Files.VmPathName).Split('[')[1]).Split(']')[0]).FreeSpaceMB
+    $Details.FreeSpaceMB = ($Datastores|Where {$_.Name -eq (($Machine.ExtensionData.Config.Files.VmPathName).Split('[')[1]).Split(']')[0]}).FreeSpaceMB
     $vmInfo += $Details
 }
 $Result = @($vmInfo | Where {($_.FreeSpaceMB -ne $null) -and ($_.MemoryMB -gt $_.FreeSpaceMB)} | Sort Name)

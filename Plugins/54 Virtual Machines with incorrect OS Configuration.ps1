@@ -1,12 +1,12 @@
 # Start of Settings
 # End of Settings
  
-$Result = @( $VM | `
-  Where-Object {$_.Guest.GuestId -and $_.Guest.GuestId -ne $_.ExtensionData.Config.GuestId} | `
+$Result = @( $FullVM |`
+  Where-Object {$_.Guest.GuestId -and $_.Guest.GuestId -ne $_.Config.GuestId} | `
   Select-Object -Property Name,@{N="GuestId";E={$_.Guest.GuestId}},
-    @{N="Guest OS";E={$_.Guest.OSFullName}},
-    @{N="Configured GuestId";E={$_.ExtensionData.Config.GuestId}},
-    @{N="Configured Guest OS";E={$_.ExtensionData.Config.GuestFullName}}
+    @{N="Guest OS";E={$_.Guest.GuestFullName}},
+    @{N="Configured GuestId";E={$_.Config.GuestId}},
+    @{N="Configured Guest OS";E={$_.Config.GuestFullName}}
 )
 $Result
  

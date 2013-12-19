@@ -1,15 +1,10 @@
 # Start of Settings
 # End of Settings
 
-$Result = @($VM | Where-Object {$_.Guest.OSFullname -like "*Windows*"} | ForEach-Object {
-  $CurrentVm = $_
-  $NrOfHardDisks = ($CurrentVm | Get-HardDisk | Measure-Object).Count
-  $NrOfGuestDisks = ($CurrentVm.Guest.Disks | Measure-Object).Count
-  if ($NrOfHardDisks -lt $NrOfGuestDisks) {
-    "" | Select-Object -Property @{N="VM";E={$CurrentVm.Name}},@{N="NrOfHardDisks";E={$NrOfHardDisks}},@{N="NrOfGuestDisks";E={$NrOfGuestDisks}}
-  }
- }
-)
+$Result = @($FullVM | `
+	Select-Object -Property Name,@{N="NrOfHardDisks";E={($_.Layout.Disk|measure).count}},@{N="NrOfGuestDisks";E={($_.Guest.Disk|measure).count}},@{N="GuestFamily";E={$_.Guest.GuestFamily}}| `
+	Where-Object {$_.GuestFamily -eq "windowsGuest" -and $_.NrOfHardDisks -lt $_.NrOfGuestDisks}
+ )
 $Result
 
 $Title = "Virtual machines with less hard disks than partitions"

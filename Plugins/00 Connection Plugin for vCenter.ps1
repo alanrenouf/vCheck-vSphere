@@ -22,7 +22,7 @@ if (!(get-pssnapin -name VMware.VimAutomation.Core -erroraction silentlycontinue
 }
 
 $OpenConnection = $global:DefaultVIServers | where { $_.Name -eq $VIServer }
-if($OpenConnection.Connected) {
+if($OpenConnection.IsConnected) {
 	Write-CustomOut "Re-using connection to VI Server"
 	$VIConnection = $OpenConnection
 } else {

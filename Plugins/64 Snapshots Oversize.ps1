@@ -12,40 +12,32 @@ Function Get-VmSize($vmname) {
 	#$fileQueryFlags.Modification = $true
 	$searchSpec = New-Object VMware.Vim.HostDatastoreBrowserSearchSpec
 	$searchSpec.details = $fileQueryFlags
-	
-	$vmname | %{
+	$vmname | ForEach {
 		#Create an array with the vm's directories
-		#$VmDirs += $_.Config.Files.VmPathName.split("/")[0]
 		$VmDirs += $_.Config.Files.SnapshotDirectory.split("/")[0]
-		#$VmDirs += $_.Config.Files.SuspendDirectory.split("/")[0]
-		#$VmDirs += $_.Config.Files.LogDirectory.split("/")[0]
 		#Add directories of the vm's virtual disk files
-		foreach ($disk in $_.Layout.Disk) {
-			foreach ($diskfile in $disk.diskfile) {
+		ForEach ($disk in $_.Layout.Disk) {
+			ForEach ($diskfile in $disk.diskfile) {
 				$VmDirs += $diskfile.split("/")[0]
 			}
 		}
 		#Only take unique array items
 		$VmDirs = $VmDirs | Sort | Get-Unique
 
-		foreach ($dir in $VmDirs){
+		ForEach ($dir in $VmDirs){
             $ds = Get-Datastore ($dir.split("[")[1]).split("]")[0]
             $dsb = Get-View (($ds | Get-View).Browser)
-			if (($global:DefaultVIServer).Version -cge "5"){$searchSpec = [VMware.Vim.VIConvert]::ToVim50($searchSpec)}
-			elseif (($global:DefaultVIServer).Version -cge "4.1"){$searchSpec = [VMware.Vim.VIConvert]::ToVim41($searchSpec)}
-			elseif (($global:DefaultVIServer).Version -eq "4.0.0"){$searchSpec = [VMware.Vim.VIConvert]::ToVim4($searchSpec)}
- 
+			$vimapiversion = ($defaultviserver.extensiondata.client.version.tostring()).Split("Vim")[-1]
+			$searchSpec = [VMware.Vim.VIConvert]::"ToVim$vimapiversion".invoke($searchSpec)
+			
 			$searchSpec.details.fileOwnerSpecified = $true
  
-			if (($global:DefaultVIServer).Version -cge "5"){$dsBrowserMoRef = [VMware.Vim.VIConvert]::ToVim50($dsb.MoRef)}
-			elseif (($global:DefaultVIServer).Version -cge "4.1"){$dsBrowserMoRef = [VMware.Vim.VIConvert]::ToVim41($dsb.MoRef)}
-            elseif (($global:DefaultVIServer).Version -eq "4.0.0"){$dsBrowserMoRef = [VMware.Vim.VIConvert]::ToVim4($dsb.MoRef)}
- 
+			$dsBrowserMoRef = [VMware.Vim.VIConvert]::"ToVim$vimapiversion".invoke($dsb.MoRef)
 			$taskMoRef  = $dsb.Client.VimService.SearchDatastoreSubFolders_Task($dsBrowserMoRef, $dir, $searchSpec)
             $task = [VMware.Vim.VIConvert]::ToVim($dsb.WaitForTask([VMware.Vim.VIConvert]::ToVim($taskMoRef))) 
  
-            foreach ($result in $task){
-                foreach ($file in $result.File){
+            ForEach ($result in $task){
+                ForEach ($file in $result.File){
                     $VmSize += $file.FileSize
                 }
             }
@@ -55,7 +47,7 @@ Function Get-VmSize($vmname) {
 }
 
 Function Get-Snapshot2 ($objVM) {					
-	$rootsnap = $objVM|%{$_.Snapshot.RootSnapshotList}
+	$rootsnap = $objVM | Foreach {$_.Snapshot.RootSnapshotList}
 	$snaplist = @()
 	$snaplist += $rootsnap
 	$snaplist += get-snapshotlegacy $rootsnap
@@ -65,7 +57,7 @@ Function Get-Snapshot2 ($objVM) {
 Function Get-Snapshotlegacy ($rootsnap) {
 	foreach ($snap in ($rootsnap|%{$_.ChildSnapshotList})) {
 		$snap
-		if ((($snap|%{$_.ChildSnapshotList})|Measure-Object).Count -gt 0) {
+		if ((($snap | Foreach {$_.ChildSnapshotList})|Measure-Object).Count -gt 0) {
 			get-snapshotlegacy $snap
 		}
 	}

@@ -1,6 +1,6 @@
 $Title = "Connection settings for vCenter"
 $Author = "Alan Renouf"
-$PluginVersion = 1.3
+$PluginVersion = 1.31
 $Header =  "Connection Settings"
 $Comments = "Connection Plugin for connecting to vSphere"
 $Display = "List"
@@ -80,28 +80,41 @@ New-VIProperty -Name "HWVersion" -ObjectType VirtualMachine -Value {
 	$vm.ExtensionData.Config.Version.Substring(4)
 } -BasedOnExtensionProperty "Config.Version" -Force | Out-Null
 
-Write-CustomOut "Collecting VM Objects"
-$VM = Get-VM | Sort Name
-Write-CustomOut "Collecting VM Host Objects"
-$VMH = Get-VMHost | Sort Name
-Write-CustomOut "Collecting Cluster Objects"
-$Clusters = Get-Cluster | Sort Name
-Write-CustomOut "Collecting Datastore Objects"
-$Datastores = Get-Datastore | Sort Name
-Write-CustomOut "Collecting Detailed VM Objects"
-$FullVM = Get-View -ViewType VirtualMachine | Where {-not $_.Config.Template}
-Write-CustomOut "Collecting Template Objects"
-$VMTmpl = Get-Template
-Write-CustomOut "Collecting Detailed VI Objects"
-$ServiceInstance = get-view ServiceInstance
-Write-CustomOut "Collecting Detailed Alarm Objects"
-$alarmMgr = get-view $ServiceInstance.Content.alarmManager
-Write-CustomOut "Collecting Detailed VMHost Objects"
-$HostsViews = Get-View -ViewType hostsystem
-Write-CustomOut "Collecting Detailed Cluster Objects"
-$clusviews = Get-View -ViewType ClusterComputeResource
-Write-CustomOut "Collecting Detailed Datastore Objects"
-$storageviews = Get-View -ViewType Datastore
+# Check each enabled plugin for references to vCheck objects
+$CheckRequirements = @{'$VM'             = @("VM Objects", '$VM = Get-VM | Sort Name');
+                       '$VMH'            = @("VM Host Objects", '$VMH = Get-VMHost | Sort Name');
+                       '$Clusters'       = @("Cluster Objects", '$Clusters = Get-Cluster | Sort Name');
+                       '$Datastores'     = @("Datastore Objects", '$Datastores = Get-Datastore | Sort Name');
+                       '$FullVM'         = @("Detailed VM Objects", '$FullVM = Get-View -ViewType VirtualMachine | Where {-not $_.Config.Template}');
+                       '$VMTmpl'         = @("Template Objects", '$VMTmpl = Get-Template');
+                       '$ServiceInstance'= @("Detailed VI Objects", '$ServiceInstance = get-view ServiceInstance');
+                       '$alarmMgr'       = @("Detailed Alarm Objects", '$alarmMgr = get-view $ServiceInstance.Content.alarmManager');
+                       '$HostsViews'     = @("Detailed VMHost Objects", '$HostsViews = Get-View -ViewType hostsystem');
+                       '$clusviews'      = @("Detailed Cluster Objects", '$clusviews = Get-View -ViewType ClusterComputeResource');
+                       '$storageviews'   = @("Detailed Datastore Objects", '$storageviews = Get-View -ViewType Datastore');
+                       }
+                       
+# Track all requirements that used in plugins
+$Requirements = @{}
+
+$Plugins | Foreach {
+   # Skip the connection plugin, otherwise you will return everything
+   if ($_.Name -ne "00 Connection Plugin for vCenter.ps1") {
+      $pluginContent = Get-Content $_.Fullname
+      foreach ($Requirement in $CheckRequirements.GetEnumerator()) {
+         if ($pluginContent -match ("\{0} " -f $Requirement.Name)) {
+            $Requirements.Add($Requirement.Name, $Requirement)
+         }
+      }
+   }
+}
+
+
+# Now load each requirement
+foreach ($Requirement in $Requirements.GetEnumerator()) {
+   Write-CustomOut ("Collecting {0}" -f $Requirement.Value.Value[0])
+   Invoke-Expression $Requirement.Value.Value[1]
+}
 
 # Find out which version of the API we are connecting to
 $VIVersion = ((Get-View ServiceInstance).Content.About.Version).Chars(0)

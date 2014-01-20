@@ -24,6 +24,10 @@ $Title = "Host Alarms"
 $Header =  "Host(s) Alarm(s): $(@($hostsalarms).Count)"
 $Comments = "The following alarms have been registered against hosts in vCenter"
 $Display = "Table"
-$Author = "Alan Renouf"
-$PluginVersion = 1.1
+$Author = "Alan Renouf, John Sneddon"
+$PluginVersion = 1.2
 $PluginCategory = "vSphere"
+
+$TableFormat = @{"Status" = @(@{ "-eq 'yellow'"     = "Row,class|warning"; },
+							  @{ "-eq 'red'"     = "Row,class|critical" })
+				}

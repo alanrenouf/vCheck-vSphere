@@ -3,9 +3,9 @@
 
 Function Get-VmSize($vmname) {
 	# modded version from Arnim van Lieshout http://www.van-lieshout.com/2009/07/how-big-is-my-vm/
-    #Initialize variables
-    $VmDirs = @()
-    $VmSize = 0
+   #Initialize variables
+   $VmDirs = @()
+   $VmSize = 0
 	$fileQueryFlags = New-Object VMware.Vim.FileQueryFlags
 	$fileQueryFlags.FileSize = $true
 	#$fileQueryFlags.FileType = $true
@@ -67,7 +67,7 @@ Function Get-hypersnapshot($FullVM) {
 	$snapp = @()
 	ForEach ($VMView in $FullVM) {			
 		if ($VMView.Snapshot) {
-			$vmg = Get-VM -Name $VMView.name
+			$vmg = $VM | ?{$_.Id -eq $VMView.MoRef}
 			$vmname = $VMView.name
 			$hddsize = 0
 			ForEach ($DISK in ($vmg|Get-HardDisk)) { # Loop through VM's harddisks 
@@ -102,5 +102,5 @@ $Header =  "Snapshots Oversize"
 $Comments = ""
 $Display = "Table"
 $Author = "Raphael Schitz"
-$PluginVersion = 1.1
+$PluginVersion = 1.2
 $PluginCategory = "vSphere"

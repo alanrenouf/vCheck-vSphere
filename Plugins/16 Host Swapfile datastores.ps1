@@ -4,7 +4,7 @@
 $cluswap = @()
 foreach ($clusview in $clusviews) {
 	if ($clusview.ConfigurationEx.VmSwapPlacement -eq "hostLocal") {
-		$CluNodes = Get-VMHost -Location $clusview.name
+		$CluNodes = $VMH | where {$clusview.Host -contains $_.Id }
 		foreach ($CluNode in $CluNodes) {
 			if ($CluNode.VMSwapfileDatastore.Name -ne $null){}
 				else {
@@ -26,5 +26,5 @@ $Header =  "Host Swapfile datastores not set : $(@($cluswap).count)"
 $Comments = "The following hosts are in a cluster which is set to store the swapfile in the datastore specified by the host but no location has been set on the host"
 $Display = "Table"
 $Author = "Alan Renouf"
-$PluginVersion = 1.1
+$PluginVersion = 1.2
 $PluginCategory = "vSphere"

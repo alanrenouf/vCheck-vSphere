@@ -7,7 +7,7 @@ Foreach ($VMHost in $VMH) {
 	$Details.Host = $VMHost.Name
 	$Details.TotalMemMB = $VMHost.MemoryTotalMB
 	if ($VMMem) { Clear-Variable VMMem }
-	$VMHost | Get-VM | Foreach {
+   $VM | ?{$_.Host.Name -eq $VMHost.Name} | Foreach {
 		[INT]$VMMem += $_.MemoryMB
 	}
 	$Details.TotalAssignedMemMB = $VMMem
@@ -27,5 +27,5 @@ $Header =  "Hosts overcommitting memory : $(@($OverCommit).count)"
 $Comments = "Overcommitted hosts may cause issues with performance if memory is not issued when needed, this may cause ballooning and swapping"
 $Display = "Table"
 $Author = "Alan Renouf"
-$PluginVersion = 1.1
+$PluginVersion = 1.2
 $PluginCategory = "vSphere"

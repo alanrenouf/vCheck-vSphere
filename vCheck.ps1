@@ -1,11 +1,62 @@
-param ([Switch]$config, $Outputpath)
-###############################
-# vCheck - Daily Error Report # 
-###############################
-# Thanks to all who have commented on my blog to help improve this project
-# all beta testers and previous contributors to this script.
-#
-$Version = "6.16"
+<# 
+.SYNOPSIS 
+   vCheck is a PowerShell HTML framework script, designed to run as a scheduled
+   task before you get into the office to present you with key information via
+   an email directly to your inbox in a nice easily readable format.
+.DESCRIPTION
+   vCheck Daily Report for vSphere
+
+   vCheck is a PowerShell HTML framework script, the script is designed to run 
+   as a scheduled task before you get into the office to present you with key 
+   information via an email directly to your inbox in a nice easily readable format.
+
+   This script picks on the key known issues and potential issues scripted as 
+   plugins for various technologies written as powershell scripts and reports 
+   it all in one place so all you do in the morning is check your email.
+
+   One of they key things about this report is if there is no issue in a particular 
+   place you will not receive that section in the email, for example if there are 
+   no datastores with less than 5% free space (configurable) then the disk space 
+   section in the virtual infrastructure version of this script, it will not show 
+   in the email, this ensures that you have only the information you need in front 
+   of you when you get into the office.
+
+   This script is not to be confused with an Audit script, although the reporting 
+   framework can also be used for auditing scripts too. I dont want to remind you 
+   that you have 5 hosts and what there names are and how many CPUs they have each 
+   and every day as you dont want to read that kind of information unless you need 
+   it, this script will only tell you about problem areas with your infrastructure.
+
+.NOTES 
+   File Name  : vCheck.ps1 
+   Author     : Alan Renouf - @alanrenouf
+   Version    : 6.17
+   
+   Thanks to all who have commented on my blog to help improve this project
+   all beta testers and previous contributors to this script.
+   
+.LINK
+   http://www.virtu-al.net/vcheck-pluginsheaders/vcheck
+.LINK
+   https://github.com/alanrenouf/vCheck-vSphere/
+
+.INPUTS
+   No inputs required
+.OUTPUTS
+   HTML formatted email, Email with attachment, HTML File
+    
+.PARAMETER config
+   If this switch is set, run the setup wizard
+   
+.PARAMETER Outputpath
+   This parameter specifies the output location for files.
+#>
+param (
+   [Switch]$config,
+   [ValidateScript({Test-Path $_ -PathType 'Container'})]
+   [string]$Outputpath
+)
+$Version = "6.17"
 $a = $host.PrivateData
 #
 # Grab the Warning foreground and background colors the user configured
@@ -19,33 +70,31 @@ function Write-CustomOut ($Details){
 	#write-eventlog -logname Application -source "Windows Error Reporting" -eventID 12345 -entrytype Information -message "vCheck: $Details"
 }
 Function Get-ID-String ($file_content,$ID_name) {
-if ($file_content | Select-String -Pattern "\$+$ID_name\s*=")
-  {	
-  # Write-CustomOut "${ID_name}: ", $file_content | Select-String -Pattern "\$+${ID_name}\s*="
-  	$value = (($file_content | Select-String -pattern "\$+${ID_name}\s*=").toString().split("=")[1]).Trim(' "')
-	 return ( $value ) }
+   if ($file_content | Select-String -Pattern "\$+$ID_name\s*=") {	
+      # Write-Host "${ID_name}: ", $file_content | Select-String -Pattern "\$+${ID_name}\s*="
+      $value = (($file_content | Select-String -pattern "\$+${ID_name}\s*=").toString().split("=")[1]).Trim(' "')
+      return ( $value ) }
 }
 
 Function Get-PluginID ($Filename){
-# Get the identifying information for a plugin script
-# Write-Host "Filename: $Filename"
-  $file = Get-Content $Filename
-  $Title = Get-ID-String $file "Title"
-  if ( !$Title ) { $Title = $Filename }
-  $PluginVersion = Get-ID-String $file "PluginVersion"
-  $Author = Get-ID-String $file "Author"
-  $Ver = "{0:N1}" -f $PluginVersion
+   # Get the identifying information for a plugin script
+   # Write-Host "Filename: $Filename"
+   $file = Get-Content $Filename
+   $Title = Get-ID-String $file "Title"
+   if ( !$Title ) { $Title = $Filename }
+   $PluginVersion = Get-ID-String $file "PluginVersion"
+   $Author = Get-ID-String $file "Author"
+   $Ver = "{0:N1}" -f $PluginVersion
 			
-# Write-Host "Title: $Title, PluginVersion: $PluginVersion, Ver: $Ver, Author: $Author"
-Return [array]( $Title, $Ver, $Author )			
+   # Write-Host "Title: $Title, PluginVersion: $PluginVersion, Ver: $Ver, Author: $Author"
+   return @{"Title"=$Title; "Version"=$Ver; "Author"=$Author }		
 }
 
 Function Invoke-Settings ($Filename, $GB) {
 	$file = Get-Content $filename
 	$OriginalLine = ($file | Select-String -Pattern "# Start of Settings").LineNumber
 	$EndLine = ($file | Select-String -Pattern "# End of Settings").LineNumber
-	if (($OriginalLine +1) -eq $EndLine) {
-		} Else {
+	if (!(($OriginalLine +1) -eq $EndLine)) {
 		$Array = @()
 		$Line = $OriginalLine
 		do {
@@ -55,7 +104,7 @@ Function Invoke-Settings ($Filename, $GB) {
 			$Var = $Split[0]
 			$CurSet = $Split[1]
 			
-			# Check if the current setting is in speach marks
+			# Check if the current setting is in speech marks
 			$String = $false
 			if ($CurSet -match '"') {
 				$String = $true
@@ -137,9 +186,9 @@ $StylePath = $ScriptPath + "\Styles\" + $Style
 if(!(Test-Path ($StylePath))) {
 	# The path is not valid
 	# Use the default style
-	Write-Debug "Style path ($($StylePath)) is not valid"
+	Write-Warning "Style path ($($StylePath)) is not valid"
 	$StylePath = $ScriptPath + "\Styles\Default"
-	Write-Debug "Using $($StylePath)"
+	Write-Warning "Using $($StylePath)"
 }
 
 # Import the Style
@@ -240,17 +289,14 @@ $MyReport += Get-CustomHeader0 ($Server)
 $Plugins | Foreach {
    $TableFormat = $null
 	$IDinfo = Get-PluginID $_.Fullname
-	$Title = $IDinfo[0]
-	$Ver = $IDinfo[1]
-	$Author = $IDinfo[2]
-	Write-CustomOut "..start calculating $Title by $Author v$Ver"
+	Write-CustomOut ("..start calculating {0} by {1} v{2}" -f $IDinfo["Title"], $IDinfo["Author"], $IDinfo["Version"])
 	$TTR = [math]::round((Measure-Command {$Details = . $_.FullName}).TotalSeconds, 2)
 	$TTRTable = "" | Select Plugin, TimeToRun
 	$TTRTable.Plugin = $_.Name
 	$TTRTable.TimeToRun = $TTR
 	$TTRReport += $TTRTable
 	$ver = "{0:N1}" -f $PluginVersion
-	Write-CustomOut "..finished calculating $Title by $Author v$Ver"
+	Write-CustomOut ("..finished calculating {0} by {1} v{2}"  -f $IDinfo["Title"], $IDinfo["Author"], $IDinfo["Version"])
 
 	If ($Details) {
 		If ($Display -eq "List"){
@@ -275,39 +321,33 @@ $MyReport += Get-CustomHeaderClose
 $MyReport += Get-CustomHeader0Close
 $MyReport += Get-CustomHTMLClose
 
-if ($DisplayToScreen -or $SetupSetting) {
-	Write-CustomOut "..Displaying HTML results"
-	$Filename = $Env:TEMP + "\" + $Server + "vCheck" + "_" + $Date.Day + "-" + $Date.Month + "-" + $Date.Year + ".htm"
-	$MyReport | out-file -encoding ASCII -filepath $Filename
-	Invoke-Item $Filename
-}
-
-if ($SendAttachment) {
-	$Filename = $Env:TEMP + "\" + $Server + "vCheck" + "_" + $Date.Day + "-" + $Date.Month + "-" + $Date.Year + ".htm"
-	$MyReport | out-file -encoding ASCII -filepath $Filename
-}
-
+# Save the file somewhere, depending on report options
 if ($Outputpath) {
 	$DateHTML = Get-Date -Format "yyyyMMddHH"
 	$ArchiveFilePath = $Outputpath + "\Archives\" + $VIServer
 	if (-not (Test-Path -PathType Container $ArchiveFilePath)) { New-Item $ArchiveFilePath -type directory | Out-Null }
 	$Filename = $ArchiveFilePath + "\" + $VIServer + "_vCheck_" + $DateHTML + ".htm"
-	$MyReport | out-file -encoding ASCII -filepath $Filename
+}
+else {
+   $Filename = $Env:TEMP + "\" + $Server + "vCheck" + "_" + $Date.Day + "-" + $Date.Month + "-" + $Date.Year + ".htm"
+}
+
+# Create the file
+$MyReport | Out-File -Encoding ASCII -Filepath $Filename
+
+if ($DisplayToScreen -or $SetupSetting) {
+	Write-CustomOut "..Displaying HTML results"
+	Invoke-Item $Filename
 }
 
 if ($SendEmail) {
 	Write-CustomOut "..Sending Email"
 	If ($SendAttachment) {
-		send-Mailmessage -To $EmailTo -From $EmailFrom -Subject $EmailSubject -SmtpServer $SMTPSRV -Body "vCheck attached to this email" -Attachments $Filename
+		Send-MailMessage -To $EmailTo -From $EmailFrom -Subject $EmailSubject -SmtpServer $SMTPSRV -Body "vCheck attached to this email" -Attachments $Filename
 	} Else {
-		send-Mailmessage -To $EmailTo -From $EmailFrom -Subject $EmailSubject -SmtpServer $SMTPSRV -Body $MyReport -BodyAsHtml
+		Send-MailMessage -To $EmailTo -From $EmailFrom -Subject $EmailSubject -SmtpServer $SMTPSRV -Body $MyReport -BodyAsHtml
 	}
 }
 
-if ($SendAttachment -eq $true -and $DisplaytoScreen -ne $true) {
-	Write-CustomOut "..Removing temporary file"
-	Remove-Item $Filename -Force
-}
-
-$End = $ScriptPath + "\EndScript.ps1"
-. $End
+# Run EndScript once everything else is complete
+. ($ScriptPath + "\EndScript.ps1")

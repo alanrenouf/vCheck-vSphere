@@ -106,6 +106,9 @@ $storageviews = Get-View -ViewType Datastore
 # Find out which version of the API we are connecting to
 $VIVersion = ((Get-View ServiceInstance).Content.About.Version).Chars(0)
 
+# Check to see if its a VCSA or not
+if ($ServiceInstance.Client.ServiceContent.About.OsType -eq "linux-x64"){ $VCSA = $true }
+
 # Check for vSphere
 If ($VIVersion -ge 4){
 	$vSphere = $true

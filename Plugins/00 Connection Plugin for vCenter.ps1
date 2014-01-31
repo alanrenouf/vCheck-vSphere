@@ -111,5 +111,9 @@ If ($VIVersion -ge 4){
 	$vSphere = $true
 }
 
+if ($VIVersion -ge 5) {
+	$DatastoreClustersView = Get-View -viewtype StoragePod
+}
+
 $date = Get-Date
 

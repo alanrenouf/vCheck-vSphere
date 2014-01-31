@@ -10,23 +10,23 @@ $HostProfiles = Get-VMHostProfile
 
 # ShowDetail will include all failures for the host profile
 if ($ShowDetail) {
-   foreach ($Profile in $HostProfiles) {
+	foreach ($Profile in $HostProfiles) {
       $Failures = $Profile | Test-VMHostProfileCompliance -UseCache 
       
-      # If there are no failures, we need to do a bit more work to get the VMHost
-      if (!$Failures) {
-         if ($ShowCompliant) {
-            $VMHosts = $VMH | Where {(($Profile.ExtensionData.entity | Where {$_.type -eq "HostSystem" } | Select @{n="Id";e={"HostSystem-{0}" -f $_.Value}}) | Select -expandProperty Id) -contains $_.Id}
-            foreach ($VMHost in $VMHosts) {
-               $Profile | Select @{Name="VMHostProfile";Expression={$_.Name}}, @{Name="Host";Expression={$VMHost.Name}}, @{Name="Compliant";Expression={$true}, @{Name="Failures";Expression={"None"}}
-            }
-         }
-      }
-      # Otherwise just spit out the failures
-      else {
-         $Failures | Select VMHostProfile, @{Name='Host';Expression={$_.vmhost.name}}, @{Name='Compliant';Expression={$false}}, @{Name="Failures";Expression={($_.IncomplianceElementList | Select -expandproperty Description) -join "<br />"}}
-      }
-   }
+	  	# If there are no failures, we need to do a bit more work to get the VMHost
+		if (!$Failures) {
+			if ($ShowCompliant) {
+	            $VMHosts = $VMH | Where {(($Profile.ExtensionData.entity | Where {$_.type -eq "HostSystem" } | Select @{n="Id";e={"HostSystem-{0}" -f $_.Value}}) | Select -expandProperty Id) -contains $_.Id}
+	            foreach ($VMHost in $VMHosts) {
+	               $Profile | Select @{Name="VMHostProfile";Expression={$_.Name}}, @{Name="Host";Expression={$VMHost.Name}}, @{Name="Compliant";Expression={$true}}, @{Name="Failures";Expression={"None"}}
+	            }
+        	}
+      	}
+      	# Otherwise just spit out the failures
+      	else {
+         	$Failures | Select VMHostProfile, @{Name='Host';Expression={$_.vmhost.name}}, @{Name='Compliant';Expression={$false}}, @{Name="Failures";Expression={($_.IncomplianceElementList | Select -expandproperty Description) -join "<br />"}}
+      	}
+   	}
 }
 # If we don't care about details, we can just return the compliance status using Test-VMHostProfileCompliance
 else {

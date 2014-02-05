@@ -16,6 +16,9 @@ $VIServer = $Server
 # Path to credentials file which is automatically created if needed
 $Credfile = $ScriptPath + "\Windowscreds.xml"
 
+# Setup plugin-specific language table
+Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable pLang
+
 # Adding PowerCLI core snapin
 if (!(get-pssnapin -name VMware.VimAutomation.Core -erroraction silentlycontinue)) {
 	add-pssnapin VMware.VimAutomation.Core
@@ -23,21 +26,18 @@ if (!(get-pssnapin -name VMware.VimAutomation.Core -erroraction silentlycontinue
 
 $OpenConnection = $global:DefaultVIServers | where { $_.Name -eq $VIServer }
 if($OpenConnection.IsConnected) {
-	Write-CustomOut "Re-using connection to VI Server"
+	Write-CustomOut $pLang.connReuse
 	$VIConnection = $OpenConnection
 } else {
-	Write-CustomOut "Connecting to VI Server"
+	Write-CustomOut $pLang.connOpen
 	$VIConnection = Connect-VIServer $VIServer
 }
 
 if (-not $VIConnection.IsConnected) {
-	Write-Host "Unable to connect to vCenter, please ensure you have altered the vCenter server address correctly "
-	Write-Host " to specify a username and password edit the connection string in the file $GlobalVariables"
-	break
+	Write-Error $pLang.connError
 }
 
-
-Write-CustomOut "Adding Custom properties"
+Write-CustomOut $pLang.custAttr
 
 function Get-VMLastPoweredOffDate {
   param([Parameter(Mandatory=$true,ValueFromPipeline=$true)]
@@ -80,27 +80,27 @@ New-VIProperty -Name "HWVersion" -ObjectType VirtualMachine -Value {
 	$vm.ExtensionData.Config.Version.Substring(4)
 } -BasedOnExtensionProperty "Config.Version" -Force | Out-Null
 
-Write-CustomOut "Collecting VM Objects"
+Write-CustomOut $pLang.collectVM
 $VM = Get-VM | Sort Name
-Write-CustomOut "Collecting VM Host Objects"
+Write-CustomOut $pLang.collectHost
 $VMH = Get-VMHost | Sort Name
-Write-CustomOut "Collecting Cluster Objects"
+Write-CustomOut $pLang.collectCluster
 $Clusters = Get-Cluster | Sort Name
-Write-CustomOut "Collecting Datastore Objects"
+Write-CustomOut $pLang.collectDatastore
 $Datastores = Get-Datastore | Sort Name
-Write-CustomOut "Collecting Detailed VM Objects"
+Write-CustomOut $pLang.collectDVM
 $FullVM = Get-View -ViewType VirtualMachine | Where {-not $_.Config.Template}
-Write-CustomOut "Collecting Template Objects"
+Write-CustomOut $pLang.collectTemplate 
 $VMTmpl = Get-Template
-Write-CustomOut "Collecting Detailed VI Objects"
+Write-CustomOut $pLang.collectDVIO
 $ServiceInstance = get-view ServiceInstance
-Write-CustomOut "Collecting Detailed Alarm Objects"
+Write-CustomOut $pLang.collectAlarm
 $alarmMgr = get-view $ServiceInstance.Content.alarmManager
-Write-CustomOut "Collecting Detailed VMHost Objects"
+Write-CustomOut $pLang.collectDHost
 $HostsViews = Get-View -ViewType hostsystem
-Write-CustomOut "Collecting Detailed Cluster Objects"
+Write-CustomOut $pLang.collectDCluster
 $clusviews = Get-View -ViewType ClusterComputeResource
-Write-CustomOut "Collecting Detailed Datastore Objects"
+Write-CustomOut $pLang.collectDDatastore
 $storageviews = Get-View -ViewType Datastore
 
 # Find out which version of the API we are connecting to
@@ -112,4 +112,3 @@ If ($VIVersion -ge 4){
 }
 
 $date = Get-Date
-

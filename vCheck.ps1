@@ -57,23 +57,16 @@ param (
    [string]$Outputpath
 )
 $Version = "6.17"
-$a = $host.PrivateData
-#
-# Grab the Warning foreground and background colors the user configured
-#
-$Warning_Foreground = $a.WarningForegroundColor
-$Warning_Background = $a.WarningBackgroundColor
 
 function Write-CustomOut ($Details){
 	$LogDate = Get-Date -Format T
 	Write-Host "$($LogDate) $Details"
-	#write-eventlog -logname Application -source "Windows Error Reporting" -eventID 12345 -entrytype Information -message "vCheck: $Details"
 }
 Function Get-ID-String ($file_content,$ID_name) {
    if ($file_content | Select-String -Pattern "\$+$ID_name\s*=") {	
-      # Write-Host "${ID_name}: ", $file_content | Select-String -Pattern "\$+${ID_name}\s*="
       $value = (($file_content | Select-String -pattern "\$+${ID_name}\s*=").toString().split("=")[1]).Trim(' "')
-      return ( $value ) }
+      return ( $value ) 
+   }
 }
 
 Function Get-PluginID ($Filename){
@@ -140,29 +133,22 @@ $PluginsFolder = $ScriptPath + "\Plugins\"
 $Plugins = Get-ChildItem -Path $PluginsFolder -filter "*.ps1" | Sort Name
 $GlobalVariables = $ScriptPath + "\GlobalVariables.ps1"
 
-
-
 $file = Get-Content $GlobalVariables
+
+# Setup language hashtable
+Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable lang
 
 $Setup = ($file | Select-String -Pattern '# Set the following to true to enable the setup wizard for first time run').LineNumber
 $SetupLine = $Setup ++
-$SetupSetting = invoke-Expression (($file[$SetupLine]).Split("="))[1]
+$SetupSetting = Invoke-Expression (($file[$SetupLine]).Split("="))[1]
 if ($config) {
 	$SetupSetting = $true
 }
 If ($SetupSetting) {
-	cls
-	Write-Host -foreground $Warning_Foreground -background $Warning_Background
-	Write-Host -foreground $Warning_Foreground -background $Warning_Background "Welcome to vCheck by Virtu-Al http://virtu-al.net"
-	Write-Host -foreground $Warning_Foreground -background $Warning_Background "================================================="
-	Write-Host -foreground $Warning_Foreground -background $Warning_Background "This is the first time you have run this script or you have re-enabled the setup wizard."
-	Write-Host -foreground $Warning_Foreground -background $Warning_Background
-	Write-Host -foreground $Warning_Foreground -background $Warning_Background "To re-run this wizard in the future please use vCheck.ps1 -Config"
-	Write-Host -foreground $Warning_Foreground -background $Warning_Background "To define a path to store each vCheck report please use vCheck.ps1 -Outputpath C:\tmp"
-	Write-Host -foreground $Warning_Foreground -background $Warning_Background
-	Write-Host -foreground $Warning_Foreground -background $Warning_Background "Please complete the following questions or hit Enter to accept the current setting"
-	Write-Host -foreground $Warning_Foreground -background $Warning_Background "After completing ths wizard the vCheck report will be displayed on the screen."
-	Write-Host -foreground $Warning_Foreground -background $Warning_Background
+	Clear-Host 
+   ($lang.GetEnumerator() | where {$_.Name -match "setupMsg[0-9]*"} | Sort-Object Name) | Foreach {
+      Write-Host -foreground $host.PrivateData.WarningForegroundColor -background $host.PrivateData.WarningBackgroundColor $_.value
+   }
 	
 	Invoke-Settings -Filename $GlobalVariables -GB $true
 	Foreach ($plugin in $Plugins) { 
@@ -174,11 +160,8 @@ If ($SetupSetting) {
 
 $vcvars = @("SetupWizard" , "Server" , "SMTPSRV" , "EmailFrom" , "EmailTo" , "EmailSubject", "DisplaytoScreen" , "SendEmail" , "SendAttachment" , "Colour1" , "Colour2" , "TitleTxtColour" , "TimeToRun" , "PluginSeconds" , "Style" , "Date")
 foreach($vcvar in $vcvars) {
-	if (!($(Get-Variable -Name "$vcvar" -erroraction 'silentlycontinue'))) {
-		Write-Host "Variable `$$vcvar is not defined in GlobalVariables.ps1" -foregroundcolor "Red"
-		Write-Host "Press any key to exit ..."
-		$x = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-		Exit
+	if (!($(Get-Variable -Name "$vcvar" -Erroraction 'SilentlyContinue'))) {
+		Write-Error ($lang.varUndefined -f $vcvar)
 	} 
 }
 
@@ -289,14 +272,14 @@ $MyReport += Get-CustomHeader0 ($Server)
 $Plugins | Foreach {
    $TableFormat = $null
 	$IDinfo = Get-PluginID $_.Fullname
-	Write-CustomOut ("..start calculating {0} by {1} v{2}" -f $IDinfo["Title"], $IDinfo["Author"], $IDinfo["Version"])
+	Write-CustomOut ($lang.pluginStart -f $IDinfo["Title"], $IDinfo["Author"], $IDinfo["Version"])
 	$TTR = [math]::round((Measure-Command {$Details = . $_.FullName}).TotalSeconds, 2)
 	$TTRTable = "" | Select Plugin, TimeToRun
 	$TTRTable.Plugin = $_.Name
 	$TTRTable.TimeToRun = $TTR
 	$TTRReport += $TTRTable
 	$ver = "{0:N1}" -f $PluginVersion
-	Write-CustomOut ("..finished calculating {0} by {1} v{2}"  -f $IDinfo["Title"], $IDinfo["Author"], $IDinfo["Version"])
+	Write-CustomOut ($lang.pluginEnd -f $IDinfo["Title"], $IDinfo["Author"], $IDinfo["Version"])
 
 	If ($Details) {
 		If ($Display -eq "List"){
@@ -314,7 +297,7 @@ $Plugins | Foreach {
 		}
 	}
 }	
-$MyReport += Get-CustomHeader ("This report took " + [math]::round(((Get-Date) - $Date).TotalMinutes,2) + " minutes to run all checks.") "The following plugins took longer than $PluginSeconds seconds to run, there may be a way to optimize these or remove them if not needed"
+$MyReport += Get-CustomHeader ($lang.repTime -f [math]::round(((Get-Date) - $Date).TotalMinutes,2)) ($lang.slowPlugins -f $PluginSeconds)
 $TTRReport = $TTRReport | Where { $_.TimeToRun -gt $PluginSeconds } | Sort-Object TimeToRun -Descending
 $TTRReport |  Foreach {$MyReport += Get-HTMLDetail $_.Plugin $_.TimeToRun}
 $MyReport += Get-CustomHeaderClose
@@ -333,19 +316,19 @@ else {
 }
 
 # Create the file
-$MyReport | Out-File -Encoding ASCII -Filepath $Filename
+$MyReport | Out-File -encoding ASCII -filepath $Filename
 
 if ($DisplayToScreen -or $SetupSetting) {
-	Write-CustomOut "..Displaying HTML results"
+	Write-CustomOut $lang.HTMLdisp
 	Invoke-Item $Filename
 }
 
 if ($SendEmail) {
-	Write-CustomOut "..Sending Email"
+	Write-CustomOut $lang.emailSend
 	If ($SendAttachment) {
-		Send-MailMessage -To $EmailTo -From $EmailFrom -Subject $EmailSubject -SmtpServer $SMTPSRV -Body "vCheck attached to this email" -Attachments $Filename
+		Send-Mailmessage -To $EmailTo -From $EmailFrom -Subject $EmailSubject -SmtpServer $SMTPSRV -Body $lang.emailAtch -Attachments $Filename
 	} Else {
-		Send-MailMessage -To $EmailTo -From $EmailFrom -Subject $EmailSubject -SmtpServer $SMTPSRV -Body $MyReport -BodyAsHtml
+		Send-Mailmessage -To $EmailTo -From $EmailFrom -Subject $EmailSubject -SmtpServer $SMTPSRV -Body $MyReport -BodyAsHtml
 	}
 }
 

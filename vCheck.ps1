@@ -30,7 +30,7 @@
 .NOTES 
    File Name  : vCheck.ps1 
    Author     : Alan Renouf - @alanrenouf
-   Version    : 6.17
+   Version    : 6.18
    
    Thanks to all who have commented on my blog to help improve this project
    all beta testers and previous contributors to this script.
@@ -50,13 +50,18 @@
    
 .PARAMETER Outputpath
    This parameter specifies the output location for files.
+   
+.PARAMETER job
+   This parameter lets you specify an xml config file for this invokation
 #>
 param (
    [Switch]$config,
    [ValidateScript({Test-Path $_ -PathType 'Container'})]
-   [string]$Outputpath
+   [string]$Outputpath,
+   [ValidateScript({Test-Path $_ -PathType 'Leaf'})]
+   [string]$job
 )
-$Version = "6.17"
+$Version = "6.18"
 
 function Write-CustomOut ($Details){
 	$LogDate = Get-Date -Format T
@@ -129,15 +134,55 @@ Function Invoke-Settings ($Filename, $GB) {
 
 # Add all global variables.
 $ScriptPath = (Split-Path ((Get-Variable MyInvocation).Value).MyCommand.Path)
-$PluginsFolder = $ScriptPath + "\Plugins\"
-$Plugins = Get-ChildItem -Path $PluginsFolder -filter "*.ps1" | Sort Name
-$GlobalVariables = $ScriptPath + "\GlobalVariables.ps1"
-
-$file = Get-Content $GlobalVariables
 
 # Setup language hashtable
 Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable lang
 
+# if we have the job parameter set, get the paths from the config file.
+if ($job) {
+   [xml]$jobConfig = Get-Content $job
+   
+   # Use GlobalVariables path if it is valid, otherwise use default
+   if (Test-Path $jobConfig.vCheck.globalVariables) {
+      $GlobalVariables = (Get-Item $jobConfig.vCheck.globalVariables).FullName
+   }
+   else {      
+      $GlobalVariables = $ScriptPath + "\GlobalVariables.ps1"
+      Write-Warning ($lang.gvInvalid -f $GlobalVariables)
+   }
+   
+   # Get Plugin path
+   if (Test-Path $jobConfig.vCheck.plugins.path) {
+      $PluginsFolder = (Get-Item $jobConfig.vCheck.plugins.path).Fullname
+   }
+   else {      
+      $PluginsFolder = $ScriptPath + "\Plugins\"
+      Write-Warning ($lang.pluginpathInvalid -f $PluginsFolder)
+   }
+   
+   # Get all plugins and test they are correct
+   $Plugins = @()
+   foreach ($plugin in $jobConfig.vCheck.plugins.plugin) {
+      if (Test-Path ("{0}\{1}" -f $PluginsFolder, $plugin)) {
+         $Plugins += Get-Item ("{0}\{1}" -f $PluginsFolder, $plugin)
+      }
+      else {
+         Write-Warning ($lang.pluginInvalid -f $plugin)
+      }
+   }
+   
+   # if no valid plugins specified, fall back to default
+   if (!$Plugins) {
+      $Plugins = Get-ChildItem -Path $PluginsFolder -filter "*.ps1" | Sort Name
+   }
+}
+else {
+   $PluginsFolder = $ScriptPath + "\Plugins\"
+   $Plugins = Get-ChildItem -Path $PluginsFolder -filter "*.ps1" | Sort Name
+   $GlobalVariables = $ScriptPath + "\GlobalVariables.ps1"
+}
+
+$file = Get-Content $GlobalVariables
 $Setup = ($file | Select-String -Pattern '# Set the following to true to enable the setup wizard for first time run').LineNumber
 $SetupLine = $Setup ++
 $SetupSetting = Invoke-Expression (($file[$SetupLine]).Split("="))[1]
@@ -333,4 +378,6 @@ if ($SendEmail) {
 }
 
 # Run EndScript once everything else is complete
-. ($ScriptPath + "\EndScript.ps1")
+if (Test-Path ($ScriptPath + "\EndScript.ps1")) {
+	. ($ScriptPath + "\EndScript.ps1")
+}

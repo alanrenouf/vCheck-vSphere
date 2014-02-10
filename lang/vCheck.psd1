@@ -10,6 +10,9 @@ ConvertFrom-StringData @'
 	setupMsg09  = Please complete the following questions or hit Enter to accept the current setting
 	setupMsg10  = After completing ths wizard the vCheck report will be displayed on the screen.
 	setupMsg11  =
+   pluginInvalid = Plugin does not exist: {0}
+   pluginpathInvalid = Plugin path invalid, defaulting to {0}
+   gvInvalid   = Global Variables path invalid in job specification, defaulting to {0}
    varUndefined = Variable `${0} is not defined in GlobalVariables.ps1
    pluginStart  = ..start calculating {0} by {1} v{2}
    pluginEnd    = ..finished calculating {0} by {1} v{2}

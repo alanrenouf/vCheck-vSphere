@@ -1,4 +1,7 @@
 # Changes:
+# v 6.18 - Added Job parameter to allow job specifications via XML file
+# v 6.17 - Basic Internationalization (i18n) support
+# v 6.16 - Table formatting rules
 # v 6.15 - Added Category to all plugins and features to vCheckUtils script for Categorys.
 # v 6.14 - Fixed a bug where a plugin was resetting the $VM variable so later plugins were not working :(
 # v 6.13 - Fixed issue with plugins 63 and 65 not using the days

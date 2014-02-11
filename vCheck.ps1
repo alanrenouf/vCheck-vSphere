@@ -151,29 +151,39 @@ if ($job) {
       Write-Warning ($lang.gvInvalid -f $GlobalVariables)
    }
    
-   # Get Plugin path
-   if (Test-Path $jobConfig.vCheck.plugins.path) {
-      $PluginsFolder = (Get-Item $jobConfig.vCheck.plugins.path).Fullname
+   # Get Plugin paths
+   $PluginPaths = @()
+   foreach ($PluginPath in ($jobConfig.vCheck.plugins.path -split ";")) {
+      if (Test-Path $PluginPath) {
+         $PluginPaths += (Get-Item $PluginPath).Fullname
+      }
+      else {      
+         $PluginPaths += $ScriptPath + "\Plugins"
+         Write-Warning ($lang.pluginpathInvalid -f $PluginPath, ($ScriptPath + "\Plugins"))
+      }
    }
-   else {      
-      $PluginsFolder = $ScriptPath + "\Plugins\"
-      Write-Warning ($lang.pluginpathInvalid -f $PluginsFolder)
-   }
+   $PluginPaths = $PluginPaths | Sort-Object -unique
    
    # Get all plugins and test they are correct
    $Plugins = @()
    foreach ($plugin in $jobConfig.vCheck.plugins.plugin) {
-      if (Test-Path ("{0}\{1}" -f $PluginsFolder, $plugin)) {
-         $Plugins += Get-Item ("{0}\{1}" -f $PluginsFolder, $plugin)
-      }
-      else {
-         Write-Warning ($lang.pluginInvalid -f $plugin)
+      $testedPaths = 0
+      foreach ($PluginPath in $PluginPaths) {        
+         $testedPaths++
+         if (Test-Path ("{0}\{1}" -f $PluginPath, $plugin)) {
+            $Plugins += Get-Item ("{0}\{1}" -f $PluginPath, $plugin)
+            break;
+         }
+         # Plugin not found in any search path
+         elseif ($testedPaths -eq $PluginPaths.Count) {
+            Write-Warning ($lang.pluginInvalid -f $plugin)
+         }
       }
    }
    
    # if no valid plugins specified, fall back to default
    if (!$Plugins) {
-      $Plugins = Get-ChildItem -Path $PluginsFolder -filter "*.ps1" | Sort Name
+      $Plugins = Get-ChildItem -Path $PluginPath -filter "*.ps1" | Sort Name
    }
 }
 else {

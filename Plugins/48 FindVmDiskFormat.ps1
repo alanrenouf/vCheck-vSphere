@@ -1,9 +1,6 @@
 #Start of Settings 
-
 # Report on disk formats that are not "thin" or "thick", which format is not allowed ?
-
-$diskformat =" thick"
-
+$diskformat ="thick"
 # End of Settings
 
 

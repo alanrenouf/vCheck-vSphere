@@ -213,7 +213,7 @@ If ($SetupSetting) {
 
 . $GlobalVariables
 
-$vcvars = @("SetupWizard" , "Server" , "SMTPSRV" , "EmailFrom" , "EmailTo" , "EmailSubject", "DisplaytoScreen" , "SendEmail" , "SendAttachment" , "Colour1" , "Colour2" , "TitleTxtColour" , "TimeToRun" , "PluginSeconds" , "Style" , "Date")
+$vcvars = @("SetupWizard" , "Server" , "SMTPSRV" , "EmailFrom" , "EmailTo" , "EmailSubject", "DisplaytoScreen" , "SendEmail" , "SendAttachment", "TimeToRun" , "PluginSeconds" , "Style" , "Date")
 foreach($vcvar in $vcvars) {
 	if (!($(Get-Variable -Name "$vcvar" -Erroraction 'SilentlyContinue'))) {
 		Write-Error ($lang.varUndefined -f $vcvar)
@@ -225,7 +225,7 @@ if(!(Test-Path ($StylePath))) {
 	# The path is not valid
 	# Use the default style
 	Write-Warning "Style path ($($StylePath)) is not valid"
-	$StylePath = $ScriptPath + "\Styles\Default"
+	$StylePath = $ScriptPath + "\Styles\VMware"
 	Write-Warning "Using $($StylePath)"
 }
 
@@ -235,12 +235,16 @@ if(!(Test-Path ($StylePath))) {
 
 Function Get-Base64Image ($Path) {
 	$pic = Get-Content $Path -Encoding Byte
-	[Convert]::ToBase64String($pic)
+	return [Convert]::ToBase64String($pic)
 }
 
-Function Get-CustomHTML ($Header, $HeaderImg){
+Function Get-CustomHTML {
+   param (
+      $Header, 
+      $HeaderImg
+   )
 	$Report = $HTMLHeader -replace "_HEADER_", $Header
-    $Report = $Report -replace "_HEADERIMG_", $HeaderImg
+   $Report = $Report -replace "_HEADERIMG_", $HeaderImg
 	Return $Report
 }
 
@@ -315,49 +319,58 @@ Function Get-HTMLTable {
 	}
 }
 
-Function Get-HTMLDetail ($Heading, $Detail){
-	$Report = ($HTMLDetail -replace "_Heading_", $Heading) -replace "_Detail_", $Detail
-	Return $Report
+function Get-HTMLList {
+   param ([array]$content)
+   
+   # Create XML doc from HTML. Remove colgroup and header row
+   [xml]$XMLTable = $content | ConvertTo-HTML -Fragment
+   $XMLTable.table.RemoveChild($XMLTable.table.colgroup) | out-null
+   $XMLTable.table.RemoveChild($XMLTable.table.tr[0]) | out-null
+   
+   for ($i = 0; $i -lt $XMLTable.table.tr.count; $i++) {
+      $node = $XMLTable.table.tr[$i].SelectSingleNode("/table/tr[$($i+1)]/td[1]")
+      $elem = $XMLTable.CreateElement("th")
+      $elem.InnerText = $node."#text"
+      $trNode = $XMLTable.SelectSingleNode("/table/tr[$($i+1)]")
+      $trNode.ReplaceChild($elem, $node) | Out-Null
+   }
+   return [string]($XMLTable.OuterXml)
 }
 
 # Adding all plugins
 $TTRReport = @()
-$MyReport = Get-CustomHTML "$Server vCheck"
+$MyReport = Get-CustomHTML -Header "$Server vCheck" -HeaderImg (Get-Base64Image $HeaderImg)
 $MyReport += Get-CustomHeader0 ($Server)
 $Plugins | Foreach {
    $TableFormat = $null
 	$IDinfo = Get-PluginID $_.Fullname
 	Write-CustomOut ($lang.pluginStart -f $IDinfo["Title"], $IDinfo["Author"], $IDinfo["Version"])
 	$TTR = [math]::round((Measure-Command {$Details = . $_.FullName}).TotalSeconds, 2)
-	$TTRTable = "" | Select Plugin, TimeToRun
-	$TTRTable.Plugin = $_.Name
-	$TTRTable.TimeToRun = $TTR
-	$TTRReport += $TTRTable
+	$TTRReport += New-Object PSObject -Property @{"Name"=$_.Name; "TimeToRun"=$TTR}	
 	$ver = "{0:N1}" -f $PluginVersion
 	Write-CustomOut ($lang.pluginEnd -f $IDinfo["Title"], $IDinfo["Author"], $IDinfo["Version"])
-
+   
 	If ($Details) {
+   	$MyReport += Get-CustomHeader $Header $Comments
 		If ($Display -eq "List"){
-			$MyReport += Get-CustomHeader $Header $Comments
-			$AllProperties = $Details | Get-Member -MemberType Properties
-			$AllProperties | Foreach {
-				$MyReport += Get-HTMLDetail ($_.Name) ($Details.($_.Name))
+				$MyReport += Get-HTMLList $Details
 			}
-			$MyReport += Get-CustomHeaderClose			
-		}
 		If ($Display -eq "Table") {
-			$MyReport += Get-CustomHeader $Header $Comments
 			$MyReport += Get-HTMLTable $Details $TableFormat
-			$MyReport += Get-CustomHeaderClose
 		}
+      $MyReport += Get-CustomHeaderClose	
 	}
-}	
-$MyReport += Get-CustomHeader ($lang.repTime -f [math]::round(((Get-Date) - $Date).TotalMinutes,2)) ($lang.slowPlugins -f $PluginSeconds)
-$TTRReport = $TTRReport | Where { $_.TimeToRun -gt $PluginSeconds } | Sort-Object TimeToRun -Descending
-$TTRReport |  Foreach {$MyReport += Get-HTMLDetail $_.Plugin $_.TimeToRun}
-$MyReport += Get-CustomHeaderClose
-$MyReport += Get-CustomHeader0Close
-$MyReport += Get-CustomHTMLClose
+}
+
+# Add Time to Run detail for plugins - if specified in GlobalVariables.ps1
+if ($TimeToRun) {
+   $MyReport += Get-CustomHeader ($lang.repTime -f [math]::round(((Get-Date) - $Date).TotalMinutes,2)) ($lang.slowPlugins -f $PluginSeconds)
+   $TTRReport = $TTRReport | Where { $_.TimeToRun -gt $PluginSeconds } | Sort-Object TimeToRun -Descending
+   $MyReport += Get-HTMLList $TTRReport 
+   $MyReport += Get-CustomHeaderClose
+   $MyReport += Get-CustomHeader0Close
+   $MyReport += Get-CustomHTMLClose
+}
 
 # Save the file somewhere, depending on report options
 if ($Outputpath) {

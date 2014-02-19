@@ -1,3 +1,10 @@
+# Use the following area to define the title color
+$Colour1 ="0A77BA"
+# Use the following area to define the Heading color
+$Colour2 ="1D6325"
+# Use the following area to define the Title text color
+$TitleTxtColour ="FFFFFF"
+
 $DspHeader0 = "
 	BORDER-RIGHT: #bbbbbb 1px solid;
 	PADDING-RIGHT: 0px;

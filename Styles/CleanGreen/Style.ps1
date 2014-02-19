@@ -2,6 +2,13 @@
 # Clean Green Style
 # Author: Sam McGeown
 #################################
+# Use the following area to define the title color
+$Colour1 ="0A77BA"
+# Use the following area to define the Heading color
+$Colour2 ="1D6325"
+# Use the following area to define the Title text color
+$TitleTxtColour ="FFFFFF"
+
 $FontFamily = "font-family: Tahoma, Arial, sans-serif;"
 
 $DspHeader0 = "border: 0px; $($FontFamily) font-size: medium; padding: 8px; margin: 0px 0px 10px 0px; text-transform:uppercase;"

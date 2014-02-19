@@ -1,189 +1,163 @@
-$DspHeader0 = "
-	BORDER-RIGHT: #bbbbbb 1px solid;
-	PADDING-RIGHT: 0px;
-	BORDER-TOP: #bbbbbb 1px solid;
-	DISPLAY: block;
-	PADDING-LEFT: 0px;
-	FONT-WEIGHT: bold;
-	FONT-SIZE: 8pt;
-	MARGIN-BOTTOM: -1px;
-	MARGIN-LEFT: 0px;
-	BORDER-LEFT: #bbbbbb 1px solid;
-	COLOR: #$($TitleTxtColour);
-	MARGIN-RIGHT: 0px;
-	PADDING-TOP: 4px;
-	BORDER-BOTTOM: #bbbbbb 1px solid;
-	FONT-FAMILY: Tahoma;
-	POSITION: relative;
-	HEIGHT: 2.25em;
-	WIDTH: 95%;
-	TEXT-INDENT: 10px;
-	BACKGROUND-COLOR: #$($Colour1);
-"
+# Use the following area to define the title color
+$Colour1 ="0A77BA"
+# Use the following area to define the Heading color
+$Colour2 ="1D6325"
+# Use the following area to define the Title text color
+$TitleTxtColour ="FFFFFF"
 
-$DspHeader1 = "
-	BORDER-RIGHT: #bbbbbb 1px solid;
-	PADDING-RIGHT: 0px;
-	BORDER-TOP: #bbbbbb 1px solid;
-	DISPLAY: block;
-	PADDING-LEFT: 0px;
-	FONT-WEIGHT: bold;
-	FONT-SIZE: 8pt;
-	MARGIN-BOTTOM: -1px;
-	MARGIN-LEFT: 0px;
-	BORDER-LEFT: #bbbbbb 1px solid;
-	COLOR: #$($TitleTxtColour);
-	MARGIN-RIGHT: 0px;
-	PADDING-TOP: 4px;
-	BORDER-BOTTOM: #bbbbbb 1px solid;
-	FONT-FAMILY: Tahoma;
-	POSITION: relative;
-	HEIGHT: 2.25em;
-	WIDTH: 95%;
-	TEXT-INDENT: 10px;
-	BACKGROUND-COLOR: #$($Colour2);
-"
-
-$dspcomments = "
-	BORDER-RIGHT: #bbbbbb 1px solid;
-	PADDING-RIGHT: 0px;
-	BORDER-TOP: #bbbbbb 1px solid;
-	DISPLAY: block;
-	PADDING-LEFT: 0px;
-	FONT-WEIGHT: bold;
-	FONT-SIZE: 8pt;
-	MARGIN-BOTTOM: -1px;
-	MARGIN-LEFT: 0px;
-	BORDER-LEFT: #bbbbbb 1px solid;
-	COLOR: #$($TitleTxtColour);
-	MARGIN-RIGHT: 0px;
-	PADDING-TOP: 4px;
-	BORDER-BOTTOM: #bbbbbb 1px solid;
-	FONT-FAMILY: Tahoma;
-	POSITION: relative;
-	HEIGHT: 2.25em;
-	WIDTH: 95%;
-	TEXT-INDENT: 10px;
-	BACKGROUND-COLOR:#FFFFE1;
-	COLOR: #000000;
-	FONT-STYLE: ITALIC;
-	FONT-WEIGHT: normal;
-	FONT-SIZE: 8pt;
-"
-
-$filler = "
-	BORDER-RIGHT: medium none; 
-	BORDER-TOP: medium none; 
-	DISPLAY: block; 
-	BACKGROUND: none transparent scroll repeat 0% 0%; 
-	MARGIN-BOTTOM: -1px; 
-	FONT: 100%/8px Tahoma; 
-	MARGIN-LEFT: 43px; 
-	BORDER-LEFT: medium none; 
-	COLOR: #ffffff; 
-	MARGIN-RIGHT: 0px; 
-	PADDING-TOP: 4px; 
-	BORDER-BOTTOM: medium none; 
-	POSITION: relative
-"
-
-$dspcont ="
-	BORDER-RIGHT: #bbbbbb 1px solid;
-	BORDER-TOP: #bbbbbb 1px solid;
-	PADDING-LEFT: 0px;
-	FONT-SIZE: 8pt;
-	MARGIN-BOTTOM: -1px;
-	PADDING-BOTTOM: 5px;
-	MARGIN-LEFT: 0px;
-	BORDER-LEFT: #bbbbbb 1px solid;
-	WIDTH: 95%;
-	COLOR: #000000;
-	MARGIN-RIGHT: 0px;
-	PADDING-TOP: 4px;
-	BORDER-BOTTOM: #bbbbbb 1px solid;
-	FONT-FAMILY: Tahoma;
-	POSITION: relative;
-	BACKGROUND-COLOR: #f9f9f9
-"
-
+# Header Image Path
+$headerImg = $StylePath + "\Header.jpg"
 
 $HTMLHeader = @"
 <!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Frameset//EN' 'http://www.w3.org/TR/html4/frameset.dtd'>
-<html><head><title>_HEADER_</title>
-		<META http-equiv=Content-Type content='text/html; charset=windows-1252'>
+<html>
+   <head>
+      <title>_HEADER_</title>
+		<meta http-equiv=Content-Type content='text/html; charset=windows-1252'>
 		<style type='text/css'>
-		TABLE 		{
-						TABLE-LAYOUT: fixed; 
-						FONT-SIZE: 100%; 
-						WIDTH: 100%
-					}
-		*		{
-						margin:0
-					}
+         body {
+                  margin-left: 4pt;
+                  margin-right: 4pt; 
+                  margin-top: 6pt;
+               }
+         table	{
+                  width: 100%;
+               }
+         *	{
+               margin:0;
+               font-family: Tahoma, sans-serif
+            }
+         tr:nth-child(even) { 
+               background-color: #e5e5e5; 
+            }
+         td {
+               vertical-align: top; 
+               font-family: Tahoma, sans-serif;
+               font-size: 8pt;
+            }
+                  
+         th {
+               vertical-align: top;  
+               color: #018AC0; 
+               text-align: left;
+               font-family: Tahoma, sans-serif;
+               font-size: 8pt;
+            }
+         #header { 
+               font-family:Arial, Helvetica, sans-serif; 
+               font-size:20px; 
+               font-weight:bolder; 
+               background-color:#$($Colour1);
+            }
+         #vcheck {
+               font-family:Arial, Helvetica, sans-serif; 
+               font-size:14px; 
+               font-weight:bold;
+               text-align: center;
+               margin-bottom: 10px;
+            }
+         .customHeader0 {
+               margin: 0px auto;
+            }
+            
+         .customHeader0 h1 {
+            background-color: #$($Colour1);
 
-		.pageholder	{
-						margin: 0px auto;
-					}
-					
-		td 				{
-						VERTICAL-ALIGN: TOP; 
-						FONT-FAMILY: Tahoma
-					}
-					
-		th 			{
-						VERTICAL-ALIGN: TOP; 
-						COLOR: #018AC0; 
-						TEXT-ALIGN: left
-					}
-					
+            line-height: 2.25em;
+            vertical-align: middle; 
+            width: 95%;
+            margin: 0px auto;
+            
+            text-indent: 10px;           
+            font-family: Tahoma, sans-serif;
+            font-weight: bold;
+            font-size: 8pt;
+            color: #$($TitleTxtColour);
+         }
+         
+         h2.dspheader1 {
+            background-color: #$($Colour2);
+            border: 1px solid #$($Colour2);
+            
+            text-indent: 10px;
+            font-family: Tahoma, sans-serif;
+            font-weight: bold;
+            font-size: 8pt;
+            color: #$($TitleTxtColour);
+            
+            line-height: 2.25em;
+            vertical-align: middle; 
+            width: 95%;
+            margin: 10px auto 0px auto;
+           
+         }
+         
+         .dspcomments {
+            line-height: 2.25em;
+            width: 95%;
+            margin: 0px auto;
+            text-indent: 10px;
+            
+            background-color: #FFFFE1;
+            color: #000000;
+            font-style: italic;
+            font-size: 8pt;
+            
+            border-right: 1px solid #bbbbbb;
+            border-left: 1px solid #bbbbbb;
+         }
+         .dspcont {
+         	border: #bbbbbb 1px solid;          
+            width: 95%;
+            color: #000000;
+            font-size: 8pt;
+            margin: 0px auto;            
+            background-color: #f9f9f9
+         }
+         
 		</style>
 	</head>
-	<body margin-left: 4pt; margin-right: 4pt; margin-top: 6pt;>
-<div style='font-family:Arial, Helvetica, sans-serif; font-size:20px; font-weight:bolder; background-color:#$($Colour1);'><center>
-<p class='accent'>
-<!--[if gte mso 9]>
-	<H1><FONT COLOR='White'>vCheck</Font></H1>
-<![endif]-->
-<!--[if !mso]><!-->
-	<IMG SRC='data:image/jpg;base64,_HEADERIMG_' ALT='vCheck'>
-<!--<![endif]-->
-</p>
-</center></div>
-	        <div style='font-family:Arial, Helvetica, sans-serif; font-size:14px; font-weight:bold;'><center>vCheck v$($version) by Alan Renouf (<a href='http://virtu-al.net' target='_blank'>http://virtu-al.net</a>) generated on $($ENV:Computername)
-			</center></div>
+	<body>
+      <div id='header'>
+         <!--[if gte mso 9]>
+            <H1 style='text-align: center; color: white'>vCheck</Font></H1>
+         <![endif]-->
+         <!--[if !mso]><!-->
+            <IMG SRC='data:image/jpg;base64,_HEADERIMG_' ALT='vCheck'>
+         <!--<![endif]-->
+      </div>
+	   <div id='vcheck'>vCheck v$($version) by Alan Renouf (<a href='http://virtu-al.net' target='_blank'>http://virtu-al.net</a>) generated on $($ENV:Computername)</div>
 "@
 
 $CustomHeader0 = @"
 	<!-- CustomHeader0 -->
-		<div style='margin: 0px auto;'>		
-		<h1 style='$($DspHeader0)'>_TITLE_</h1>
-    	<div style='$($filler)'></div>
+		<div class='customHeader0'>		
+         <h1>_TITLE_</h1>
 "@
 
 $CustomHeaderStart = @"
 	<!-- CustomHeaderStart -->
-	    <h2 style='$($dspheader1)'>_TITLE_</h2>
+	   <h2 class='dspheader1'>_TITLE_</h2>
 "@
 
 $CustomHeaderComments = @"
 	<!-- CustomHeaderComments -->
-		<div style='$($dspcomments)'>_COMMENTS_</div>
+		<div class='dspcomments'>_COMMENTS_</div>
 "@
 
 $CustomHeaderEnd = @"
 	<!-- CustomHeaderEnd -->
-			<div style='$($dspcont)'>
+			<div class='dspcont'>
 "@
 	
 $CustomHeaderClose = @"
 	<!-- CustomHeaderClose -->
-		</DIV>
-		<div style='$($filler)'></div>
+		</div>
 "@
 
 $CustomHeader0Close = @"
 	<!-- CustomHeader0Close -->
-</DIV>
+</div>
 "@
 
 $CustomHTMLClose = @"
@@ -193,19 +167,19 @@ $CustomHTMLClose = @"
 </html>
 "@
 
-$HTMLTableReplace = '<TABLE><style>tr:nth-child(even) { background-color: #e5e5e5; TABLE-LAYOUT: Fixed; FONT-SIZE: 100%; WIDTH: 100%}</style>' 
-$HTMLTdReplace = '<td style= "FONT-FAMILY: Tahoma; FONT-SIZE: 8pt;">'
-$HTMLThReplace = '<th style= "COLOR: #$($Colour1); FONT-FAMILY: Tahoma; FONT-SIZE: 8pt;">'
+$HTMLTableReplace = '<table>' 
+$HTMLTdReplace = '<td>'
+$HTMLThReplace = '<th>'
 $HTMLLtReplace = "<"
 $HTMLGtReplace = ">"
 
 $HTMLDetail = @"
-<TABLE TABLE-LAYOUT: Fixed; FONT-SIZE: 100%; WIDTH: 100%>
+<table>
 	<tr>
 	<th width='50%';VERTICAL-ALIGN: TOP; FONT-FAMILY: Tahoma; FONT-SIZE: 8pt; COLOR: #$($Colour1);><b>_HEADING_</b></th>
 	<td width='50%';VERTICAL-ALIGN: TOP; FONT-FAMILY: Tahoma; FONT-SIZE: 8pt;>_DETAIL_</td>
 	</tr>
-</TABLE>
+</table>
 "@
 
 

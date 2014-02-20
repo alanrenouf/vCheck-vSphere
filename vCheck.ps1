@@ -447,9 +447,11 @@ if ($TimeToRun) {
    $TTRReport = $TTRReport | Where { $_.TimeToRun -gt $PluginSeconds } | Sort-Object TimeToRun -Descending
    $MyReport += Get-HTMLList $TTRReport 
    $MyReport += Get-CustomHeaderClose
-   $MyReport += Get-CustomHeader0Close
-   $MyReport += Get-CustomHTMLClose
 }
+   
+$MyReport += Get-CustomHeader0Close
+$MyReport += Get-CustomHTMLClose
+
 
 ################################################################################
 #                                    Output                                    #

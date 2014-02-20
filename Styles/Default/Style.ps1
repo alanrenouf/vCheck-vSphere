@@ -5,6 +5,9 @@ $Colour2 ="1D6325"
 # Use the following area to define the Title text color
 $TitleTxtColour ="FFFFFF"
 
+# Add Header resource
+Add-ReportResource "Header" ($StylePath + "\Header.jpg")
+
 $DspHeader0 = "
 	BORDER-RIGHT: #bbbbbb 1px solid;
 	PADDING-RIGHT: 0px;
@@ -152,7 +155,7 @@ $HTMLHeader = @"
 	<H1><FONT COLOR='White'>vCheck</Font></H1>
 <![endif]-->
 <!--[if !mso]><!-->
-	<IMG SRC='data:image/jpg;base64,_HEADERIMG_' ALT='vCheck'>
+	<IMG SRC='cid:Header' ALT='vCheck'>
 <!--<![endif]-->
 </p>
 </center></div>

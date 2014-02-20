@@ -30,7 +30,7 @@
 .NOTES 
    File Name  : vCheck.ps1 
    Author     : Alan Renouf - @alanrenouf
-   Version    : 6.18
+   Version    : 6.19
    
    Thanks to all who have commented on my blog to help improve this project
    all beta testers and previous contributors to this script.
@@ -61,12 +61,18 @@ param (
    [ValidateScript({Test-Path $_ -PathType 'Leaf'})]
    [string]$job
 )
-$Version = "6.18"
+$Version = "6.19"
 
+################################################################################
+#                                  Functions                                   #
+################################################################################
+<# Write timestamped output to screen #>
 function Write-CustomOut ($Details){
 	$LogDate = Get-Date -Format T
 	Write-Host "$($LogDate) $Details"
 }
+
+<# Search $file_content for name/value pair with ID_Name and return value #>
 Function Get-ID-String ($file_content,$ID_name) {
    if ($file_content | Select-String -Pattern "\$+$ID_name\s*=") {	
       $value = (($file_content | Select-String -pattern "\$+${ID_name}\s*=").toString().split("=")[1]).Trim(' "')
@@ -74,9 +80,9 @@ Function Get-ID-String ($file_content,$ID_name) {
    }
 }
 
+<# Get basic information abount a plugin #>
 Function Get-PluginID ($Filename){
    # Get the identifying information for a plugin script
-   # Write-Host "Filename: $Filename"
    $file = Get-Content $Filename
    $Title = Get-ID-String $file "Title"
    if ( !$Title ) { $Title = $Filename }
@@ -84,10 +90,10 @@ Function Get-PluginID ($Filename){
    $Author = Get-ID-String $file "Author"
    $Ver = "{0:N1}" -f $PluginVersion
 			
-   # Write-Host "Title: $Title, PluginVersion: $PluginVersion, Ver: $Ver, Author: $Author"
    return @{"Title"=$Title; "Version"=$Ver; "Author"=$Author }		
 }
 
+<# Run through settings for specified file, expects question on one line, and variable/value on following line #>
 Function Invoke-Settings ($Filename, $GB) {
 	$file = Get-Content $filename
 	$OriginalLine = ($file | Select-String -Pattern "# Start of Settings").LineNumber
@@ -132,7 +138,176 @@ Function Invoke-Settings ($Filename, $GB) {
 	}
 }
 
-# Add all global variables.
+<# Take file path and return base64 string #>
+Function Get-Base64Image ($Path) {
+	return [Convert]::ToBase64String((Get-Content $Path -Encoding Byte))
+}
+
+Function Get-CustomHTML {
+   param (
+      $Header, 
+      $HeaderImg
+   )
+	$Report = $HTMLHeader -replace "_HEADER_", $Header
+   $Report = $Report -replace "_HEADERIMG_", $HeaderImg
+	Return $Report
+}
+
+Function Get-CustomHeader0 ($Title){
+	$Report = $CustomHeader0 -replace "_TITLE_", $Title
+	Return $Report
+}
+
+Function Get-CustomHeader ($Title, $Comments){
+	$Report = $CustomHeaderStart -replace "_TITLE_", $Title
+	If ($Comments) {
+		$Report += $CustomheaderComments -replace "_COMMENTS_", $Comments
+	}
+	$Report += $CustomHeaderEnd
+	Return $Report
+}
+
+Function Get-CustomHeaderClose{
+	$Report = $CustomHeaderClose
+	Return $Report
+}
+
+Function Get-CustomHeader0Close{
+	$Report = $CustomHeader0Close
+	Return $Report
+}
+
+Function Get-CustomHTMLClose{
+	$Report = $CustomHTMLClose
+	Return $Report
+}
+
+<# Takes an array of content, and optional formatRules and generated HTML table #>
+Function Get-HTMLTable {
+	param([array]$Content, [array]$FormatRules)
+	
+	# If format rules are specified
+	if ($FormatRules) {
+		# Use an XML object for ease of use
+		$XMLTable = [xml]($content | ConvertTo-Html -Fragment)
+		$XMLTable.table.RemoveChild($XMLTable.table.colgroup) | out-null
+		
+		# Check each cell to see if there are any format rules
+		for ($RowN = 1; $RowN -lt $XMLTable.table.tr.count; $RowN++) {
+			for ($ColN = 0; $ColN -lt $XMLTable.table.tr[$RowN].td.count; $ColN++) {
+				if ( $Tableformat.keys -contains $XMLTable.table.tr[0].th[$ColN]) {
+					# Current cell has a rule, test to see if they are valid
+					foreach ( $rule in $Tableformat[$XMLTable.table.tr[0].th[$ColN]] ) {
+						if ( Invoke-Expression ("`$XMLTable.table.tr[`$RowN].td[`$ColN] {0}" -f [string]$rule.Keys) ) {
+							# Find what to 
+							$RuleScope = ([string]$rule.Values).split(",")[0]
+							$RuleActions = ([string]$rule.Values).split(",")[1].split("|")
+							
+							switch ($RuleScope) {
+								"Row"  { $XMLTable.table.tr[$RowN].SetAttribute($RuleActions[0], $RuleActions[1]) }
+								"Cell" { $XMLTable.table.tr[$RowN].selectSingleNode("td[$($ColN+1)]").SetAttribute($RuleActions[0], $RuleActions[1]) }
+							}
+						}
+					}
+				}
+			}	
+		}
+		return [string]($XMLTable.OuterXml)
+	}
+	else {
+		$HTMLTable = $Content | ConvertTo-Html -Fragment
+		$HTMLTable = $HTMLTable -Replace '<TABLE>', $HTMLTableReplace
+		$HTMLTable = $HTMLTable -Replace '<td>', $HTMLTdReplace
+		$HTMLTable = $HTMLTable -Replace '<th>', $HTMLThReplace
+		$HTMLTable = $HTMLTable -replace '&lt;', '<'
+		$HTMLTable = $HTMLTable -replace '&gt;', '>'
+		Return $HTMLTable
+	}
+}
+
+<# Takes an array of content, and returns HTML table with header column #>
+Function Get-HTMLList {
+   param ([array]$content)
+   
+   if ($content.count -gt 0 ) {
+      # Create XML doc from HTML. Remove colgroup and header row
+      [xml]$XMLTable = $content | ConvertTo-HTML -Fragment
+      $XMLTable.table.RemoveChild($XMLTable.table.colgroup) | out-null
+      $XMLTable.table.RemoveChild($XMLTable.table.tr[0]) | out-null
+      
+      # Replace the first column td with th
+      for ($i = 0; $i -lt $XMLTable.table.tr.count; $i++) {
+         $node = $XMLTable.table.tr[$i].SelectSingleNode("/table/tr[$($i+1)]/td[1]")
+         $elem = $XMLTable.CreateElement("th")
+         $elem.InnerText = $node."#text"
+         $trNode = $XMLTable.SelectSingleNode("/table/tr[$($i+1)]")
+         $trNode.ReplaceChild($elem, $node) | Out-Null
+      }
+      return [string]($XMLTable.OuterXml)
+   }
+}
+
+<# Adds a resource to the resource array, to be included in report.
+   At the moment, only "File" types are supported- this will be expanded to include
+   SystemIcons and raw byte data (so images can be packaged completely in styles if desired
+ #>
+function Add-ReportResource {
+   param (
+      $cid,
+      $ResourceData,
+      $Type="File"
+   )
+   
+   # If cid does not exist, add it
+   if ($global:ReportResources.Keys -notcontains $cid) {
+      $global:ReportResources.Add($cid, @{"Data" = ("{0}|{1}" -f $Type, $ResourceData);
+                                           "Uses" = 0 })
+   }
+   
+   # Update uses count
+   ($global:ReportResources[$cid].Uses)++
+}
+
+<# Gets a resource in the specified ReturnType (eventually support both a 
+base64 encoded string, and Linked Resource for email #>
+function Get-ReportResource {
+   param (
+      $cid,
+      [ValidateSet("embed","linkedresource")]
+      $ReturnType="embed"
+   )
+     
+   $data = $global:ReportResources[$cid].Data.Split("|")
+   
+   # Process each resource type differently - only File supported for now
+   switch ($data[0]) {
+      "File"   {  
+                  if (Test-Path $data[1] -ErrorAction SilentlyContinue) {
+                     if ($ReturnType -eq "embed") {
+                        # return a MIME/Base64 combo for embedding in HTML               
+                        $imgData = Get-Content ($data[1]) -Encoding Byte
+                        $type = $path.substring($path.LastIndexOf(".")+1)
+                        return ("data:image/{0};base64,{1}" -f $type, [System.Convert]::ToBase64String($imgData))
+                     }
+                     if ($ReturnType -eq "linkedresource") {
+                        # return a linked resource to be added to mail message
+                        $lr = New-Object system.net.mail.LinkedResource($data[1])
+                        $lr.ContentId=$cid
+                        return $lr;
+                     }
+                  }
+                  else {
+                     Write-Warning ($lang.resFileWarn -f $cid)
+                  }
+      }   
+   }
+   
+}
+
+################################################################################
+#                                Initialization                                #
+################################################################################
+# Setup all paths required for script to run
 $ScriptPath = (Split-Path ((Get-Variable MyInvocation).Value).MyCommand.Path)
 
 # Setup language hashtable
@@ -192,14 +367,13 @@ else {
    $GlobalVariables = $ScriptPath + "\GlobalVariables.ps1"
 }
 
+## Determine if the setup wizard needs to run
 $file = Get-Content $GlobalVariables
 $Setup = ($file | Select-String -Pattern '# Set the following to true to enable the setup wizard for first time run').LineNumber
 $SetupLine = $Setup ++
 $SetupSetting = Invoke-Expression (($file[$SetupLine]).Split("="))[1]
-if ($config) {
-	$SetupSetting = $true
-}
-If ($SetupSetting) {
+
+if ($SetupSetting -or $config) {
 	Clear-Host 
    ($lang.GetEnumerator() | where {$_.Name -match "setupMsg[0-9]*"} | Sort-Object Name) | Foreach {
       Write-Host -foreground $host.PrivateData.WarningForegroundColor -background $host.PrivateData.WarningBackgroundColor $_.value
@@ -211,6 +385,7 @@ If ($SetupSetting) {
 	}
 }
 
+## Include GlobalVariables and validate settings (at the moment just check they exist)
 . $GlobalVariables
 
 $vcvars = @("SetupWizard" , "Server" , "SMTPSRV" , "EmailFrom" , "EmailTo" , "EmailSubject", "DisplaytoScreen" , "SendEmail" , "SendAttachment", "TimeToRun" , "PluginSeconds" , "Style" , "Date")
@@ -220,6 +395,10 @@ foreach($vcvar in $vcvars) {
 	} 
 }
 
+# Create empty array of resources (i.e. Images)
+$global:ReportResources = @{}
+
+## Set the StylePath and include it
 $StylePath = $ScriptPath + "\Styles\" + $Style
 if(!(Test-Path ($StylePath))) {
 	# The path is not valid
@@ -232,115 +411,15 @@ if(!(Test-Path ($StylePath))) {
 # Import the Style
 . ("$($StylePath)\Style.ps1")
 
-
-Function Get-Base64Image ($Path) {
-	$pic = Get-Content $Path -Encoding Byte
-	return [Convert]::ToBase64String($pic)
-}
-
-Function Get-CustomHTML {
-   param (
-      $Header, 
-      $HeaderImg
-   )
-	$Report = $HTMLHeader -replace "_HEADER_", $Header
-   $Report = $Report -replace "_HEADERIMG_", $HeaderImg
-	Return $Report
-}
-
-Function Get-CustomHeader0 ($Title){
-	$Report = $CustomHeader0 -replace "_TITLE_", $Title
-	Return $Report
-}
-
-Function Get-CustomHeader ($Title, $Comments){
-	$Report = $CustomHeaderStart -replace "_TITLE_", $Title
-	If ($Comments) {
-		$Report += $CustomheaderComments -replace "_COMMENTS_", $Comments
-	}
-	$Report += $CustomHeaderEnd
-	Return $Report
-}
-
-Function Get-CustomHeaderClose{
-	$Report = $CustomHeaderClose
-	Return $Report
-}
-
-Function Get-CustomHeader0Close{
-	$Report = $CustomHeader0Close
-	Return $Report
-}
-
-Function Get-CustomHTMLClose{
-	$Report = $CustomHTMLClose
-	Return $Report
-}
-
-Function Get-HTMLTable {
-	param([array]$Content, [array]$FormatRules)
-	
-	# If format rules are specified
-	if ($FormatRules) {
-		# Use an XML object for ease of use
-		$XMLTable = [xml]($content | ConvertTo-Html -Fragment)
-		$XMLTable.table.RemoveChild($XMLTable.table.colgroup) | out-null
-		
-		# Check each cell to see if there are any format rules
-		for ($RowN = 1; $RowN -lt $XMLTable.table.tr.count; $RowN++) {
-			for ($ColN = 0; $ColN -lt $XMLTable.table.tr[$RowN].td.count; $ColN++) {
-				if ( $Tableformat.keys -contains $XMLTable.table.tr[0].th[$ColN]) {
-					# Current cell has a rule, test to see if they are valid
-					foreach ( $rule in $Tableformat[$XMLTable.table.tr[0].th[$ColN]] ) {
-						if ( Invoke-Expression ("`$XMLTable.table.tr[`$RowN].td[`$ColN] {0}" -f [string]$rule.Keys) ) {
-							# Find what to 
-							$RuleScope = ([string]$rule.Values).split(",")[0]
-							$RuleActions = ([string]$rule.Values).split(",")[1].split("|")
-							
-							switch ($RuleScope) {
-								"Row"  { $XMLTable.table.tr[$RowN].SetAttribute($RuleActions[0], $RuleActions[1]) }
-								"Cell" { $XMLTable.table.tr[$RowN].selectSingleNode("td[$($ColN+1)]").SetAttribute($RuleActions[0], $RuleActions[1]) }
-							}
-						}
-					}
-				}
-			}	
-		}
-		return [string]($XMLTable.OuterXml)
-	}
-	else {
-		$HTMLTable = $Content | ConvertTo-Html -Fragment
-		$HTMLTable = $HTMLTable -Replace '<TABLE>', $HTMLTableReplace
-		$HTMLTable = $HTMLTable -Replace '<td>', $HTMLTdReplace
-		$HTMLTable = $HTMLTable -Replace '<th>', $HTMLThReplace
-		$HTMLTable = $HTMLTable -replace '&lt;', '<'
-		$HTMLTable = $HTMLTable -replace '&gt;', '>'
-		Return $HTMLTable
-	}
-}
-
-function Get-HTMLList {
-   param ([array]$content)
-   
-   # Create XML doc from HTML. Remove colgroup and header row
-   [xml]$XMLTable = $content | ConvertTo-HTML -Fragment
-   $XMLTable.table.RemoveChild($XMLTable.table.colgroup) | out-null
-   $XMLTable.table.RemoveChild($XMLTable.table.tr[0]) | out-null
-   
-   for ($i = 0; $i -lt $XMLTable.table.tr.count; $i++) {
-      $node = $XMLTable.table.tr[$i].SelectSingleNode("/table/tr[$($i+1)]/td[1]")
-      $elem = $XMLTable.CreateElement("th")
-      $elem.InnerText = $node."#text"
-      $trNode = $XMLTable.SelectSingleNode("/table/tr[$($i+1)]")
-      $trNode.ReplaceChild($elem, $node) | Out-Null
-   }
-   return [string]($XMLTable.OuterXml)
-}
-
-# Adding all plugins
+################################################################################
+#                                 Script logic                                 #
+################################################################################
+# Start generating the report
 $TTRReport = @()
-$MyReport = Get-CustomHTML -Header "$Server vCheck" -HeaderImg (Get-Base64Image $HeaderImg)
+$MyReport = Get-CustomHTML -Header "$Server vCheck"
 $MyReport += Get-CustomHeader0 ($Server)
+
+# Loop over all enabled plugins
 $Plugins | Foreach {
    $TableFormat = $null
 	$IDinfo = Get-PluginID $_.Fullname
@@ -372,7 +451,10 @@ if ($TimeToRun) {
    $MyReport += Get-CustomHTMLClose
 }
 
-# Save the file somewhere, depending on report options
+################################################################################
+#                                    Output                                    #
+################################################################################
+# Set the output filename - if one is specified use it, otherwise just use temp
 if ($Outputpath) {
 	$DateHTML = Get-Date -Format "yyyyMMddHH"
 	$ArchiveFilePath = $Outputpath + "\Archives\" + $VIServer
@@ -383,20 +465,37 @@ else {
    $Filename = $Env:TEMP + "\" + $Server + "vCheck" + "_" + $Date.Day + "-" + $Date.Month + "-" + $Date.Year + ".htm"
 }
 
-# Create the file
-$MyReport | Out-File -encoding ASCII -filepath $Filename
-
-if ($DisplayToScreen -or $SetupSetting) {
+# Display to screen
+if ($DisplayToScreen) {
 	Write-CustomOut $lang.HTMLdisp
+   $tempReport = $MyReport
+   # Loop over all CIDs and replace them
+   Foreach ($cid in $global:ReportResources.Keys) {
+      $tempReport = $tempReport -replace ("cid:{0}" -f $cid), (Get-ReportResource $cid -ReturnType "embed")   
+   }
+   
+   # Create the file
+   $tempReport | Out-File -encoding ASCII -filepath $Filename
+   
 	Invoke-Item $Filename
 }
 
+# Send email
 if ($SendEmail) {
 	Write-CustomOut $lang.emailSend
+   
+   # Loop over all CIDs and replace them
+   Foreach ($cid in $global:ReportResources.Keys) {
+      $tempReport = $MyReport -replace ("cid:{0}" -f $cid), (Get-ReportResource $cid -ReturnType "embed")   
+   }
+   
 	If ($SendAttachment) {
-		Send-Mailmessage -To $EmailTo -From $EmailFrom -Subject $EmailSubject -SmtpServer $SMTPSRV -Body $lang.emailAtch -Attachments $Filename
+      # Create the file
+      $tempReport | Out-File -encoding ASCII -filepath $Filename
+		
+      Send-Mailmessage -To $EmailTo -From $EmailFrom -Subject $EmailSubject -SmtpServer $SMTPSRV -Body $lang.emailAtch -Attachments $Filename
 	} Else {
-		Send-Mailmessage -To $EmailTo -From $EmailFrom -Subject $EmailSubject -SmtpServer $SMTPSRV -Body $MyReport -BodyAsHtml
+		Send-Mailmessage -To $EmailTo -From $EmailFrom -Subject $EmailSubject -SmtpServer $SMTPSRV -Body $tempReport -BodyAsHtml
 	}
 }
 

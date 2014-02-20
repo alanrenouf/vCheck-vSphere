@@ -8,6 +8,8 @@ $Colour1 ="0A77BA"
 $Colour2 ="1D6325"
 # Use the following area to define the Title text color
 $TitleTxtColour ="FFFFFF"
+# Header Image Path
+$headerImg = $StylePath + "\Header.jpg"
 
 $FontFamily = "font-family: Tahoma, Arial, sans-serif;"
 

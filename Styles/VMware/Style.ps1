@@ -5,8 +5,9 @@ $Colour2 ="1D6325"
 # Use the following area to define the Title text color
 $TitleTxtColour ="FFFFFF"
 
-# Header Image Path
-$headerImg = $StylePath + "\Header.jpg"
+# Header Images
+Add-ReportResource "Header-vCheck" ($StylePath + "\Header.jpg")
+Add-ReportResource "Header-VMware" ($StylePath + "\Header-vmware.png")
 
 $HTMLHeader = @"
 <!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Frameset//EN' 'http://www.w3.org/TR/html4/frameset.dtd'>
@@ -123,7 +124,7 @@ $HTMLHeader = @"
             <H1 style='text-align: center; color: white'>vCheck</Font></H1>
          <![endif]-->
          <!--[if !mso]><!-->
-            <IMG SRC='data:image/jpg;base64,_HEADERIMG_' ALT='vCheck'>
+            <img src='cid:Header-vCheck' ALT='vCheck' /><div style='float:right'><img src='cid:Header-VMware' alt='VMware' /></div>
          <!--<![endif]-->
       </div>
 	   <div id='vcheck'>vCheck v$($version) by Alan Renouf (<a href='http://virtu-al.net' target='_blank'>http://virtu-al.net</a>) generated on $($ENV:Computername)</div>
@@ -172,14 +173,3 @@ $HTMLTdReplace = '<td>'
 $HTMLThReplace = '<th>'
 $HTMLLtReplace = "<"
 $HTMLGtReplace = ">"
-
-$HTMLDetail = @"
-<table>
-	<tr>
-	<th width='50%';VERTICAL-ALIGN: TOP; FONT-FAMILY: Tahoma; FONT-SIZE: 8pt; COLOR: #$($Colour1);><b>_HEADING_</b></th>
-	<td width='50%';VERTICAL-ALIGN: TOP; FONT-FAMILY: Tahoma; FONT-SIZE: 8pt;>_DETAIL_</td>
-	</tr>
-</table>
-"@
-
-

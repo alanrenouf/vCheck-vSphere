@@ -41,7 +41,7 @@ $EnableEmailReport = $true
  
 # Changelog
 ## 0.1 : Initial version.
- 
+
 ## Begin code block obtained from: http://www.virtu-al.net/2013/06/14/reporting-on-rpo-violations-from-vsphere-replication/
 #  modified by Joel Gibson
 Write-Host "[$(Get-Date)] Retrieving VMs"
@@ -73,7 +73,8 @@ Foreach ($VM in $VMs) {
                     
                                                                                 } Else {
                                                                                                 $details.ViolationEnd = "No End Date"
-                                                                                                $details.Mins = "N/A"
+                                                                                                $Time = $(Get-Date) - $details.ViolationStart
+                                                                                                $details.Mins = "{0:N2}" -f $Time.TotalMinutes
                
  
                                                                                 }
@@ -86,6 +87,9 @@ Foreach ($VM in $VMs) {
 }
 ## End of code block obtained from: http://www.virtu-al.net/2013/06/14/reporting-on-rpo-violations-from-vsphere-replication/.
  
+## filter the results based on the number of minutes an RPO has been exceeded by
+$Results = @($Results | Where { $_.Mins -gt $RPOviolationMins})
+ 
 ## filter the results based on unresolved violations, if desired
 if ($ActiveViolationsOnly) {
  
@@ -97,8 +101,8 @@ if ($ActiveViolationsOnly) {
 ## if e-mail reporting is enabled
 if ($EnableEmailReport) {
  
-    ## if there are open violations, enable e-mail reporting (if not already)
-    if ($Results.Count -gt 0) { $SendEmail = $true }
+    ## if there are violations, enable e-mail reporting (if not already)
+    if ($Results.Count -ne 0) { $SendEmail = $true }
    
     }      
  
@@ -110,5 +114,5 @@ $Header =  "Site Recovery Manager - RPO Violations: $(@($SRMViolations).count)"
 $Comments = "This is a customizable report of RPO violations found in the vCenter event log."
 $Display = "Table"
 $Author = "Joel Gibson, based on work by Alan Renouf"
-$PluginVersion = 0.1
+$PluginVersion = 0.2
 $PluginCategory = "vSphere"

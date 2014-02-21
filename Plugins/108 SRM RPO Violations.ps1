@@ -37,7 +37,7 @@ $VMNameExpression = "*"
 $ActiveViolationsOnly = $true
 # Enable vCheck e-mail report?
 $EnableEmailReport = $true
-#End of Settings
+# End of Settings
  
 # Changelog
 ## 0.1 : Initial version.

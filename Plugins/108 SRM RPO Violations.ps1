@@ -102,7 +102,7 @@ if ($ActiveViolationsOnly) {
 if ($EnableEmailReport) {
  
     ## if there are violations, enable e-mail reporting (if not already)
-    if ($Results.Count -ne 0) { $SendEmail = $true }
+    if ($(@($Results).count) -gt 0) { $SendEmail = $true }
    
     }      
  
@@ -110,9 +110,9 @@ if ($EnableEmailReport) {
 $Results
  
 $Title = "Site Recovery Manager - RPO Violation Report"
-$Header =  "Site Recovery Manager - RPO Violations: $(@($SRMViolations).count)"
+$Header =  "Site Recovery Manager - RPO Violations: $(@($Results).count)"
 $Comments = "This is a customizable report of RPO violations found in the vCenter event log."
 $Display = "Table"
 $Author = "Joel Gibson, based on work by Alan Renouf"
-$PluginVersion = 0.2
+$PluginVersion = 0.1
 $PluginCategory = "vSphere"

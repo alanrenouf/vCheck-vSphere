@@ -10,6 +10,7 @@ ConvertFrom-StringData @'
    setupMsg09  = Please complete the following questions or hit Enter to accept the current setting
    setupMsg10  = After completing ths wizard the vCheck report will be displayed on the screen.
    setupMsg11  =
+   resFileWarn = Image File not found for {0}!
    pluginInvalid = Plugin does not exist: {0}
    pluginpathInvalid = Plugin path "{0}" is invalid, defaulting to {1}
    gvInvalid   = Global Variables path invalid in job specification, defaulting to {0}

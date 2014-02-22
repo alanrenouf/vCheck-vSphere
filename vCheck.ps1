@@ -30,7 +30,7 @@
 .NOTES 
    File Name  : vCheck.ps1 
    Author     : Alan Renouf - @alanrenouf
-   Version    : 6.18
+   Version    : 6.19
    
    Thanks to all who have commented on my blog to help improve this project
    all beta testers and previous contributors to this script.
@@ -61,7 +61,7 @@ param (
    [ValidateScript({Test-Path $_ -PathType 'Leaf'})]
    [string]$job
 )
-$Version = "6.18"
+$Version = "6.19"
 
 function Write-CustomOut ($Details){
 	$LogDate = Get-Date -Format T
@@ -341,6 +341,10 @@ function Get-HTMLList {
 $TTRReport = @()
 $MyReport = Get-CustomHTML -Header "$Server vCheck" -HeaderImg (Get-Base64Image $HeaderImg)
 $MyReport += Get-CustomHeader0 ($Server)
+
+# added counter which will increment each time a plug-in provides output
+$PluginsOutputCounter = 0 
+
 $Plugins | Foreach {
    $TableFormat = $null
 	$IDinfo = Get-PluginID $_.Fullname
@@ -351,7 +355,11 @@ $Plugins | Foreach {
 	Write-CustomOut ($lang.pluginEnd -f $IDinfo["Title"], $IDinfo["Author"], $IDinfo["Version"])
    
 	If ($Details) {
-   	$MyReport += Get-CustomHeader $Header $Comments
+
+        # increment counter
+        $PluginsOutputCounter++
+
+   	    $MyReport += Get-CustomHeader $Header $Comments
 		If ($Display -eq "List"){
 				$MyReport += Get-HTMLList $Details
 			}
@@ -391,14 +399,48 @@ if ($DisplayToScreen -or $SetupSetting) {
 	Invoke-Item $Filename
 }
 
-if ($SendEmail) {
-	Write-CustomOut $lang.emailSend
+Function Send-Email () {
+
+    ## send e-mail
+    Write-CustomOut "..Sending Email"
+
+    ## if an atachment is to be used
 	If ($SendAttachment) {
-		Send-Mailmessage -To $EmailTo -From $EmailFrom -Subject $EmailSubject -SmtpServer $SMTPSRV -Body $lang.emailAtch -Attachments $Filename
+		send-Mailmessage -To $EmailTo -From $EmailFrom -Subject $EmailSubject -SmtpServer $SMTPSRV -Body "vCheck attached to this email" -Attachments $Filename
+
+    ## otherwise, send as HTML
 	} Else {
-		Send-Mailmessage -To $EmailTo -From $EmailFrom -Subject $EmailSubject -SmtpServer $SMTPSRV -Body $MyReport -BodyAsHtml
+		send-Mailmessage -To $EmailTo -From $EmailFrom -Subject $EmailSubject -SmtpServer $SMTPSRV -Body $MyReport -BodyAsHtml
+
 	}
+
 }
+
+# if an e-mail is to be generated
+if ($SendEmail) {
+
+    # check if the plugins provided content or not
+    # if the counter = 0, no output was returned by the plugins
+    if ($PluginsOutputCounter -eq 0) {
+        Write-CustomOut "..No output was returned by the plugins."
+
+        ## should a blank report be sent?
+        if ($SendEmptyReport) {                 
+            Send-Email
+
+        } else {
+            Write-CustomOut "..E-mail not sent. Empty report."
+
+        }
+
+
+    # the plugins returned output, send e-mail
+    } else {
+       Send-Email
+
+    } # end of if ($PluginsOutputCounter -eq 0)
+	
+} # end of if ($SendEmail)
 
 # Run EndScript once everything else is complete
 if (Test-Path ($ScriptPath + "\EndScript.ps1")) {

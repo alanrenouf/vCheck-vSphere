@@ -9,7 +9,7 @@
 # $RPOviolationMins     - report on events that indicate an RPO exceeded by x minutes
 # $MaxHours             - review vCenter events that are no older than x hours
 # $MaxEvents            - the maximum number of vCenter events to review
-# $VMNameExpression     - only look for RPO events on VMs with these names
+# $VMNameRegex          - only look for RPO events on VMs with these names (regex)
 # $ActiveViolationsOnly - report can display all RPO events based on above criteria, or only active unresolved ones
 #
 # Note, the RPO violation start time is based on the violations found within the configured event search criteria.

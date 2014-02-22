@@ -13,8 +13,8 @@
 # $ActiveViolationsOnly - report can display all RPO events based on above criteria, or only active unresolved ones
 #
 # Note, the RPO violation start time is based on the violations found within the configured event search criteria.
-# For example, if you are only searching through four hours of events, then the ViolationStart will reflect the
-# a start time within that four hour window, though the violation may have actually begun earlier.
+# For example, if you are only searching through four hours of events, then the ViolationStart will reflect 
+# a start time within that four hour window, even though the violation may have actually begun earlier.
 #
 # Use at your own risk.
 #

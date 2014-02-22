@@ -11,10 +11,6 @@
 # $MaxEvents            - the maximum number of vCenter events to review
 # $VMNameExpression     - only look for RPO events on VMs with these names
 # $ActiveViolationsOnly - report can display all RPO events based on above criteria, or only active unresolved ones
-# $EnableEmailReport    - if set to $true, will set vCheck's e-mail reporting to $true if RPO violations found.
-#                         this is useful if you run the report regularly, but only want to receive an e-mail when
-#                         there is a violation that meets the defined criteria (vCheck e-mail reporting would
-#                         need to be set to $false for this to have any effect)
 #
 # Note, the RPO violation start time is based on the violations found within the configured event search criteria.
 # For example, if you are only searching through four hours of events, then the ViolationStart will reflect the
@@ -31,12 +27,10 @@ $RPOviolationMins = 240
 $MaxHours = 72
 # Set the maximum number of vCenter events to retrieve
 $MaxEvents = 100000
-# Set a VM name filter to report RPO violations on
-$VMNameExpression = "*"
+# Only look for RPO events on VMs with these names: (regex)
+$VMNameRegex =""
 # Report on unresolved RPO violations only?
 $ActiveViolationsOnly = $true
-# Enable vCheck e-mail report?
-$EnableEmailReport = $true
 # End of Settings
  
 # Changelog
@@ -44,19 +38,17 @@ $EnableEmailReport = $true
 
 ## Begin code block obtained from: http://www.virtu-al.net/2013/06/14/reporting-on-rpo-violations-from-vsphere-replication/
 #  modified by Joel Gibson
-Write-Host "[$(Get-Date)] Retrieving VMs"
-$VMs = Get-VM -Name $VMNameExpression
- 
+$VMs = $VM | Where { $_.name -match $VMNameRegex }
  
 $Results = @()
-Foreach ($VM in $VMs) {
-                Write-Host "[$(Get-Date)] Retrieving events for $($VM.name)"
-                $Events = Get-VIEvent -MaxSamples $MaxEvents -Entity $VM -Start $(Get-Date).AddHours(-$MaxHours)
-                Write-Host "[$(Get-Date)] Filtering RPO events for $($VM.name)"
-                $RPOEvents = $Events | where { $_.EventTypeID -match "rpo" } | Where { $_.Vm.Name -eq $VM.Name } | Select EventTypeId, CreatedTime, FullFormattedMessage, @{Name="VMName";Expression={$_.Vm.Name}} | Sort CreatedTime
+Foreach ($RPOvm in $VMs) {
+                Write-CustomOut "..[$(Get-Date)] Retrieving events for $($RPOvm.name)"
+                $Events = Get-VIEvent -MaxSamples $MaxEvents -Entity $RPOvm -Start $(Get-Date).AddHours(-$MaxHours)
+                Write-CustomOut "..[$(Get-Date)] Filtering RPO events for $($RPOvm.name)"
+                $RPOEvents = $Events | where { $_.EventTypeID -match "rpo" } | Where { $_.Vm.Name -eq $RPOvm.Name } | Select EventTypeId, CreatedTime, FullFormattedMessage, @{Name="VMName";Expression={$_.Vm.Name}} | Sort CreatedTime
                 if ($RPOEvents) {
                                 $Count = 0
-                                Write-Host "[$(Get-Date)] Finding replication results for $($VM.Name)"
+                                Write-CustomOut "..[$(Get-Date)] Finding replication results for $($RPOvm.Name)"
                                 do {
                                                 $details = "" | Select VMName, ViolationStart, ViolationEnd, Mins
                                                 if ($RPOEvents[$count].EventTypeID -match "Violated") {
@@ -75,8 +67,7 @@ Foreach ($VM in $VMs) {
                                                                                                 $details.ViolationEnd = "No End Date"
                                                                                                 $Time = $(Get-Date) - $details.ViolationStart
                                                                                                 $details.Mins = "{0:N2}" -f $Time.TotalMinutes
-               
- 
+                
                                                                                 }
                                                                 }
                                                 }
@@ -97,15 +88,7 @@ if ($ActiveViolationsOnly) {
     $Results = @($Results | Where { $_.ViolationEnd -eq "No End Date" })
  
     }
- 
-## if e-mail reporting is enabled
-if ($EnableEmailReport) {
- 
-    ## if there are violations, enable e-mail reporting (if not already)
-    if ($(@($Results).count) -gt 0) { $SendEmail = $true }
-   
-    }      
- 
+  
 ## output VMs that have exeeded their RPO by $RPOviolationMins, based on defined criteria
 $Results
  

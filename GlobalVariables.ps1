@@ -22,7 +22,7 @@ $DisplaytoScreen =$True
 # Use the following item to define if an email report should be sent once completed
 $SendEmail =$true
 # Send the report by e-mail even if it is empty?
-$SendEmptyReport =$true
+$SendReportEvenIfEmpty =$true
 # If you would prefer the HTML file as an attachment then enable the following:
 $SendAttachment =$false
 # Set the style template to use.

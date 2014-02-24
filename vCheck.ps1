@@ -89,7 +89,7 @@ Function Get-PluginID ($Filename){
    $PluginVersion = Get-ID-String $file "PluginVersion"
    $Author = Get-ID-String $file "Author"
    $Ver = "{0:N1}" -f $PluginVersion
-			
+
    return @{"Title"=$Title; "Version"=$Ver; "Author"=$Author }		
 }
 
@@ -185,13 +185,13 @@ Function Get-CustomHTMLClose{
 <# Takes an array of content, and optional formatRules and generated HTML table #>
 Function Get-HTMLTable {
 	param([array]$Content, [array]$FormatRules)
-	
+
 	# If format rules are specified
 	if ($FormatRules) {
 		# Use an XML object for ease of use
 		$XMLTable = [xml]($content | ConvertTo-Html -Fragment)
 		$XMLTable.table.RemoveChild($XMLTable.table.colgroup) | out-null
-		
+
 		# Check each cell to see if there are any format rules
 		for ($RowN = 1; $RowN -lt $XMLTable.table.tr.count; $RowN++) {
 			for ($ColN = 0; $ColN -lt $XMLTable.table.tr[$RowN].td.count; $ColN++) {
@@ -205,12 +205,29 @@ Function Get-HTMLTable {
 							
 							switch ($RuleScope) {
 								"Row"  { $XMLTable.table.tr[$RowN].SetAttribute($RuleActions[0], $RuleActions[1]) }
-								"Cell" { $XMLTable.table.tr[$RowN].selectSingleNode("td[$($ColN+1)]").SetAttribute($RuleActions[0], $RuleActions[1]) }
+								"Cell" {
+                           if ($RuleActions[0] -eq "cid") {
+                              # Do Image - create new XML node for img and clear #text
+                              $XMLTable.table.tr[$RowN].selectSingleNode("td[$($ColN+1)]")."#text" = ""
+                              $elem = $XMLTable.CreateElement("img")
+                              $elem.SetAttribute("src", ("cid:{0}" -f $RuleActions[1]))
+                              # Add img size if specified
+                              if ($RuleActions[2] -match "(\d+)x(\d+)") {
+                                 $elem.SetAttribute("width", $Matches[1])
+                                 $elem.SetAttribute("height", $Matches[2])
+                              }
+                              
+                              $XMLTable.table.tr[$RowN].selectSingleNode("td[$($ColN+1)]").AppendChild($elem) | Out-Null
+                           }
+                           else {
+                              $XMLTable.table.tr[$RowN].selectSingleNode("td[$($ColN+1)]").SetAttribute($RuleActions[0], $RuleActions[1]) 
+                           }
+                        }
 							}
 						}
 					}
 				}
-			}	
+			}
 		}
 		return [string]($XMLTable.OuterXml)
 	}
@@ -255,6 +272,7 @@ function Add-ReportResource {
    param (
       $cid,
       $ResourceData,
+      [ValidateSet("File","SystemIcons","Base64")]
       $Type="File"
    )
    
@@ -276,32 +294,69 @@ function Get-ReportResource {
       [ValidateSet("embed","linkedresource")]
       $ReturnType="embed"
    )
-     
+
    $data = $global:ReportResources[$cid].Data.Split("|")
    
-   # Process each resource type differently - only File supported for now
+   # Process each resource type differently
    switch ($data[0]) {
       "File"   {  
-                  if (Test-Path $data[1] -ErrorAction SilentlyContinue) {
-                     if ($ReturnType -eq "embed") {
-                        # return a MIME/Base64 combo for embedding in HTML               
-                        $imgData = Get-Content ($data[1]) -Encoding Byte
-                        $type = $path.substring($path.LastIndexOf(".")+1)
-                        return ("data:image/{0};base64,{1}" -f $type, [System.Convert]::ToBase64String($imgData))
-                     }
-                     if ($ReturnType -eq "linkedresource") {
-                        # return a linked resource to be added to mail message
-                        $lr = New-Object system.net.mail.LinkedResource($data[1])
-                        $lr.ContentId=$cid
-                        return $lr;
-                     }
-                  }
-                  else {
-                     Write-Warning ($lang.resFileWarn -f $cid)
-                  }
-      }   
+         # Check the path exists
+         if (Test-Path $data[1] -ErrorAction SilentlyContinue) {
+            if ($ReturnType -eq "embed") {
+               # return a MIME/Base64 combo for embedding in HTML               
+               $imgData = Get-Content ($data[1]) -Encoding Byte
+               $type = $data[1].substring($data[1].LastIndexOf(".")+1)
+               return ("data:image/{0};base64,{1}" -f $type, [System.Convert]::ToBase64String($imgData))
+            }
+            if ($ReturnType -eq "linkedresource") {
+               # return a linked resource to be added to mail message
+               $lr = New-Object system.net.mail.LinkedResource($data[1])
+               $lr.ContentId=$cid
+               return $lr;
+            }
+         }
+         else {
+            Write-Warning ($lang.resFileWarn -f $cid)
+         }
+      }
+      "SystemIcons" {
+         # Take the SystemIcon Name - see http://msdn.microsoft.com/en-us/library/system.drawing.systemicons(v=vs.110).aspx
+         # Load the image into a MemoryStream in PNG format (to preserve transparency)
+         [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
+         $bmp = ([System.Drawing.SystemIcons]::($data[1])).toBitmap()
+         $bmp.MakeTransparent()
+         $ms = new-Object IO.MemoryStream
+         $bmp.Save($ms, [System.Drawing.Imaging.ImageFormat]::PNG)
+         $ms.Seek(0, [System.IO.SeekOrigin]::Begin) | Out-Null
+         
+         if ($ReturnType -eq "embed") {
+            # return a MIME/Base64 combo for embedding in HTML               
+            $byte = New-Object byte[] $ms.Length
+            $ms.read($byte, 0, $ms.length) | Out-Null
+            return ("data:image/png;base64,"+[System.Convert]::ToBase64String($byte))
+         }
+         if ($ReturnType -eq "linkedresource") {
+            # return a linked resource to be added to mail message
+            $lr = New-Object system.net.mail.LinkedResource($ms)
+            $lr.ContentId=$img
+            $html.LinkedResources.Add($lr);
+         }
+      }
+      "Base64" {        
+         if ($ReturnType -eq "embed") {
+            return ("data:image/{0};base64,{1}" -f $data[1], $data[2]) 
+         }
+         if ($ReturnType -eq "linkedresource") {
+            $w = [system.convert]::FromBase64String($data[1])
+            $ms = new-Object IO.MemoryStream
+            $ms.Write($w, 0 , $w.Length);
+            $ms.Seek(0, [System.IO.SeekOrigin]::Begin) | Out-Null
+            $lr = New-Object system.net.mail.LinkedResource($ms)
+            $lr.ContentId=$img
+            return $lr;
+         }
+      }
    }
-   
 }
 
 ################################################################################

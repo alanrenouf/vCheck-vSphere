@@ -2,7 +2,7 @@
 # Show detailed information in report
 $ShowDetail = $true
 # Show compliant servers
-$ShowCompliant = $true
+$ShowCompliant = $false
 # End of Settings
 
 # Add resources for report

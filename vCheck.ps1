@@ -425,7 +425,7 @@ if ($SendEmail) {
         Write-CustomOut "..No output was returned by the plugins."
 
         ## should a blank report be sent?
-        if ($SendEmptyReport) {                 
+        if ($SendReportEvenIfEmpty) {                 
             Send-Email
 
         } else {

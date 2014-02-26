@@ -1,0 +1,125 @@
+## 
+# vCheck Plugin: Search for Orphaned VMDK Files
+#
+# This plugin can be used to generate a custom report of orphaned VMDK files.
+#
+# PLEASE NOTE: This plugin can take quite a while to run, depending on the environment. It has been 
+# disabled by default (file has been called .ps1.disabled) because of the length of time required to
+# run, and possible resources consumed. Also, not all files that show up in the report may actually
+# be orphaned. (i.e. VMDKs used by SRM, VMDKs used by a different vCenter, and so on.) This is for
+# informational purposes only and simply one way to detect possible orphaned files. It is not
+# recommending or suggesting any specific actions.
+#
+# The core algorithm used for this plug-in was obtained from: 
+#         http://virtuallyjason.blogspot.ca/2013/08/orphaned-vmdk-files.html
+# and was written by: HJA van Bokhoven, and modified by LucD and Joel Gibson.
+#
+# The plug-in settings are mostly self-explanatory:
+#
+# $excludeDatastoreRegex - regex pattern used to exclude datastores by name,
+#                          useful for omitting unused datastores, and those shared between vCenters
+#
+# $excludeVMPathRegex    - regex pattern used to exclude VMs by VM path
+#                          useful for omitting SRM placeholders, and other VMs that should not
+#                          appear in the report
+#
+# Use at your own risk.
+#
+##
+
+
+# Start of Settings
+# Orphaned Delta File: Exclude datatores by DS name? (regex)
+$excludeDatastoreRegex =""
+# Orphaned Delta File: Exclude VMs by VM path (regex)
+$excludeVMPathRegex =""
+# End of Settings
+
+# Changelog
+## 0.1 : Initial version.
+
+# Begin code block obtained from: http://virtuallyjason.blogspot.ca/2013/08/orphaned-vmdk-files.html
+
+# Powershell script to discover VMDK files that are not referenced in any VM's VMX file.
+# Also detects VMDKs from machines that need snapshot consolidation (from differentials that exist but are not part of the tree).
+# Author: HJA van Bokhoven
+# Modifications: LucD, and Joel Gibson
+
+$report = @()
+$arrUsedDisks = $FullVM | % {$_.Layout} | % {$_.Disk} | % {$_.DiskFile}
+
+Write-CustomOut "..filtering list to exclude datastores that match this regex pattern: $excludeDatastoreRegex"
+$arrDS = $storageviews | Sort-Object -property Name | Where {$_.name -notmatch $excludeDatastoreRegex }
+
+foreach ($strDatastore in $arrDS) {
+    Write-CustomOut "..$($strDatastore.Name) Orphaned Disks:"
+    $ds = Get-Datastore -Name $strDatastore.Name | % {Get-View $_.Id}
+    $fileQueryFlags = New-Object VMware.Vim.FileQueryFlags
+    $fileQueryFlags.FileSize = $true
+    $fileQueryFlags.FileType = $true
+    $fileQueryFlags.Modification = $true
+    $searchSpec = New-Object VMware.Vim.HostDatastoreBrowserSearchSpec
+    $searchSpec.details = $fileQueryFlags
+    $searchSpec.matchPattern = "*.vmdk"
+    $searchSpec.sortFoldersFirst = $true
+    $dsBrowser = Get-View $ds.browser
+    $rootPath = "[" + $ds.Name + "]"
+    $searchResult = $dsBrowser.SearchDatastoreSubFolders($rootPath, $searchSpec)
+    
+    foreach ($folder in $searchResult)
+    {
+        foreach ($fileResult in $folder.File)
+        {
+            if ($fileResult.Path)
+            {
+                $pathAsString = out-string -InputObject $FileResult.Path
+                if (-not ($arrUsedDisks -contains ($folder.FolderPath + $fileResult.Path))){
+
+                    # Changed Black Tracking creates ctk.vmdk files that are not referenced in the VMX.  This prevents them from showing as false positives.
+		                if (-not ($pathAsString.toLower().contains("-ctk.vmdk"))) {
+
+			                # Site Recovery Manager creates -000000.vmdk and -000000-delta.vmdk files. This excludes these patterns from being displayed.
+			                if ($pathAsString -notmatch "-[0-9][0-9][0-9][0-9][0-9][0-9]\.vmdk|-[0-9][0-9][0-9][0-9][0-9][0-9]-delta\.vmdk") {
+                        	$row = "" | Select DS, Path, File, Size, ModDate
+                        	$row.DS = $strDatastore.Name
+                        	$row.Path = $folder.FolderPath
+                        	$row.File = $fileResult.Path
+                        	$row.Size = $fileResult.FileSize
+                        	$row.ModDate = $fileResult.Modification
+                        	$report += $row
+                        	Write-CustomOut "..$($row.Path)$($row.File)"
+
+			                } # end of SRM filter
+
+                    } # end of CBT filter
+
+                } # end of if (-not ($arrUsedDisks -contains ($folder.FolderPath + $fileResult.Path)))
+
+            } # end of if ($fileResult.Path)
+
+        } # end of foreach ($fileResult in $folder.File)
+
+    } # end of foreach ($folder in $searchResult)
+
+} # end of foreach ($strDatastore in $arrDS)
+
+# End of code block obtained from: http://virtuallyjason.blogspot.ca/2013/08/orphaned-vmdk-files.html
+
+# remove VMDKs from list that match the regex $excludeVMPathRegex
+if ($excludeVMPathRegex -ne "") {
+    Write-CustomOut "..filtering list to exclude VMs that match this regex pattern: $excludeVMPathRegex"
+    $Results = $report | where {$_.path -notmatch $excludeVMPathRegex}
+} else {
+    $Results = $report
+}
+
+## output list of orphaned VMDK files
+$Results
+
+$Title = "Orphaned VMDK File Plugin"
+$Header =  "Orphaned VMDK Files: $(@($Results).count)"
+$Comments = "This plugin can be used to generate a custom report of orphaned VMDK files. Note: This plugin can take quite a while to run, depending on the environment."
+$Display = "Table"
+$Author = "Joel Gibson et al."
+$PluginVersion = 0.1
+$PluginCategory = "vSphere"

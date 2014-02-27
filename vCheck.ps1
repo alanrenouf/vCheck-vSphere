@@ -403,6 +403,7 @@ Function Send-Email () {
 
     ## send e-mail
     Write-CustomOut "..Sending Email"
+    Write-CustomOut $lang.emailSend
 
     ## if an atachment is to be used
 	If ($SendAttachment) {

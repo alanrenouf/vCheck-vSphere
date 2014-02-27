@@ -10,9 +10,9 @@
 # informational purposes only and simply one way to detect possible orphaned files. It is not
 # recommending or suggesting any specific actions.
 #
-# The core algorithm used for this plug-in was obtained from: 
+# The core algorithm used for this plug-in was obtained from Jason Coleman's blog: 
 #         http://virtuallyjason.blogspot.ca/2013/08/orphaned-vmdk-files.html
-# and was written by: HJA van Bokhoven, and modified by LucD and Joel Gibson.
+# and was written by: HJA van Bokhoven, and modified by LucD, Jason Coleman, and Joel Gibson.
 #
 # The plug-in settings are mostly self-explanatory:
 #

@@ -411,7 +411,7 @@ Function Send-Email () {
 
     ## otherwise, send as HTML
 	} Else {
-		send-Mailmessage -To $EmailTo -From $EmailFrom -Subject $EmailSubject -SmtpServer $SMTPSRV -Body $MyReport -BodyAsHtml
+		Send-Mailmessage -To $EmailTo -From $EmailFrom -Subject $EmailSubject -SmtpServer $SMTPSRV -Body $MyReport -BodyAsHtml
 
 	}
 

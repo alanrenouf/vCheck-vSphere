@@ -213,7 +213,7 @@ If ($SetupSetting) {
 
 . $GlobalVariables
 
-$vcvars = @("SetupWizard" , "Server" , "SMTPSRV" , "EmailFrom" , "EmailTo" , "EmailSubject", "DisplaytoScreen" , "SendEmail" , "SendAttachment", "TimeToRun" , "PluginSeconds" , "Style" , "Date")
+$vcvars = @("SetupWizard" , "Server" , "SMTPSRV" , "EmailFrom" , "EmailTo" , "EmailSubject", "SendReportEvenIfEmpty", "DisplaytoScreen" , "SendEmail" , "SendAttachment", "TimeToRun" , "PluginSeconds" , "Style" , "Date")
 foreach($vcvar in $vcvars) {
 	if (!($(Get-Variable -Name "$vcvar" -Erroraction 'SilentlyContinue'))) {
 		Write-Error ($lang.varUndefined -f $vcvar)

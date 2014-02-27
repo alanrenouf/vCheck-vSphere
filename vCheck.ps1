@@ -406,7 +406,7 @@ Function Send-Email () {
 
     ## if an atachment is to be used
 	If ($SendAttachment) {
-		send-Mailmessage -To $EmailTo -From $EmailFrom -Subject $EmailSubject -SmtpServer $SMTPSRV -Body "vCheck attached to this email" -Attachments $Filename
+		Send-Mailmessage -To $EmailTo -From $EmailFrom -Subject $EmailSubject -SmtpServer $SMTPSRV -Body $lang.emailAtch -Attachments $Filename
 
     ## otherwise, send as HTML
 	} Else {

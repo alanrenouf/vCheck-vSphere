@@ -443,7 +443,7 @@ if ($SetupSetting -or $config) {
 ## Include GlobalVariables and validate settings (at the moment just check they exist)
 . $GlobalVariables
 
-$vcvars = @("SetupWizard" , "Server" , "SMTPSRV" , "EmailFrom" , "EmailTo" , "EmailSubject", "DisplaytoScreen" , "SendEmail" , "SendAttachment", "TimeToRun" , "PluginSeconds" , "Style" , "Date")
+$vcvars = @("SetupWizard" , "Server" , "SMTPSRV" , "EmailFrom" , "EmailTo" , "EmailCc" , "EmailSubject", "EmailReportEvenIfEmpty", "DisplaytoScreen" , "SendEmail" , "SendAttachment", "TimeToRun" , "PluginSeconds" , "Style" , "Date")
 foreach($vcvar in $vcvars) {
 	if (!($(Get-Variable -Name "$vcvar" -Erroraction 'SilentlyContinue'))) {
 		Write-Error ($lang.varUndefined -f $vcvar)
@@ -473,6 +473,7 @@ if(!(Test-Path ($StylePath))) {
 $TTRReport = @()
 $MyReport = Get-CustomHTML -Header "$Server vCheck"
 $MyReport += Get-CustomHeader0 ($Server)
+$PluginsOutputCounter = 0 # added counter which will increment each time a plug-in provides output
 
 # Loop over all enabled plugins
 $Plugins | Foreach {
@@ -485,15 +486,21 @@ $Plugins | Foreach {
 	Write-CustomOut ($lang.pluginEnd -f $IDinfo["Title"], $IDinfo["Author"], $IDinfo["Version"])
    
 	If ($Details) {
-   	$MyReport += Get-CustomHeader $Header $Comments
+        # increment counter
+        $PluginsOutputCounter++
+   	    $MyReport += Get-CustomHeader $Header $Comments
 		If ($Display -eq "List"){
 				$MyReport += Get-HTMLList $Details
-			}
+
+		}
 		If ($Display -eq "Table") {
 			$MyReport += Get-HTMLTable $Details $TableFormat
+
 		}
       $MyReport += Get-CustomHeaderClose	
+
 	}
+
 }
 
 # Add Time to Run detail for plugins - if specified in GlobalVariables.ps1
@@ -506,7 +513,6 @@ if ($TimeToRun) {
    
 $MyReport += Get-CustomHeader0Close
 $MyReport += Get-CustomHTMLClose
-
 
 ################################################################################
 #                                    Output                                    #
@@ -537,23 +543,70 @@ if ($DisplayToScreen) {
 	Invoke-Item $Filename
 }
 
+Function Send-Email () {
+    ## send e-mail
+    Write-CustomOut $lang.emailSend
+
+    If ($SendAttachment) {
+        # Create the file
+        $tempReport | Out-File -encoding ASCII -filepath $Filename
+
+        # if EmailCc variable is not blank
+        If ($EmailCc -ne "") {
+            Write-CustomOut "..Sending Email to $EmailTo and CC to $EmailCc"
+            Send-Mailmessage -To $EmailTo -Cc $EmailCc -From $EmailFrom -Subject $EmailSubject -SmtpServer $SMTPSRV -Body $lang.emailAtch -Attachments $Filename
+
+        } else {
+            Write-CustomOut "..Sending Email to $EmailTo"
+            Send-Mailmessage -To $EmailTo -From $EmailFrom -Subject $EmailSubject -SmtpServer $SMTPSRV -Body $lang.emailAtch -Attachments $Filename
+
+        }
+
+    } Else {
+        # if EmailCc variable is not blank
+        If ($EmailCc -ne "") {
+            Write-CustomOut "..Sending Email to $EmailTo and CC to $EmailCc"
+            Send-Mailmessage -To $EmailTo -Cc $EmailCc -From $EmailFrom -Subject $EmailSubject -SmtpServer $SMTPSRV -Body $tempReport -BodyAsHtml
+
+        } else {
+            Write-CustomOut "..Sending Email to $EmailTo"
+            Send-Mailmessage -To $EmailTo -From $EmailFrom -Subject $EmailSubject -SmtpServer $SMTPSRV -Body $tempReport -BodyAsHtml
+
+        }
+
+    }
+
+
+}
+
 # Send email
 if ($SendEmail) {
-	Write-CustomOut $lang.emailSend
-   
-   # Loop over all CIDs and replace them
-   Foreach ($cid in $global:ReportResources.Keys) {
-      $tempReport = $MyReport -replace ("cid:{0}" -f $cid), (Get-ReportResource $cid -ReturnType "embed")   
-   }
-   
-	If ($SendAttachment) {
-      # Create the file
-      $tempReport | Out-File -encoding ASCII -filepath $Filename
-		
-      Send-Mailmessage -To $EmailTo -From $EmailFrom -Subject $EmailSubject -SmtpServer $SMTPSRV -Body $lang.emailAtch -Attachments $Filename
-	} Else {
-		Send-Mailmessage -To $EmailTo -From $EmailFrom -Subject $EmailSubject -SmtpServer $SMTPSRV -Body $tempReport -BodyAsHtml
-	}
+	 
+    # Loop over all CIDs and replace them
+    Foreach ($cid in $global:ReportResources.Keys) {
+        $tempReport = $MyReport -replace ("cid:{0}" -f $cid), (Get-ReportResource $cid -ReturnType "embed")   
+    }
+
+    # check if the plugins provided content or not
+    # if the counter = 0, no output was returned by the plugins
+    if ($PluginsOutputCounter -eq 0) {
+        Write-CustomOut "..No output was returned by the plugins."
+  
+        ## should a blank report be sent?
+        if ($EmailReportEvenIfEmpty) {                 
+            Send-Email
+  
+        } else {
+            Write-CustomOut "..E-mail not sent. Empty report."
+  
+        }
+
+    # the plugins returned output, send e-mail
+    } else {
+        Send-Email
+  
+    } # end of if ($PluginsOutputCounter -eq 0)
+
 }
 
 # Run EndScript once everything else is complete

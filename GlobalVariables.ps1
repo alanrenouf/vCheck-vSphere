@@ -15,8 +15,12 @@ $SMTPSRV ="mysmtpserver.mydomain.local"
 $EmailFrom ="me@mydomain.local"
 # Please specify the email address who will receive the vCheck report
 $EmailTo ="me@mydomain.local"
+# Please specify the email address who will be CCd to receive the vCheck report
+$EmailCc =""
 # Please specify an email subject
 $EmailSubject="$Server vCheck Report"
+# Send the report by e-mail even if it is empty?
+$EmailReportEvenIfEmpty =$true
 # Would you like the report displayed in the local browser once completed ?
 $DisplaytoScreen =$True
 # Use the following item to define if an email report should be sent once completed

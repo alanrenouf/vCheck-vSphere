@@ -76,4 +76,4 @@ For more information please read here: http://www.virtu-al.net/vcheck-pluginshea
 
 For an example vSphere output (doesnt contain all info) click here http://virtu-al.net/Downloads/vCheck/vCheck.htm
 
-![Alt text](http://virtu-al.net/images/vCheck-6-released_12358/SNAGHTML583ab440_thumb.png "vCheck Sample")
+![Alt text](http://www.virtu-al.net/wp-content/uploads/2014/02/vCheck619.jpg "vCheck Sample")

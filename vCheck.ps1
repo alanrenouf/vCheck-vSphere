@@ -247,12 +247,17 @@ Function Get-HTMLList {
    param ([array]$content)
    
    if ($content.count -gt 0 ) {
-      # Create XML doc from HTML. Remove colgroup and header row
-      [xml]$XMLTable = $content | ConvertTo-HTML -Fragment
-      $XMLTable.table.RemoveChild($XMLTable.table.colgroup) | out-null
-      $XMLTable.table.RemoveChild($XMLTable.table.tr[0]) | out-null
-      
-      # Replace the first column td with th
+      # Create XML doc from HTML. Remove colgroup and header row    	  
+	  if ($content.count -gt 1 ) {
+		  [xml]$XMLTable = $content | ConvertTo-HTML -Fragment
+		  $XMLTable.table.RemoveChild($XMLTable.table.colgroup) | out-null
+		  $XMLTable.table.RemoveChild($XMLTable.table.tr[0]) | out-null
+      }
+      else {
+		[xml]$XMLTable = $content | ConvertTo-HTML -Fragment -As List
+	  }
+	        
+	  # Replace the first column td with th
       for ($i = 0; $i -lt $XMLTable.table.tr.count; $i++) {
          $node = $XMLTable.table.tr[$i].SelectSingleNode("/table/tr[$($i+1)]/td[1]")
          $elem = $XMLTable.CreateElement("th")

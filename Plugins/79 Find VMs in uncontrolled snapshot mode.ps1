@@ -3,8 +3,7 @@
 
 $VMFolder = @()
 foreach ($vm in $FullVM) {
-  $snapList = Get-Snapshot -VM $vm.Name
-  if (!$snapList) { # Only process VMs without snapshots
+  if (!$VM.snapshot) { # Only process VMs without snapshots
     $vm.Summary.Config.VmPathName -match '^\[([^\]]+)\] ([^/]+)' > $null
     $Datastore = $matches[1]
     $VMPath = $matches[2]
@@ -36,5 +35,5 @@ $Header =  "VMs in uncontrolled snapshot mode: $(@($Result).Count)"
 $Comments = "The following VMs are in snapshot mode, but vCenter isn't aware of it. See http://kb.vmware.com/kb/1002310"
 $Display = "Table"
 $Author = "Rick Glover, Matthias Koehler"
-$PluginVersion = 1.2
+$PluginVersion = 1.3
 $PluginCategory = "vSphere"

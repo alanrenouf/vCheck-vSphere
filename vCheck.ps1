@@ -532,19 +532,20 @@ if ($Outputpath) {
 else {
    $Filename = $Env:TEMP + "\" + $Server + "vCheck" + "_" + $Date.Day + "-" + $Date.Month + "-" + $Date.Year + ".htm"
 }
+# Create a copy of the report with embedded images - used for $displayToScreen
+# and for saving a copy if $Outputpath is set
+$tempReport = $MyReport
+# Loop over all CIDs and replace them
+Foreach ($cid in $global:ReportResources.Keys) {
+   $tempReport = $tempReport -replace ("cid:{0}" -f $cid), (Get-ReportResource $cid -ReturnType "embed")   
+}
+
+# Create the file
+$tempReport | Out-File -encoding ASCII -filepath $Filename
 
 # Display to screen
 if ($DisplayToScreen) {
 	Write-CustomOut $lang.HTMLdisp
-   $tempReport = $MyReport
-   # Loop over all CIDs and replace them
-   Foreach ($cid in $global:ReportResources.Keys) {
-      $tempReport = $tempReport -replace ("cid:{0}" -f $cid), (Get-ReportResource $cid -ReturnType "embed")   
-   }
-   
-   # Create the file
-   $tempReport | Out-File -encoding ASCII -filepath $Filename
-   
 	Invoke-Item $Filename
 }
 
@@ -553,9 +554,6 @@ Function Send-Email () {
     Write-CustomOut $lang.emailSend
 
     If ($SendAttachment) {
-        # Create the file
-        $tempReport | Out-File -encoding ASCII -filepath $Filename
-
         # if EmailCc variable is not blank
         If ($EmailCc -ne "") {
             Write-CustomOut "..Sending Email to $EmailTo and CC to $EmailCc"

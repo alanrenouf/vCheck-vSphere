@@ -10,7 +10,7 @@ $Colour2 ="1D6325"
 $TitleTxtColour ="FFFFFF"
 
 # Add Header Resource
-Add-ReportResource "Header" ($StylePath + "\Header.jpg")
+Add-ReportResource "Header" ($StylePath + "\Header.jpg") -Used $true
 
 $FontFamily = "font-family: Tahoma, Arial, sans-serif;"
 

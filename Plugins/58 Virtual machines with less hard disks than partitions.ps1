@@ -9,7 +9,7 @@ $Result = @($VM | Where-Object {$_.Guest.OSFullname -like "*Windows*"} | ForEach
     "" | Select-Object -Property @{N="VM";E={$CurrentVm.Name}},@{N="NrOfHardDisks";E={$NrOfHardDisks}},@{N="NrOfGuestDisks";E={$NrOfGuestDisks}}
   }
  }
- )
+)
 $Result
 
 $Title = "Virtual machines with less hard disks than partitions"

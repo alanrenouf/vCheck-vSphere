@@ -218,6 +218,8 @@ Function Get-HTMLTable {
                               }
                               
                               $XMLTable.table.tr[$RowN].selectSingleNode("td[$($ColN+1)]").AppendChild($elem) | Out-Null
+                              # Increment usage counter (so we don't have .bin attachments)
+                              Set-ReportResource $RuleActions[1]
                            }
                            else {
                               $XMLTable.table.tr[$RowN].selectSingleNode("td[$($ColN+1)]").SetAttribute($RuleActions[0], $RuleActions[1]) 
@@ -278,7 +280,8 @@ function Add-ReportResource {
       $cid,
       $ResourceData,
       [ValidateSet("File","SystemIcons","Base64")]
-      $Type="File"
+      $Type="File",
+      $Used=$false
    )
    
    # If cid does not exist, add it
@@ -287,7 +290,19 @@ function Add-ReportResource {
                                            "Uses" = 0 })
    }
    
-   # Update uses count
+   # Update uses count if $Used set (Should normally be incremented with Set-ReportResource)
+   # Useful for things like headers where they are always required.
+   if ($Used) {
+      ($global:ReportResources[$cid].Uses)++
+   }
+}
+
+Function Set-ReportResource {
+   param (
+      $cid
+   )
+   
+   # Increment use
    ($global:ReportResources[$cid].Uses)++
 }
 
@@ -343,8 +358,8 @@ function Get-ReportResource {
          if ($ReturnType -eq "linkedresource") {
             # return a linked resource to be added to mail message
             $lr = New-Object system.net.mail.LinkedResource($ms)
-            $lr.ContentId=$img
-            $html.LinkedResources.Add($lr);
+            $lr.ContentId=$cid
+            return $lr;
          }
       }
       "Base64" {        
@@ -352,12 +367,12 @@ function Get-ReportResource {
             return ("data:image/{0};base64,{1}" -f $data[1], $data[2]) 
          }
          if ($ReturnType -eq "linkedresource") {
-            $w = [system.convert]::FromBase64String($data[1])
+            $w = [system.convert]::FromBase64String($data[2])
             $ms = new-Object IO.MemoryStream
             $ms.Write($w, 0 , $w.Length);
             $ms.Seek(0, [System.IO.SeekOrigin]::Begin) | Out-Null
             $lr = New-Object system.net.mail.LinkedResource($ms)
-            $lr.ContentId=$img
+            $lr.ContentId=$cid
             return $lr;
          }
       }
@@ -448,7 +463,7 @@ if ($SetupSetting -or $config) {
 ## Include GlobalVariables and validate settings (at the moment just check they exist)
 . $GlobalVariables
 
-$vcvars = @("SetupWizard" , "Server" , "SMTPSRV" , "EmailFrom" , "EmailTo" , "EmailCc" , "EmailSubject", "EmailReportEvenIfEmpty", "DisplaytoScreen" , "SendEmail" , "SendAttachment", "TimeToRun" , "PluginSeconds" , "Style" , "Date")
+$vcvars = @("SetupWizard" , "Server" , "SMTPSRV" , "EmailFrom" , "EmailTo" , "EmailSubject", "DisplaytoScreen" , "SendEmail" , "SendAttachment", "TimeToRun" , "PluginSeconds" , "Style" , "Date")
 foreach($vcvar in $vcvars) {
 	if (!($(Get-Variable -Name "$vcvar" -Erroraction 'SilentlyContinue'))) {
 		Write-Error ($lang.varUndefined -f $vcvar)
@@ -478,7 +493,6 @@ if(!(Test-Path ($StylePath))) {
 $TTRReport = @()
 $MyReport = Get-CustomHTML -Header "$Server vCheck"
 $MyReport += Get-CustomHeader0 ($Server)
-$PluginsOutputCounter = 0 # added counter which will increment each time a plug-in provides output
 
 # Loop over all enabled plugins
 $Plugins | Foreach {
@@ -491,21 +505,15 @@ $Plugins | Foreach {
 	Write-CustomOut ($lang.pluginEnd -f $IDinfo["Title"], $IDinfo["Author"], $IDinfo["Version"])
    
 	If ($Details) {
-        # increment counter
-        $PluginsOutputCounter++
-   	    $MyReport += Get-CustomHeader $Header $Comments
+   	$MyReport += Get-CustomHeader $Header $Comments
 		If ($Display -eq "List"){
 				$MyReport += Get-HTMLList $Details
-
-		}
+			}
 		If ($Display -eq "Table") {
 			$MyReport += Get-HTMLTable $Details $TableFormat
-
 		}
       $MyReport += Get-CustomHeaderClose	
-
 	}
-
 }
 
 # Add Time to Run detail for plugins - if specified in GlobalVariables.ps1
@@ -518,6 +526,7 @@ if ($TimeToRun) {
    
 $MyReport += Get-CustomHeader0Close
 $MyReport += Get-CustomHTMLClose
+
 
 ################################################################################
 #                                    Output                                    #
@@ -548,70 +557,37 @@ if ($DisplayToScreen) {
 	Invoke-Item $Filename
 }
 
-Function Send-Email () {
-    ## send e-mail
-    Write-CustomOut $lang.emailSend
-
-    If ($SendAttachment) {
-        # Create the file
-        $tempReport | Out-File -encoding ASCII -filepath $Filename
-
-        # if EmailCc variable is not blank
-        If ($EmailCc -ne "") {
-            Write-CustomOut "..Sending Email to $EmailTo and CC to $EmailCc"
-            Send-Mailmessage -To $EmailTo -Cc $EmailCc -From $EmailFrom -Subject $EmailSubject -SmtpServer $SMTPSRV -Body $lang.emailAtch -Attachments $Filename
-
-        } else {
-            Write-CustomOut "..Sending Email to $EmailTo"
-            Send-Mailmessage -To $EmailTo -From $EmailFrom -Subject $EmailSubject -SmtpServer $SMTPSRV -Body $lang.emailAtch -Attachments $Filename
-
-        }
-
-    } Else {
-        # if EmailCc variable is not blank
-        If ($EmailCc -ne "") {
-            Write-CustomOut "..Sending Email to $EmailTo and CC to $EmailCc"
-            Send-Mailmessage -To $EmailTo -Cc $EmailCc -From $EmailFrom -Subject $EmailSubject -SmtpServer $SMTPSRV -Body $tempReport -BodyAsHtml
-
-        } else {
-            Write-CustomOut "..Sending Email to $EmailTo"
-            Send-Mailmessage -To $EmailTo -From $EmailFrom -Subject $EmailSubject -SmtpServer $SMTPSRV -Body $tempReport -BodyAsHtml
-
-        }
-
-    }
-
-
-}
-
-# Send email
+# Generate email
 if ($SendEmail) {
-	 
-    # Loop over all CIDs and replace them
-    Foreach ($cid in $global:ReportResources.Keys) {
-        $tempReport = $MyReport -replace ("cid:{0}" -f $cid), (Get-ReportResource $cid -ReturnType "embed")   
-    }
-
-    # check if the plugins provided content or not
-    # if the counter = 0, no output was returned by the plugins
-    if ($PluginsOutputCounter -eq 0) {
-        Write-CustomOut "..No output was returned by the plugins."
-  
-        ## should a blank report be sent?
-        if ($EmailReportEvenIfEmpty) {                 
-            Send-Email
-  
-        } else {
-            Write-CustomOut "..E-mail not sent. Empty report."
-  
-        }
-
-    # the plugins returned output, send e-mail
-    } else {
-        Send-Email
-  
-    } # end of if ($PluginsOutputCounter -eq 0)
-
+	Write-CustomOut $lang.emailSend
+   $msg = New-Object System.Net.Mail.MailMessage ($EmailFrom,$EmailTo)
+   $msg.subject = $EmailSubject
+   
+   # if send attachment, just send plaintext email with HTML report attached
+   If ($SendAttachment) {
+      $msg.Body = $lang.emailAtch
+      $attachment = new-object System.Net.Mail.Attachment $Filename
+      $msg.Attachments.Add($attachment)
+   }
+   # Otherwise send the HTML email
+   else {
+      $msg.IsBodyHtml = $true;
+      $html = [System.Net.Mail.AlternateView]::CreateAlternateViewFromString($MyReport,$null,'text/html')
+      $msg.AlternateViews.Add($html)
+      
+      # Loop over all CIDs and replace them
+      Foreach ($cid in $global:ReportResources.Keys) {
+         if ($global:ReportResources[$cid].Uses -gt 0) {         
+            $lr = (Get-ReportResource $cid -ReturnType "linkedresource")
+            $html.LinkedResources.Add($lr);
+         }
+      }
+   }
+   # Send the email
+   $smtpClient = New-Object System.Net.Mail.SmtpClient
+   $smtpClient.Host = $SMTPSRV
+   #$smtpClient.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
+   $smtpClient.Send($msg)
 }
 
 # Run EndScript once everything else is complete

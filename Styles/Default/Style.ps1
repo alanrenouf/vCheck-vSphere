@@ -6,7 +6,7 @@ $Colour2 ="1D6325"
 $TitleTxtColour ="FFFFFF"
 
 # Add Header resource
-Add-ReportResource "Header" ($StylePath + "\Header.jpg")
+Add-ReportResource "Header" ($StylePath + "\Header.jpg") -Used $true
 
 $DspHeader0 = "
 	BORDER-RIGHT: #bbbbbb 1px solid;

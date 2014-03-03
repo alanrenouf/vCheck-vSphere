@@ -2,12 +2,12 @@
 # End of Settings
 
 $VMFolder = @()
-foreach ($vm in $FullVM) {
-  if (!$VM.snapshot) { # Only process VMs without snapshots
-    $vm.Summary.Config.VmPathName -match '^\[([^\]]+)\] ([^/]+)' > $null
+foreach ($eachVM in $FullVM) {
+  if (!$eachVM.snapshot) { # Only process VMs without snapshots
+    $eachVM.Summary.Config.VmPathName -match '^\[([^\]]+)\] ([^/]+)' > $null
     $Datastore = $matches[1]
     $VMPath = $matches[2]
-    $DC = Get-Datacenter -VM $vm.Name
+    $DC = Get-Datacenter -VM $eachVM.Name
     if ($DC.ParentFolder.Parent) { #Check if Datacenter has a parent folder
       $DCPath = $DC.ParentFolder.Name
     }
@@ -19,7 +19,7 @@ foreach ($vm in $FullVM) {
     foreach ($file in $fileList) {
       if ($file.Name -like '*delta.vmdk*' -or $file -like '-*-flat.vmdk') { 
         $Details = "" | Select-Object VM, Datacenter, Path
-        $Details.VM = $vm.Name
+        $Details.VM = $eachVM.Name
         $Details.Datacenter = $DC.Name
         $Details.Path = $Datastore + '/' + $VMPath + '/' + $file.Name
         $VMFolder += $Details

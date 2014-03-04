@@ -101,7 +101,6 @@ Function Invoke-Settings ($Filename, $GB) {
 	if (!(($OriginalLine +1) -eq $EndLine)) {
 		$Array = @()
 		$Line = $OriginalLine
-		Write-Host "`n"($filename.split("\")[-1]).split(".")[0]
 		do {
 			$Question = $file[$Line]
 			$Line ++

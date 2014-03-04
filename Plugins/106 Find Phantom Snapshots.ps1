@@ -37,5 +37,5 @@ $Header =  "VM's with Phantom Snapshots : $(@($OutputPhantomSnapshots).count)"
 $Comments = "The following VM's have Phantom Snapshots"
 $Display = "Table"
 $Author = "Mads Fog Albrechtslund"
-$PluginVersion = 1.0
+$PluginVersion = 1.1
 $PluginCategory = "vSphere"

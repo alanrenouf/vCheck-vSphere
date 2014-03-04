@@ -1,4 +1,4 @@
-#Start of Settings 
+# Start of Settings 
 # Report on disk formats that are not "thin" or "thick", which format is not allowed ?
 $diskformat ="thick"
 # End of Settings
@@ -21,7 +21,7 @@ $Display = "Table"
 
 $Author = "David Chung"
 
-$PluginVersion = 1.1
+$PluginVersion = 1.2
 
 $PluginCategory = "vSphere"
 

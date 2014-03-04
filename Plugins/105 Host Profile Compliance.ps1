@@ -22,14 +22,11 @@ foreach ($Profile in $HostProfiles) {
          $Failures = $Profile | Test-VMHostProfileCompliance -UseCache 
 
          # Find all Hosts with HP Applied and status
-         if ($ShowCompliant) {
-            # Get all hosts with HP
-            $VMHosts = $VMH | Where {(($Profile.ExtensionData.entity | Where {$_.type -eq "HostSystem" } | Select @{n="Id";e={"HostSystem-{0}" -f $_.Value}}) | Select -expandProperty Id) -contains $_.Id} 
-            # Filter out those with failures and select required columns
-            $VMHosts = $VMHosts | where {($failures | Select -expandproperty VMHostID) -notcontains $_.id} | Select @{Name="VMHostProfile";Expression={$Profile.Name}}, @{Name="Host";Expression={$_.Name}}, @{Name="Compliant";Expression={$true}}, @{Name="Failures";Expression={"None"}} 
-            # Add in the failures
-            $VMHosts += ($Failures | Select VMHostProfile, @{Name='Host';Expression={$_.vmhost.name}}, @{Name='Compliant';Expression={$false}}, @{Name="Failures";Expression={($_.IncomplianceElementList | Select -expandproperty Description) -join "<br />"}})
-         }
+         $VMHosts = $VMH | Where {(($Profile.ExtensionData.entity | Where {$_.type -eq "HostSystem" } | Select @{n="Id";e={"HostSystem-{0}" -f $_.Value}}) | Select -expandProperty Id) -contains $_.Id} 
+         # Filter out those with failures and select required columns
+         $VMHosts = $VMHosts | where {($failures | Select -expandproperty VMHostID) -notcontains $_.id} | Select @{Name="VMHostProfile";Expression={$Profile.Name}}, @{Name="Host";Expression={$_.Name}}, @{Name="Compliant";Expression={$true}}, @{Name="Failures";Expression={"None"}} 
+         # Add in the failures
+         $VMHosts += ($Failures | Select VMHostProfile, @{Name='Host';Expression={$_.vmhost.name}}, @{Name='Compliant';Expression={$false}}, @{Name="Failures";Expression={($_.IncomplianceElementList | Select -expandproperty Description) -join "<br />"}})
          
          if ($ShowCompliant) {
             $VMHosts 
@@ -61,7 +58,7 @@ $Header =  "List of host profiles and compliance status"
 $Comments = ""
 $Display = "Table"
 $Author = "John Sneddon"
-$PluginVersion = 1.1
+$PluginVersion = 1.2
 $PluginCategory = "vSphere"
 
 # Table formatting rules - requires formatting modification

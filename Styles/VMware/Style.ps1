@@ -6,8 +6,8 @@ $Colour2 ="1D6325"
 $TitleTxtColour ="FFFFFF"
 
 # Header Images
-Add-ReportResource "Header-vCheck" ($StylePath + "\Header.jpg")
-Add-ReportResource "Header-VMware" ($StylePath + "\Header-vmware.png")
+Add-ReportResource "Header-vCheck" ($StylePath + "\Header.jpg") -Used $true
+Add-ReportResource "Header-VMware" ($StylePath + "\Header-vmware.png") -Used $true
 
 $HTMLHeader = @"
 <!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Frameset//EN' 'http://www.w3.org/TR/html4/frameset.dtd'>

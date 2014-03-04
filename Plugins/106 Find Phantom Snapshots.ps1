@@ -12,7 +12,7 @@ ForEach ($theVM in $VM){
 
     
     	# Find VM's where active VMDK is a Delta VMDK
-    	if ($theVMdisk.Filename -like "*-??????.vmdk"){
+    	if ($theVMdisk.Filename -match "-\d{6}.vmdk"){
     		
     		# Find VM's which don't have normal Snapshots registered 
     		if (!(Get-Snapshot $theVM))

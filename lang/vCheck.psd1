@@ -15,8 +15,11 @@ ConvertFrom-StringData @'
    pluginpathInvalid = Plugin path "{0}" is invalid, defaulting to {1}
    gvInvalid   = Global Variables path invalid in job specification, defaulting to {0}
    varUndefined = Variable `${0} is not defined in GlobalVariables.ps1
-   pluginStart  = ..start calculating {0} by {1} v{2}
-   pluginEnd    = ..finished calculating {0} by {1} v{2}
+   pluginActivity = Evaluating plugins
+   pluginStatus = [{0} of {1}] {2}
+   Complete = Complete
+   pluginStart  = ..start calculating {0} by {1} v{2} [{3} of {4}]
+   pluginEnd    = ..finished calculating {0} by {1} v{2} [{3} of {4}]
    repTime     = This report took {0} minutes to run all checks.
    slowPlugins = The following plugins took longer than {0} seconds to run, there may be a way to optimize these or remove them if not needed
    emailSend   = ..Sending Email

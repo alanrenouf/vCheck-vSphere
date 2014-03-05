@@ -542,18 +542,17 @@ else {
    $Filename = $Env:TEMP + "\" + $Server + "vCheck" + "_" + $Date.Day + "-" + $Date.Month + "-" + $Date.Year + ".htm"
 }
 
+# Always generate the report with embedded images
+$embedReport = $MyReport
+# Loop over all CIDs and replace them
+Foreach ($cid in $global:ReportResources.Keys) {
+   $embedReport = $embedReport -replace ("cid:{0}" -f $cid), (Get-ReportResource $cid -ReturnType "embed")   
+}
+$embedReport | Out-File -encoding ASCII -filepath $Filename
+
 # Display to screen
 if ($DisplayToScreen) {
-	Write-CustomOut $lang.HTMLdisp
-   $tempReport = $MyReport
-   # Loop over all CIDs and replace them
-   Foreach ($cid in $global:ReportResources.Keys) {
-      $tempReport = $tempReport -replace ("cid:{0}" -f $cid), (Get-ReportResource $cid -ReturnType "embed")   
-   }
-   
-   # Create the file
-   $tempReport | Out-File -encoding ASCII -filepath $Filename
-   
+	Write-CustomOut $lang.HTMLdisp  
 	Invoke-Item $Filename
 }
 

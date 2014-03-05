@@ -30,7 +30,7 @@
 .NOTES 
    File Name  : vCheck.ps1 
    Author     : Alan Renouf - @alanrenouf
-   Version    : 6.20
+   Version    : 6.21-alpha-1
    
    Thanks to all who have commented on my blog to help improve this project
    all beta testers and previous contributors to this script.
@@ -61,7 +61,7 @@ param (
    [ValidateScript({Test-Path $_ -PathType 'Leaf'})]
    [string]$job
 )
-$Version = "6.20"
+$Version = "6.20-alpha-1"
 
 ################################################################################
 #                                  Functions                                   #
@@ -495,14 +495,18 @@ $MyReport = Get-CustomHTML -Header "$Server vCheck"
 $MyReport += Get-CustomHeader0 ($Server)
 
 # Loop over all enabled plugins
+$p = 0 
 $Plugins | Foreach {
    $TableFormat = $null
 	$IDinfo = Get-PluginID $_.Fullname
-	Write-CustomOut ($lang.pluginStart -f $IDinfo["Title"], $IDinfo["Author"], $IDinfo["Version"])
+   $p++
+	Write-CustomOut ($lang.pluginStart -f $IDinfo["Title"], $IDinfo["Author"], $IDinfo["Version"], $p, $plugins.count)
+   $pluginStatus = ($lang.pluginStatus -f $p, $plugins.count, $_.Name)
+   Write-Progress -Activity $lang.pluginActivity -Status $pluginStatus -PercentComplete (100*$p/($plugins.count))
 	$TTR = [math]::round((Measure-Command {$Details = . $_.FullName}).TotalSeconds, 2)
 	$TTRReport += New-Object PSObject -Property @{"Name"=$_.Name; "TimeToRun"=$TTR}	
 	$ver = "{0:N1}" -f $PluginVersion
-	Write-CustomOut ($lang.pluginEnd -f $IDinfo["Title"], $IDinfo["Author"], $IDinfo["Version"])
+	Write-CustomOut ($lang.pluginEnd -f $IDinfo["Title"], $IDinfo["Author"], $IDinfo["Version"], $p, $plugins.count)
    
 	If ($Details) {
    	$MyReport += Get-CustomHeader $Header $Comments
@@ -512,9 +516,10 @@ $Plugins | Foreach {
 		If ($Display -eq "Table") {
 			$MyReport += Get-HTMLTable $Details $TableFormat
 		}
-      $MyReport += Get-CustomHeaderClose	
+      $MyReport += Get-CustomHeaderClose
 	}
 }
+Write-Progress -Activity $lang.pluginActivity -Status $lang.Complete -Completed
 
 # Add Time to Run detail for plugins - if specified in GlobalVariables.ps1
 if ($TimeToRun) {

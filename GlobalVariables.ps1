@@ -13,9 +13,11 @@ $Server ="192.168.0.9"
 $SMTPSRV ="mysmtpserver.mydomain.local"
 # Please specify the email address who will send the vCheck report
 $EmailFrom ="me@mydomain.local"
-# Please specify the email address who will receive the vCheck report
+# Please specify the email address(es) who will receive the vCheck report
+# To specify multiple recipients, use the following format: "me@mydomain.local,me2@mydomain.local"
 $EmailTo ="me@mydomain.local"
-# Please specify the email address who will be CCd to receive the vCheck report
+# Please specify the email address(es) who will be CCd to receive the vCheck report
+# To specify multiple recipients, use the following format: "me@mydomain.local,me2@mydomain.local"
 $EmailCc =""
 # Please specify an email subject
 $EmailSubject="$Server vCheck Report"

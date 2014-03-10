@@ -101,6 +101,11 @@ Function Invoke-Settings ($Filename, $GB) {
 	if (!(($OriginalLine +1) -eq $EndLine)) {
 		$Array = @()
 		$Line = $OriginalLine
+		$PluginName = (Get-PluginID $Filename).Title
+		If ($PluginName.EndsWith(".ps1",1)) {
+			$PluginName = ($PluginName.split("\")[-1]).split(".")[0]
+		}
+		Write-Host "`n$PluginName" -foreground $host.PrivateData.WarningForegroundColor -background $host.PrivateData.WarningBackgroundColor
 		do {
 			$Question = $file[$Line]
 			$Line ++
@@ -494,6 +499,7 @@ $TTRReport = @()
 $MyReport = Get-CustomHTML -Header "$Server vCheck"
 $MyReport += Get-CustomHeader0 ($Server)
 
+Write-Host "`nBegin Plugin Processing" -foreground $host.PrivateData.WarningForegroundColor -background $host.PrivateData.WarningBackgroundColor
 # Loop over all enabled plugins
 $p = 0 
 $Plugins | Foreach {

@@ -1,6 +1,6 @@
 # Start of Settings
 # Do not report on any Datastores that are defined here (Datastore Consistency Plugin)
-$DSDoNotInclude ="*:local|datastore*"
+$DSDoNotInclude ="local*|datastore*"
 # End of Settings
 
 $problemDatastores = @() 
@@ -27,5 +27,5 @@ $Header =  "Datastores not connected to every host in cluster"
 $Comments = "Virtual Machines residing on these datastores will not be able to run on all hosts in the cluster"
 $Display = "Table"
 $Author = "Robert Sexstone"
-$PluginVersion = 1.3
+$PluginVersion = 1.3.1
 $PluginCategory = "vSphere"

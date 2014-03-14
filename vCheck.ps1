@@ -572,7 +572,7 @@ if ($SendEmail) {
 	Write-CustomOut $lang.emailSend
    $msg = New-Object System.Net.Mail.MailMessage ($EmailFrom,$EmailTo)
    # If CC address specified, add
-   If ($EmailCc -ne $null) {
+   If ($EmailCc -ne "") {
       $msg.CC.Add($EmailCc)
    }
    $msg.subject = $EmailSubject

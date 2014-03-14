@@ -1,7 +1,7 @@
-#Start of Settings
-	#Default Days to Expire 60
-	$WarningDays = 60
-#End of Settings
+# Start of Settings
+# How many days to warn before cert expiration (Default 60)
+$WarningDays = 60
+# End of Settings
 
 
 

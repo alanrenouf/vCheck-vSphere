@@ -1,4 +1,5 @@
-��# End of Settings
+# Start of Settings
+# End of Settings
 
 $ListCPUMemDisabled = @()
 

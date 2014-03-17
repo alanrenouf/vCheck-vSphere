@@ -1,4 +1,6 @@
 # Changes:
+# v 6.20 - First tagged release. Bugfixes. Email resource support added.
+# v 6.19 - Bugfixes.
 # v 6.18 - Added Job parameter to allow job specifications via XML file
 # v 6.17 - Basic Internationalization (i18n) support
 # v 6.16 - Table formatting rules

@@ -3,7 +3,8 @@
 $WarningDays = 60
 # End of Settings
 
-
+# Changelog
+## 1.1 : Added filter for connected Hosts only
 
 Function Test-WebServerSSL { 
 # Function original location: http://en-us.sysadmins.lv/Lists/Posts/Post.aspx?List=332991f0-bfed-4143-9eea-f521167d287c&ID=60 
@@ -79,12 +80,12 @@ namespace PKI {
 # Plugin to report on upcoming host certificate expirations
 
 # Check for Host Certificates 
-$report = $VMH | Foreach { Test-WebServerSSL -URL $_.Name | Select OriginalURi, Issuer, @{N="Expires";E={$_.Certificate.NotAfter} }, @{N="DaysTillExpire";E={(New-TimeSpan -Start (Get-Date) -End ($_.Certificate.NotAfter)).Days} }|? {$_.DaysTillExpire -le $WarningDays}}
+$report = $VMH | Where {$_.ConnectionState -eq "Connected" -or $_.ConnectionState -eq "Maintenance"} | Foreach { Test-WebServerSSL -URL $_.Name | Select OriginalURi, Issuer, @{N="Expires";E={$_.Certificate.NotAfter} }, @{N="DaysTillExpire";E={(New-TimeSpan -Start (Get-Date) -End ($_.Certificate.NotAfter)).Days} }|? {$_.DaysTillExpire -le $WarningDays}}
 $report
 
 $Title = "Hosts with Upcoming Certificate Expiration"
 $Header = "Hosts with upcoming Certificate Expirations: $WarningDays Days"
 $Comments = "The following hosts have certificates that will expire soon and will need to be replaced."
 $Display = "Table"
-$PluginVersion = 1.0
+$PluginVersion = 1.1
 $PluginCategory = "vSphere"

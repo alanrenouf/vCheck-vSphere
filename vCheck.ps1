@@ -143,11 +143,6 @@ Function Invoke-Settings ($Filename, $GB) {
 	}
 }
 
-<# Take file path and return base64 string #>
-Function Get-Base64Image ($Path) {
-	return [Convert]::ToBase64String((Get-Content $Path -Encoding Byte))
-}
-
 Function Get-CustomHTML {
    param (
       $Header, 

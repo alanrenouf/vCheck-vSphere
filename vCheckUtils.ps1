@@ -1,5 +1,5 @@
 $global:vCheckPath = $MyInvocation.MyCommand.Definition | Split-Path
-$global:pluginXMLURL = "http://www.virtu-al.net/vcheck/plugins/plugins.xml"
+$global:pluginXMLURL = "https://raw.github.com/alanrenouf/vCheck-vSphere/master/plugins.xml"
 $global:pluginURL = "https://raw.github.com/alanrenouf/vCheck-{0}/master/Plugins/{1}"
 
  <#

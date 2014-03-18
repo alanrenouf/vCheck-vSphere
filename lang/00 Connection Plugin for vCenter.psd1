@@ -14,4 +14,5 @@ ConvertFrom-StringData @'
    collectDHost = Collecting Detailed VMHost Objects
    collectDCluster = Collecting Detailed Cluster Objects
    collectDDatastore = Collecting Detailed Datastore Objects
+   collectDDatastoreCluster = Collecting Detailed Datastore Cluster Objects
 '@

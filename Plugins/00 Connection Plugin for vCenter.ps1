@@ -118,5 +118,3 @@ if ($VIVersion -ge 5) {
 	Write-CustomOut $pLang.collectDDatastoreCluster
 	$DatastoreClustersView = Get-View -viewtype StoragePod
 }
-
-$date = Get-Date

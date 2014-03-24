@@ -1,0 +1,25 @@
+# Start of Settings
+# End of Settings
+
+$hostsalarmstate = @()
+foreach ($myhost in $VMH){
+
+	if ($myhost.ExtensionData.AlarmActionsEnabled -match "false" -and $myhost.ExtensionData.Runtime.InMaintenanceMode -match "True"){
+			$Details = "" | Select-Object Object, Alarm, Status
+			$Details.Object = $myhost.name
+			$Details.Alarm = "AlarmActions"
+			$Details.Status = $myhost.ExtensionData.AlarmActionsEnabled
+			$hostsalarmstate += $Details
+		}
+	}
+
+$Result = @($hostsalarmstate |sort Object)
+$Result
+
+$Title = "Hosts with Alarm disabled"
+$Header =  "Hosts with Alarms disabled : $(@($hostsalarmstate).Count)"
+$Comments = "The following Hosts have Alarm disabled. This may impact the Alarming of your infrastrucure."
+$Display = "Table"
+$Author = "Denis Gauthier"
+$PluginVersion = 1.1
+$PluginCategory = "vSphere"

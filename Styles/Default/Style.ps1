@@ -149,6 +149,7 @@ $HTMLHeader = @"
 		</style>
 	</head>
 	<body margin-left: 4pt; margin-right: 4pt; margin-top: 6pt;>
+	<a name='top'></a>
 <div style='font-family:Arial, Helvetica, sans-serif; font-size:20px; font-weight:bolder; background-color:#$($Colour1);'><center>
 <p class='accent'>
 <!--[if gte mso 9]>
@@ -194,6 +195,7 @@ $CustomHeaderClose = @"
 $CustomHeader0Close = @"
 	<!-- CustomHeader0Close -->
 </DIV>
+<div style='width: 95%; margin: 0px auto; font-size: 8pt; text-align: right'><a href="#top">Back to Top</a></div>
 "@
 
 $CustomHTMLClose = @"

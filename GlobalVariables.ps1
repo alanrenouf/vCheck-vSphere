@@ -19,6 +19,8 @@ $EmailTo ="me@mydomain.local"
 $EmailCc =""
 # Please specify an email subject
 $EmailSubject="$Server vCheck Report"
+# Would you like to use SSL to send email?
+$EmailSSL = $false
 # Send the report by e-mail even if it is empty?
 $EmailReportEvenIfEmpty =$true
 # Would you like the report displayed in the local browser once completed ?

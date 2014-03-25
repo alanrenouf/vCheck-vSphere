@@ -6,8 +6,7 @@ foreach ($clusview in $clusviews) {
 	if ($clusview.ConfigurationEx.VmSwapPlacement -eq "hostLocal") {
 		$CluNodes = $VMH | where {$clusview.Host -contains $_.Id }
 		foreach ($CluNode in $CluNodes) {
-			if ($CluNode.VMSwapfileDatastore.Name -ne $null){}
-				else {
+			if ($CluNode.VMSwapfileDatastore.Name -eq $null){
 				if ($CluNode.ExtensionData.Config.LocalSwapDatastore.Value) {
 					$Details = "" | Select-Object Cluster, Host, Message
 					$Details.cluster = $clusview.name

@@ -595,7 +595,9 @@ if ($SendEmail) {
    # Send the email
    $smtpClient = New-Object System.Net.Mail.SmtpClient
    $smtpClient.Host = $SMTPSRV
-   #$smtpClient.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
+   if ($EmailSSL -eq $true) {
+      $smtpClient.EnableSsl = $true
+   }
    $smtpClient.Send($msg)
 }
 

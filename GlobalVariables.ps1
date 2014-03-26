@@ -36,6 +36,3 @@ $TimeToRun = $true
 # Report an plugins that take longer than the following amount of seconds
 $PluginSeconds = 30
 # End of Settings
-
-
-$Date = Get-Date

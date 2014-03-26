@@ -1,6 +1,6 @@
 $Title = "Connection settings for vCenter"
 $Author = "Alan Renouf"
-$PluginVersion = 1.3
+$PluginVersion = 1.4
 $Header =  "Connection Settings"
 $Comments = "Connection Plugin for connecting to vSphere"
 $Display = "List"
@@ -118,5 +118,3 @@ if ($VIVersion -ge 5) {
 	Write-CustomOut $pLang.collectDDatastoreCluster
 	$DatastoreClustersView = Get-View -viewtype StoragePod
 }
-
-$date = Get-Date

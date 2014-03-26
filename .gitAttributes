@@ -1,0 +1,5 @@
+# Set default behaviour, in case users don't have core.autocrlf set.
+* text=auto
+
+# Ignore plugins.xml in exports
+plugins.xml     export-ignore

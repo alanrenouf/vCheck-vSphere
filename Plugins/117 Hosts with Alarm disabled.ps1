@@ -1,4 +1,5 @@
 # Start of Settings
+# Include Hosts in Maintenance mode
 $IncludeMaintenance = $false
 # End of Settings
 
@@ -16,5 +17,5 @@ $Header =  "Hosts with Alarms disabled : $(@($AlarmActionsEnabled).Count)"
 $Comments = "The following Hosts have Alarm disabled. This may impact the Alarming of your infrastrucure."
 $Display = "Table"
 $Author = "Denis Gauthier"
-$PluginVersion = 1.1
+$PluginVersion = 1.2
 $PluginCategory = "vSphere"

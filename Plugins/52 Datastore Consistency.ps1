@@ -27,5 +27,5 @@ $Header =  "Datastores not connected to every host in cluster"
 $Comments = "Virtual Machines residing on these datastores will not be able to run on all hosts in the cluster"
 $Display = "Table"
 $Author = "Robert Sexstone"
-$PluginVersion = 1.3.1
+$PluginVersion = 1.4
 $PluginCategory = "vSphere"

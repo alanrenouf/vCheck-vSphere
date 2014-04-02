@@ -33,6 +33,7 @@ $ActiveViolationsOnly =$true
 ## 0.2 : Minor tweaks. Removed two unnecessary configurable variables. Utilized existing $MaxSampleVIEvent variable.
 ## 0.3 : Removed extra timing in output as this is displayed as part of Write-CustomOut
 ## 0.4 : Fixed a bug/typo while filtering results by duration of RPO violation. ($RPOviolationMin should have been $RPOviolationMins)
+## 0.5 : Fixed a bug where filtering results by duration of RPO violation was not working.
 
 ## Begin code block obtained from: http://www.virtu-al.net/2013/06/14/reporting-on-rpo-violations-from-vsphere-replication/
 #  modified by Joel Gibson
@@ -59,12 +60,12 @@ Foreach ($RPOvm in $VMs) {
                                                                                 if ($RPOEvents[$count].EventTypeID -match "Restored") {
                                                                                                 $details.ViolationEnd = $RPOEvents[$Count].CreatedTime
                                                                                                 $Time = $details.ViolationEnd - $details.ViolationStart
-                                                                                                $details.Mins = "{0:N2}" -f $Time.TotalMinutes
+                                                                                                $details.Mins = $Time.TotalMinutes
                     
                                                                                 } Else {
                                                                                                 $details.ViolationEnd = "No End Date"
                                                                                                 $Time = $(Get-Date) - $details.ViolationStart
-                                                                                                $details.Mins = "{0:N2}" -f $Time.TotalMinutes
+                                                                                                $details.Mins = $Time.TotalMinutes
                 
                                                                                 }
                                                                 }
@@ -78,6 +79,20 @@ Foreach ($RPOvm in $VMs) {
  
 ## filter the results based on the number of minutes an RPO has been exceeded by
 $Results = $Results | Where { $_.Mins -gt $RPOviolationMins}
+
+## format the number of minutes for the RPO violation
+Foreach ($event in $Results) {
+    if ($event.ViolationEnd -eq "No End Date") {
+        $EventDurationTime = $(Get-Date) - $event.ViolationStart
+
+    } else {
+        $EventDurationTime = $event.ViolationEnd - $event.ViolationStart
+
+    }
+
+    $event.Mins = "{0:N2}" -f $EventDurationTime.TotalMinutes
+
+}
  
 ## filter the results based on unresolved violations, if desired
 if ($ActiveViolationsOnly) {
@@ -95,5 +110,5 @@ $Header =  "Site Recovery Manager - RPO Violations: $(@($Results).count)"
 $Comments = "This is a customizable report of RPO violations found in the vCenter event log."
 $Display = "Table"
 $Author = "Joel Gibson, based on work by Alan Renouf"
-$PluginVersion = 0.4
+$PluginVersion = 0.5
 $PluginCategory = "vSphere"

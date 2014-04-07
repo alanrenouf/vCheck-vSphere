@@ -198,7 +198,7 @@ Function Get-HTMLTable {
 				if ( $Tableformat.keys -contains $XMLTable.table.tr[0].th[$ColN]) {
 					# Current cell has a rule, test to see if they are valid
 					foreach ( $rule in $Tableformat[$XMLTable.table.tr[0].th[$ColN]] ) {
-						if ( Invoke-Expression ("`$XMLTable.table.tr[`$RowN].td[`$ColN] {0}" -f [string]$rule.Keys) ) {
+						if ( Invoke-Expression ("[int]`$XMLTable.table.tr[`$RowN].td[`$ColN] {0}" -f [string]$rule.Keys) ) {
 							# Find what to 
 							$RuleScope = ([string]$rule.Values).split(",")[0]
 							$RuleActions = ([string]$rule.Values).split(",")[1].split("|")

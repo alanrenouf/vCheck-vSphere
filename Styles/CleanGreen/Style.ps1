@@ -30,6 +30,8 @@ $HTMLHeader = @"
 	TABLE { TABLE-LAYOUT: fixed; FONT-SIZE: 100%;  WIDTH: 100%}
 	* { margin:0 }
 	.pageholder	{ margin: 0px auto; }
+	.warning { background: #FFFBAA !important }
+	.critical { background: #FFDDDD !important }
 	</style>
 </head>
 <body margin-left: 4pt; margin-right: 4pt; margin-top: 6pt;>

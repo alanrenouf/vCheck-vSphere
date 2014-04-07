@@ -198,7 +198,7 @@ Function Get-HTMLTable {
 				if ( $Tableformat.keys -contains $XMLTable.table.tr[0].th[$ColN]) {
 					# Current cell has a rule, test to see if they are valid
 					foreach ( $rule in $Tableformat[$XMLTable.table.tr[0].th[$ColN]] ) {
-						if ( Invoke-Expression ("`$XMLTable.table.tr[`$RowN].td[`$ColN] {0}" -f [string]$rule.Keys) ) {
+						if ( Invoke-Expression ("[int]`$XMLTable.table.tr[`$RowN].td[`$ColN] {0}" -f [string]$rule.Keys) ) {
 							# Find what to 
 							$RuleScope = ([string]$rule.Values).split(",")[0]
 							$RuleActions = ([string]$rule.Values).split(",")[1].split("|")
@@ -503,7 +503,7 @@ $Plugins | Foreach {
    $p++
 	Write-CustomOut ($lang.pluginStart -f $IDinfo["Title"], $IDinfo["Author"], $IDinfo["Version"], $p, $plugins.count)
    $pluginStatus = ($lang.pluginStatus -f $p, $plugins.count, $_.Name)
-   Write-Progress -ID 1 -Activity $lang.pluginActivity -Status $pluginStatus -PercentComplete (100*$p/($plugins.count))
+   Write-Progress -Activity $lang.pluginActivity -Status $pluginStatus -PercentComplete (100*$p/($plugins.count))
 	$TTR = [math]::round((Measure-Command {$Details = . $_.FullName}).TotalSeconds, 2)
 	$TTRReport += New-Object PSObject -Property @{"Name"=$_.Name; "TimeToRun"=$TTR}	
 	$ver = "{0:N1}" -f $PluginVersion
@@ -520,7 +520,7 @@ $Plugins | Foreach {
       $MyReport += Get-CustomHeaderClose
 	}
 }
-Write-Progress -ID 1 -Activity $lang.pluginActivity -Status $lang.Complete -Completed
+Write-Progress -Activity $lang.pluginActivity -Status $lang.Complete -Completed
 
 # Add Time to Run detail for plugins - if specified in GlobalVariables.ps1
 if ($TimeToRun) {

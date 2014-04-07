@@ -115,7 +115,8 @@ $HTMLHeader = @"
             margin: 0px auto;            
             background-color: #f9f9f9
          }
-         
+         .warning { background: #FFFBAA !important }
+			.critical { background: #FFDDDD !important }
 		</style>
 	</head>
 	<body>

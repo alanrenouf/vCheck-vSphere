@@ -145,7 +145,8 @@ $HTMLHeader = @"
 						COLOR: #018AC0; 
 						TEXT-ALIGN: left
 					}
-					
+		.warning { background: #FFFBAA !important }
+		.critical { background: #FFDDDD !important }
 		</style>
 	</head>
 	<body margin-left: 4pt; margin-right: 4pt; margin-top: 6pt;>

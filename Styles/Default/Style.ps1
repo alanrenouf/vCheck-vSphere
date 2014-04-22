@@ -161,7 +161,7 @@ $HTMLHeader = @"
 <!--<![endif]-->
 </p>
 </center></div>
-	        <div style='font-family:Arial, Helvetica, sans-serif; font-size:14px; font-weight:bold;'><center>vCheck v$($version) by Alan Renouf (<a href='http://virtu-al.net' target='_blank'>http://virtu-al.net</a>) generated on $($ENV:Computername)
+	        <div style='font-family:Arial, Helvetica, sans-serif; font-size:14px; font-weight:bold;'><center>vCheck v$($version) by Alan Renouf (<a href='http://virtu-al.net' target='_blank'>http://virtu-al.net</a>) generated on $($ENV:Computername) on $($Date.ToLongDateString()) at $($Date.ToLongTimeString())
 			</center></div>
 "@
 

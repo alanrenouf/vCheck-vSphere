@@ -128,7 +128,7 @@ $HTMLHeader = @"
             <img src='cid:Header-vCheck' ALT='vCheck' /><div style='float:right'><img src='cid:Header-VMware' alt='VMware' /></div>
          <!--<![endif]-->
       </div>
-	   <div id='vcheck'>vCheck v$($version) by Alan Renouf (<a href='http://virtu-al.net' target='_blank'>http://virtu-al.net</a>) generated on $($ENV:Computername)</div>
+	   <div id='vcheck'>vCheck v$($version) by Alan Renouf (<a href='http://virtu-al.net' target='_blank'>http://virtu-al.net</a>) generated on $($ENV:Computername) on $($Date.ToLongDateString()) at $($Date.ToLongTimeString())</div>
 "@
 
 $CustomHeader0 = @"

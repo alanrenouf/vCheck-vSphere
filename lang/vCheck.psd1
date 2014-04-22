@@ -20,7 +20,7 @@ ConvertFrom-StringData @'
    Complete = Complete
    pluginStart  = ..start calculating {0} by {1} v{2} [{3} of {4}]
    pluginEnd    = ..finished calculating {0} by {1} v{2} [{3} of {4}]
-   repTime     = This report took {0} minutes to run all checks.
+   repTime     = This report took {0} minutes to run all checks, completing on {1} at {2}
    slowPlugins = The following plugins took longer than {0} seconds to run, there may be a way to optimize these or remove them if not needed
    emailSend   = ..Sending Email
    emailAtch   = vCheck attached to this email

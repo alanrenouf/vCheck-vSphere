@@ -524,7 +524,8 @@ Write-Progress -ID 1 -Activity $lang.pluginActivity -Status $lang.Complete -Comp
 
 # Add Time to Run detail for plugins - if specified in GlobalVariables.ps1
 if ($TimeToRun) {
-   $MyReport += Get-CustomHeader ($lang.repTime -f [math]::round(((Get-Date) - $Date).TotalMinutes,2)) ($lang.slowPlugins -f $PluginSeconds)
+   $Finished = Get-Date
+   $MyReport += Get-CustomHeader ($lang.repTime -f [math]::round(($Finished - $Date).TotalMinutes,2), ($Finished.ToLongDateString()), ($Finished.ToLongTimeString())) ($lang.slowPlugins -f $PluginSeconds)
    $TTRReport = $TTRReport | Where { $_.TimeToRun -gt $PluginSeconds } | Sort-Object TimeToRun -Descending
    $MyReport += Get-HTMLList $TTRReport 
    $MyReport += Get-CustomHeaderClose

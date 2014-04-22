@@ -49,7 +49,7 @@ function Get-VCheckPlugin
     {
         $pluginObjectList = @()
 
-        foreach ($localPluginFile in (Get-ChildItem $vCheckPath\Plugins\*.ps1))
+        foreach ($localPluginFile in (Get-ChildItem -Path $vCheckPath\Plugins\* -Include *.ps1, *.ps1.disabled))
         {
             $localPluginContent = Get-Content $localPluginFile
             

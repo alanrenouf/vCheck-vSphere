@@ -87,7 +87,7 @@ $CustomHTMLClose = @"
 	<!-- CustomHTMLClose -->
 </div>
 <div style='$($FontFamily) font-size: small;'>
-	<center>vCheck v$($version) by Alan Renouf (<a href='http://virtu-al.net' target='_blank'>http://virtu-al.net</a>) generated on $($ENV:Computername)</center>
+	<center>vCheck v$($version) by Alan Renouf (<a href='http://virtu-al.net' target='_blank'>http://virtu-al.net</a>) generated on $($ENV:Computername) on $($Date.ToLongDateString()) at $($Date.ToLongTimeString())</center>
 </div>
 </body>
 </html>

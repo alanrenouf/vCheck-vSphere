@@ -3,7 +3,7 @@
     <name>Connection settings for vCenter</name>
     <description>Connection Plugin for connecting to vSphere</description>
     <author>Alan Renouf</author>
-    <version>1.3</version>
+    <version>1.4</version>
     <category>vSphere</category>
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/00 Connection Plugin for vCenter.ps1</href>
   </plugin>
@@ -60,7 +60,7 @@
     <name>Hosts Overcommit state</name>
     <description>Overcommitted hosts may cause issues with performance if memory is not issued when needed, this may cause ballooning and swapping</description>
     <author>Alan Renouf</author>
-    <version>1.2</version>
+    <version>1.3</version>
     <category>vSphere</category>
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/07 Hosts Overcommit State.ps1</href>
   </plugin>
@@ -100,7 +100,7 @@
     <name>ESXi Inode Exhaustion</name>
     <description>The following hosts have an excessive amount of Inodes in use on the local ESXi filesystem. This can cause hosts to disconnect from vCenter and becoming completely unmanageable even locally, requiring a hard reboot. See &lt;a href=`</description>
     <author>Matthias Koehler</author>
-    <version>1.0</version>
+    <version>1.1</version>
     <category>vSphere</category>
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/101 ESXi Inode Usage.ps1</href>
   </plugin>
@@ -156,7 +156,7 @@
     <name>Site Recovery Manager - RPO Violation Report</name>
     <description>This is a customizable report of RPO violations found in the vCenter event log.</description>
     <author>Joel Gibson, based on work by Alan Renouf</author>
-    <version>0.4</version>
+    <version>0.5</version>
     <category>vSphere</category>
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/108 SRM RPO Violations.ps1</href>
   </plugin>
@@ -172,7 +172,7 @@
     <name>Hosts with Upcoming Certificate Expiration</name>
     <description>The following hosts have certificates that will expire soon and will need to be replaced.</description>
     <author>Alan Renouf</author>
-    <version>1.0</version>
+    <version>1.1</version>
     <category>vSphere</category>
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/110 Host Certificate Expiration Check.ps1</href>
   </plugin>
@@ -210,6 +210,30 @@
     <version>1.0</version>
     <category>vSphere</category>
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/114 VM Tools Not Up to Date.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Datastore Clusters with sDRS Disabled</name>
+    <description>The following Datastore Clusters either do not have sDRS enabled or it is set to manual</description>
+    <author>Shawn Masterson</author>
+    <version>1.0</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/115 Datastore Clusters with sDRS Disabled.ps1</href>
+  </plugin>
+  <plugin>
+    <name>sDRS VM Behavior not Default</name>
+    <description>The following VMs are overriding the Datastore Cluster sDRS automation level</description>
+    <author>Shawn Masterson</author>
+    <version>1.0</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/116 sDRS VM Behavior not Default.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Hosts with Alarm disabled</name>
+    <description>The following Hosts have Alarm disabled. This may impact the Alarming of your infrastructure.</description>
+    <author>Denis Gauthier</author>
+    <version>1.2</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/117 Hosts with Alarm disabled.ps1</href>
   </plugin>
   <plugin>
     <name>VMs Ballooning or Swapping</name>
@@ -527,7 +551,7 @@
     <name>Datastore Consistency</name>
     <description>Virtual Machines residing on these datastores will not be able to run on all hosts in the cluster</description>
     <author>Robert Sexstone</author>
-    <version>1.3.1</version>
+    <version>1.4</version>
     <category>vSphere</category>
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/52 Datastore Consistency.ps1</href>
   </plugin>
@@ -789,6 +813,70 @@
     <version>1.2</version>
     <category>vSphere</category>
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/98 vSwitch Security.ps1</href>
+  </plugin>
+  <plugin>
+    <name>VSAN Datastore Capacity</name>
+    <description>VSAN Datastore Capacity Report - Modified version from Alan Renouf &amp; Jonathan Medd's Datastore Report</description>
+    <author>William Lam</author>
+    <version>1.0</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/990 VSAN Capacity Report.ps1</href>
+  </plugin>
+  <plugin>
+    <name>VSAN Configuration Maximum Disk Group Per Host Report</name>
+    <description>VSAN hosts approaching </description>
+    <author>William Lam</author>
+    <version>1.0</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/991 VSAN Configuration Maximum Disk Group Per Host Report.ps1</href>
+  </plugin>
+  <plugin>
+    <name>VSAN Configuration Maximum Magnetic Disks Per Disk Group Report</name>
+    <description>VSAN hosts approaching </description>
+    <author>William Lam</author>
+    <version>1.0</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/992 VSAN Configuration Maximum Magnetic Disks Per Disk Group Report.ps1</href>
+  </plugin>
+  <plugin>
+    <name>VSAN Configuration Maximum Total Magnetic Disks In All Disk Groups Per Host Report</name>
+    <description>VSAN hosts approaching </description>
+    <author>William Lam</author>
+    <version>1.0</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/993 VSAN Configuration Maximum Total Magnetic Disks In All Disk Groups Per Host Report.ps1</href>
+  </plugin>
+  <plugin>
+    <name>VSAN Configuration Maximum Components Per Host Report</name>
+    <description>VSAN hosts approaching </description>
+    <author>William Lam</author>
+    <version>1.0</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/994 VSAN Configuration Maximum Component Per Host Report.ps1</href>
+  </plugin>
+  <plugin>
+    <name>VSAN Configuration Maximum Hosts Per VSAN Cluster Report</name>
+    <description>VSAN hosts approaching </description>
+    <author>William Lam</author>
+    <version>1.0</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/995 VSAN Configuration Maximum Hosts Per Cluster Report.ps1</href>
+  </plugin>
+  <plugin>
+    <name>VSAN Configuration Maximum VMs Per Host Report</name>
+    <description>VSAN hosts approaching </description>
+    <author>William Lam</author>
+    <version>1.0</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/996 VSAN Configuration Maximum VMs Per Host Report.ps1</href>
+  </plugin>
+  <plugin>
+    <name>VSAN Configuration Maximum VMs Per VSAN Cluster Report</name>
+    <description>VSAN hosts approaching </description>
+    <author>William Lam</author>
+    <version>1.0</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/997 VSAN Configuration Maximum VMs Per Cluster Report.ps1</href>
   </plugin>
   <plugin>
     <name>Disconnecting from vCenter</name>

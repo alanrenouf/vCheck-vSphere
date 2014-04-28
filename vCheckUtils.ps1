@@ -49,7 +49,7 @@ function Get-VCheckPlugin
     {
         $pluginObjectList = @()
 
-        foreach ($localPluginFile in (Get-ChildItem $vCheckPath\Plugins\*.ps1))
+        foreach ($localPluginFile in (Get-ChildItem -Path $vCheckPath\Plugins\* -Include *.ps1, *.ps1.disabled))
         {
             $localPluginContent = Get-Content $localPluginFile
             
@@ -106,7 +106,12 @@ function Get-VCheckPlugin
 
                 foreach ($plugin in $plugins.pluginlist.plugin)
                 {
-                    if (!($pluginObjectList | where {$_.name -eq $plugin.name}))
+                    $current = $pluginObjectList | where {$_.name -eq $plugin.name}					
+					If ($current -and [double]$current.version -lt [double]$plugin.version) {
+						$index = $pluginObjectList.Indexof($current)
+						$pluginObjectList[$index].status = "New Version Available - " + $plugin.version						
+					}
+					if (!($pluginObjectList | where {$_.name -eq $plugin.name}))
                     {
                         $pluginObject = New-Object PSObject
                         $pluginObject | Add-Member -MemberType NoteProperty -Name name -value $plugin.name

@@ -102,7 +102,7 @@ if ($ActiveViolationsOnly) {
  
     }
   
-## output VMs that have exeeded their RPO by $RPOviolationMins, based on defined criteria
+## output VMs that have exceeded their RPO by $RPOviolationMins, based on defined criteria
 $Results
  
 $Title = "Site Recovery Manager - RPO Violation Report"

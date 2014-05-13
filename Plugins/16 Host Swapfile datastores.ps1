@@ -11,7 +11,7 @@ foreach ($clusview in $clusviews) {
 					$Details = "" | Select-Object Cluster, Host, Message
 					$Details.cluster = $clusview.name
 					$Details.host = $CluNode.name
-					$Details.Message = "Swapfile location NOT SET"
+					$Details.Message = "Swap file location NOT SET"
 					$cluswap += $Details
 				}
 			}

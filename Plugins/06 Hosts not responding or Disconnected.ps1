@@ -6,7 +6,7 @@ $RespondHosts
 
 $Title = "Hosts Not responding or Disconnected"
 $Header = "Hosts not responding or disconnected : $(@($RespondHosts).count)"
-$Comments = "Hosts which are in a disconnected state will not be running any virtual machine worloads, check the below Hosts are in an expected state"
+$Comments = "Hosts which are in a disconnected state will not be running any virtual machine workloads, check the below Hosts are in an expected state"
 $Display = "Table"
 $Author = "Alan Renouf"
 $PluginVersion = 1.1

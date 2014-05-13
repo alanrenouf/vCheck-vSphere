@@ -68,7 +68,7 @@ function Get-SnapshotTree{
 
 function Get-SnapshotExtra ($snap){
 	$guestName = $snap.VM	# The name of the guest
-	$tasknumber = 999		# Windowsize of the Task collector
+	$tasknumber = 999		# Window size of the Task collector
 	$taskMgr = Get-View TaskManager
 
 	# Create hash table. Each entry is a create snapshot task

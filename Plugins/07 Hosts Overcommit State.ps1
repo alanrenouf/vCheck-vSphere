@@ -48,7 +48,7 @@ $OverCommit | Select Host, "TotalMem$Units", "TotalAssignedMem$Units", "TotalUse
 
 
 $Title = "Hosts Overcommit state"
-$Header =  "Hosts overcommitting memory : $(@($OverCommit).count)"
+$Header = "Hosts overcommitting memory : $(@($OverCommit).count)"
 $Comments = "Overcommitted hosts may cause issues with performance if memory is not issued when needed, this may cause ballooning and swapping"
 $Display = "Table"
 $Author = "Alan Renouf"

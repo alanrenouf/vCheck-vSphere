@@ -17,7 +17,7 @@ foreach ($esxhost in ($HostsViews | where {$_.Runtime.ConnectionState -match "Co
 	
 $deadluns
 
-$Title = "Hosts Dead Lun Path"
+$Title = "Hosts Dead LUN Path"
 $Header = "Dead LunPath : $(@($deadluns).count)"
 $Comments = "Dead LUN Paths may cause issues with storage performance or be an indication of loss of redundancy"
 $Display = "Table"

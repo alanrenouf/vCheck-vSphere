@@ -5,7 +5,7 @@ $MapDiskRegionEvents = @($VIEvent | Where {$_.FullFormattedMessage -match "Map d
 $MapDiskRegionEvents
 
 $Title = "Map disk region event"
-$Header =  "Map disk region event (Last $VMsNewRemovedAge Day(s)) : $(@($MapDiskRegionEvents).count)"
+$Header = "Map disk region event (Last $VMsNewRemovedAge Day(s)) : $(@($MapDiskRegionEvents).count)"
 $Comments = "These may occur due to VCB issues, check <a href='http://kb.vmware.com/kb/1007331' target='_blank'>this article</a> for more details"
 $Display = "Table"
 $Author = "Alan Renouf"

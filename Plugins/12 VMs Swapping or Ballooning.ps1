@@ -8,7 +8,7 @@ $bs = $FullVM | Where {$_.runtime.PowerState -eq "PoweredOn" }| Select Name, @{N
 $bs
 
 $Title = "VMs Ballooning or Swapping"
-$Header =  "VMs Ballooning or Swapping : $(@($bs).count)"
+$Header = "VMs Ballooning or Swapping : $(@($bs).count)"
 $Comments = "Ballooning and swapping may indicate a lack of memory or a limit on a VM, this may be an indication of not enough memory in a host or a limit held on a VM, <a href='http://www.virtualinsanity.com/index.php/2010/02/19/performance-troubleshooting-vmware-vsphere-memory/' target='_blank'>further information is available here</a>."
 $Display = "Table"
 $Author = "Alan Renouf, Frederic Martin"

@@ -21,8 +21,8 @@ foreach ($clusview in $clusviews) {
 $cluswap | sort name
 
 $Title = "Host Swapfile datastores"
-$Header =  "Host Swapfile datastores not set : $(@($cluswap).count)"
-$Comments = "The following hosts are in a cluster which is set to store the swapfile in the datastore specified by the host but no location has been set on the host"
+$Header = "Host Swapfile datastores not set : $(@($cluswap).count)"
+$Comments = "The following hosts are in a cluster which is set to store the swap file in the datastore specified by the host but no location has been set on the host"
 $Display = "Table"
 $Author = "Alan Renouf"
 $PluginVersion = 1.2

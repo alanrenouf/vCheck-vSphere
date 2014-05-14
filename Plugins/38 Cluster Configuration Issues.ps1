@@ -17,7 +17,7 @@ foreach ($clusview in $clusviews) {
 $clualarms | sort name
 
 $Title = "Cluster Configuration Issues"
-$Header =  "Cluster(s) Config Issue(s): $(@($clualarms).Count)"
+$Header = "Cluster(s) Config Issue(s): $(@($clualarms).Count)"
 $Comments = "The following alarms have been registered against clusters in vCenter"
 $Display = "Table"
 $Author = "Alan Renouf"

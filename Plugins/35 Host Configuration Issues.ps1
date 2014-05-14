@@ -17,7 +17,7 @@ foreach ($HostsView in $HostsViews) {
 $hostcialarms | sort name
 
 $Title = "Host Configuration Issues"
-$Header =  "Host(s) Config Issue(s): $(@($hostcialarms).Count)"
+$Header = "Host(s) Config Issue(s): $(@($hostcialarms).Count)"
 $Comments = "The following configuration issues have been registered against Hosts in vCenter"
 $Display = "Table"
 $Author = "Alan Renouf"

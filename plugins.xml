@@ -882,7 +882,7 @@
     <name>Disconnecting from vCenter</name>
     <description>Disconnect plugin</description>
     <author>Alan Renouf</author>
-    <version>1.1</version>
+    <version>1.2</version>
     <category>vSphere</category>
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/999 VeryLastPlugin Used to Disconnect.ps1</href>
   </plugin>

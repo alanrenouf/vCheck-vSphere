@@ -30,7 +30,7 @@
 .NOTES 
    File Name  : vCheck.ps1 
    Author     : Alan Renouf - @alanrenouf
-   Version    : 6.21-alpha-1
+   Version    : 6.21-alpha-2
    
    Thanks to all who have commented on my blog to help improve this project
    all beta testers and previous contributors to this script.
@@ -55,11 +55,11 @@
    This parameter lets you specify an xml config file for this invokation
 #>
 param (
-   [Switch]$config,
-   [ValidateScript({Test-Path $_ -PathType 'Container'})]
-   [string]$Outputpath,
-   [ValidateScript({Test-Path $_ -PathType 'Leaf'})]
-   [string]$job
+	[Switch]$config,
+	[ValidateScript({Test-Path $_ -PathType 'Container'})]
+	[string]$Outputpath,
+	[ValidateScript({Test-Path $_ -PathType 'Leaf'})]
+	[string]$job
 )
 $Version = "6.20-alpha-1"
 $Date = Get-Date
@@ -74,23 +74,22 @@ function Write-CustomOut ($Details){
 
 <# Search $file_content for name/value pair with ID_Name and return value #>
 Function Get-ID-String ($file_content,$ID_name) {
-   if ($file_content | Select-String -Pattern "\$+$ID_name\s*=") {	
-      $value = (($file_content | Select-String -pattern "\$+${ID_name}\s*=").toString().split("=")[1]).Trim(' "')
-      return ( $value ) 
-   }
+	if ($file_content | Select-String -Pattern "\$+$ID_name\s*=") {	
+		$value = (($file_content | Select-String -pattern "\$+${ID_name}\s*=").toString().split("=")[1]).Trim(' "')
+		return ( $value ) 
+	}
 }
 
 <# Get basic information abount a plugin #>
 Function Get-PluginID ($Filename){
-   # Get the identifying information for a plugin script
-   $file = Get-Content $Filename
-   $Title = Get-ID-String $file "Title"
-   if ( !$Title ) { $Title = $Filename }
-   $PluginVersion = Get-ID-String $file "PluginVersion"
-   $Author = Get-ID-String $file "Author"
-   $Ver = "{0:N1}" -f $PluginVersion
+	# Get the identifying information for a plugin script
+	$file = Get-Content $Filename
+	$Title = Get-ID-String $file "Title"
+	if ( !$Title ) { $Title = $Filename }
+	$PluginVersion = "{0:N1}" -f (Get-ID-String $file "PluginVersion")
+	$Author = Get-ID-String $file "Author"
 
-   return @{"Title"=$Title; "Version"=$Ver; "Author"=$Author }		
+	return @{"Title"=$Title; "Version"=$PluginVersion; "Author"=$Author }
 }
 
 <# Run through settings for specified file, expects question on one line, and variable/value on following line #>
@@ -144,12 +143,12 @@ Function Invoke-Settings ($Filename, $GB) {
 }
 
 Function Get-CustomHTML {
-   param (
-      $Header, 
-      $HeaderImg
-   )
+	param (
+		$Header, 
+		$HeaderImg
+	)
 	$Report = $HTMLHeader -replace "_HEADER_", $Header
-   $Report = $Report -replace "_HEADERIMG_", $HeaderImg
+	$Report = $Report -replace "_HEADERIMG_", $HeaderImg
 	Return $Report
 }
 
@@ -206,25 +205,25 @@ Function Get-HTMLTable {
 							switch ($RuleScope) {
 								"Row"  { $XMLTable.table.tr[$RowN].SetAttribute($RuleActions[0], $RuleActions[1]) }
 								"Cell" {
-                           if ($RuleActions[0] -eq "cid") {
-                              # Do Image - create new XML node for img and clear #text
-                              $XMLTable.table.tr[$RowN].selectSingleNode("td[$($ColN+1)]")."#text" = ""
-                              $elem = $XMLTable.CreateElement("img")
-                              $elem.SetAttribute("src", ("cid:{0}" -f $RuleActions[1]))
-                              # Add img size if specified
-                              if ($RuleActions[2] -match "(\d+)x(\d+)") {
-                                 $elem.SetAttribute("width", $Matches[1])
-                                 $elem.SetAttribute("height", $Matches[2])
-                              }
-                              
-                              $XMLTable.table.tr[$RowN].selectSingleNode("td[$($ColN+1)]").AppendChild($elem) | Out-Null
-                              # Increment usage counter (so we don't have .bin attachments)
-                              Set-ReportResource $RuleActions[1]
-                           }
-                           else {
-                              $XMLTable.table.tr[$RowN].selectSingleNode("td[$($ColN+1)]").SetAttribute($RuleActions[0], $RuleActions[1]) 
-                           }
-                        }
+									if ($RuleActions[0] -eq "cid") {
+										# Do Image - create new XML node for img and clear #text
+										$XMLTable.table.tr[$RowN].selectSingleNode("td[$($ColN+1)]")."#text" = ""
+										$elem = $XMLTable.CreateElement("img")
+										$elem.SetAttribute("src", ("cid:{0}" -f $RuleActions[1]))
+										# Add img size if specified
+										if ($RuleActions[2] -match "(\d+)x(\d+)") {
+											$elem.SetAttribute("width", $Matches[1])
+											$elem.SetAttribute("height", $Matches[2])
+										}
+										
+										$XMLTable.table.tr[$RowN].selectSingleNode("td[$($ColN+1)]").AppendChild($elem) | Out-Null
+										# Increment usage counter (so we don't have .bin attachments)
+										Set-ReportResource $RuleActions[1]
+									}
+									else {
+										$XMLTable.table.tr[$RowN].selectSingleNode("td[$($ColN+1)]").SetAttribute($RuleActions[0], $RuleActions[1]) 
+									}
+								}
 							}
 						}
 					}
@@ -415,13 +414,13 @@ if ($job) {
    $PluginPaths = $PluginPaths | Sort-Object -unique
    
    # Get all plugins and test they are correct
-   $Plugins = @()
+   $vCheckPlugins = @()
    foreach ($plugin in $jobConfig.vCheck.plugins.plugin) {
       $testedPaths = 0
       foreach ($PluginPath in $PluginPaths) {        
          $testedPaths++
          if (Test-Path ("{0}\{1}" -f $PluginPath, $plugin)) {
-            $Plugins += Get-Item ("{0}\{1}" -f $PluginPath, $plugin)
+            $vCheckPlugins += Get-Item ("{0}\{1}" -f $PluginPath, $plugin)
             break;
          }
          # Plugin not found in any search path
@@ -432,13 +431,13 @@ if ($job) {
    }
    
    # if no valid plugins specified, fall back to default
-   if (!$Plugins) {
-      $Plugins = Get-ChildItem -Path $PluginPath -filter "*.ps1" | Sort Name
+   if (!$vCheckPlugins) {
+      $vCheckPlugins = Get-ChildItem -Path $PluginPath -filter "*.ps1" | Sort Name
    }
 }
 else {
    $PluginsFolder = $ScriptPath + "\Plugins\"
-   $Plugins = Get-ChildItem -Path $PluginsFolder -filter "*.ps1" | Sort Name
+   $vCheckPlugins = Get-ChildItem -Path $PluginsFolder -filter "*.ps1" | Sort Name
    $GlobalVariables = $ScriptPath + "\GlobalVariables.ps1"
 }
 
@@ -450,12 +449,12 @@ $SetupSetting = Invoke-Expression (($file[$SetupLine]).Split("="))[1]
 
 if ($SetupSetting -or $config) {
 	Clear-Host 
-   ($lang.GetEnumerator() | where {$_.Name -match "setupMsg[0-9]*"} | Sort-Object Name) | Foreach {
-      Write-Host -foreground $host.PrivateData.WarningForegroundColor -background $host.PrivateData.WarningBackgroundColor $_.value
-   }
+	($lang.GetEnumerator() | where {$_.Name -match "setupMsg[0-9]*"} | Sort-Object Name) | Foreach {
+		Write-Host -foreground $host.PrivateData.WarningForegroundColor -background $host.PrivateData.WarningBackgroundColor $_.value
+	}
 	
 	Invoke-Settings -Filename $GlobalVariables -GB $true
-	Foreach ($plugin in $Plugins) { 
+	Foreach ($plugin in $vCheckPlugins) { 
 		Invoke-Settings -Filename $plugin.Fullname
 	}
 }
@@ -490,54 +489,65 @@ if(!(Test-Path ($StylePath))) {
 #                                 Script logic                                 #
 ################################################################################
 # Start generating the report
-$TTRReport = @()
-$MyReport = Get-CustomHTML -Header "$Server vCheck"
-$MyReport += Get-CustomHeader0 ($Server)
+$PluginResult = @()
 
 Write-Host "`nBegin Plugin Processing" -foreground $host.PrivateData.WarningForegroundColor -background $host.PrivateData.WarningBackgroundColor
 # Loop over all enabled plugins
 $p = 0 
-$Plugins | Foreach {
-   $TableFormat = $null
-	$IDinfo = Get-PluginID $_.Fullname
-   $p++
-	Write-CustomOut ($lang.pluginStart -f $IDinfo["Title"], $IDinfo["Author"], $IDinfo["Version"], $p, $plugins.count)
-   $pluginStatus = ($lang.pluginStatus -f $p, $plugins.count, $_.Name)
-   Write-Progress -ID 1 -Activity $lang.pluginActivity -Status $pluginStatus -PercentComplete (100*$p/($plugins.count))
+$vCheckPlugins | Foreach {
+	$TableFormat = $null
+	$PluginInfo = Get-PluginID $_.Fullname
+	$p++
+	Write-CustomOut ($lang.pluginStart -f $PluginInfo["Title"], $PluginInfo["Author"], $PluginInfo["Version"], $p, $vCheckPlugins.count)
+	$pluginStatus = ($lang.pluginStatus -f $p, $vCheckPlugins.count, $_.Name)
+	Write-Progress -ID 1 -Activity $lang.pluginActivity -Status $pluginStatus -PercentComplete (100*$p/($vCheckPlugins.count))
 	$TTR = [math]::round((Measure-Command {$Details = . $_.FullName}).TotalSeconds, 2)
-	$TTRReport += New-Object PSObject -Property @{"Name"=$_.Name; "TimeToRun"=$TTR}	
-	$ver = "{0:N1}" -f $PluginVersion
-	Write-CustomOut ($lang.pluginEnd -f $IDinfo["Title"], $IDinfo["Author"], $IDinfo["Version"], $p, $plugins.count)
-   
-	If ($Details) {
-   	$MyReport += Get-CustomHeader $Header $Comments
-		If ($Display -eq "List"){
-				$MyReport += Get-HTMLList $Details
-			}
-		If ($Display -eq "Table") {
-			$MyReport += Get-HTMLTable $Details $TableFormat
-		}
-      $MyReport += Get-CustomHeaderClose
-	}
+
+	Write-CustomOut ($lang.pluginEnd -f $PluginInfo["Title"], $PluginInfo["Author"], $PluginInfo["Version"], $p, $vCheckPlugins.count)
+
+	$PluginResult += New-Object PSObject -Property @{"Title" = $PluginInfo["Title"];
+																	 "Author" = $PluginInfo["Author"];
+																	 "Version" = $PluginInfo["Version"];
+																	 "Details" = $Details;
+																	 "Display" = $Display;
+																	 "TableFormat" = $TableFormat;
+																	 "Header" = $Header;
+																	 "Comments" = $Comments;
+																	 "TimeToRun" = $TTR; }
 }
 Write-Progress -ID 1 -Activity $lang.pluginActivity -Status $lang.Complete -Completed
+
+################################################################################
+#                                    Output                                    #
+################################################################################
+# Wrap the HTML content with header and footer from style
+$MyReport = Get-CustomHTML -Header "$Server vCheck"
+$MyReport += Get-CustomHeader0 ($Server)
+
+Foreach ( $pr in $PluginResult) {
+	If ($pr.Details) {
+		$MyReport += Get-CustomHeader $pr.Header $pr.Comments
+
+		switch ($pr.Display) {
+			"List"  { $MyReport += Get-HTMLList $pr.Details }
+			"Table" { $MyReport += Get-HTMLTable $pr.Details $pr.TableFormat }
+		}
+		$MyReport += Get-CustomHeaderClose
+	}
+}
 
 # Add Time to Run detail for plugins - if specified in GlobalVariables.ps1
 if ($TimeToRun) {
    $Finished = Get-Date
    $MyReport += Get-CustomHeader ($lang.repTime -f [math]::round(($Finished - $Date).TotalMinutes,2), ($Finished.ToLongDateString()), ($Finished.ToLongTimeString())) ($lang.slowPlugins -f $PluginSeconds)
-   $TTRReport = $TTRReport | Where { $_.TimeToRun -gt $PluginSeconds } | Sort-Object TimeToRun -Descending
+   $TTRReport = $PluginResult | Where { $_.TimeToRun -gt $PluginSeconds } | Select Title, TimeToRun | Sort-Object TimeToRun -Descending
    $MyReport += Get-HTMLList $TTRReport 
    $MyReport += Get-CustomHeaderClose
 }
-   
+
 $MyReport += Get-CustomHeader0Close
 $MyReport += Get-CustomHTMLClose
 
-
-################################################################################
-#                                    Output                                    #
-################################################################################
 # Set the output filename - if one is specified use it, otherwise just use temp
 if ($Outputpath) {
 	$DateHTML = Get-Date -Format "yyyyMMddHH"

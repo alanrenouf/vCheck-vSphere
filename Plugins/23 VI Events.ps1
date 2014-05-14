@@ -5,8 +5,8 @@ $Result = @(Get-VIEvent -maxsamples $MaxSampleVIEvent -Start ($Date).AddDays(-$V
 $Result
 
 $Title = "Checking VI Events"
-$Header =  "Error Events (Last $VCEventAge Day(s)): $(@($Result).Count)"
-$Comments = "The Following Errors were logged in the vCenter Events tab, you may wish to investigate these"
+$Header = "Error Events (Last $VCEventAge Day(s)): $(@($Result).Count)"
+$Comments = "The following errors were logged in the vCenter Events tab, you may wish to investigate these"
 $Display = "Table"
 $Author = "Alan Renouf"
 $PluginVersion = 1.1

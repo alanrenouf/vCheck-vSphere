@@ -6,8 +6,8 @@ $Result = @($ESXiLockDown | Where { $_.LockedMode -eq $false })
 $Result
 
 $Title = "ESXi hosts which do not have Lockdown mode enabled"
-$Header =  "ESXi Hosts with Lockdown Mode not Enabled : $(@($Result).count)"
-$Comments = "The following ESXi Hosts do not have lockdown enabled, think about using Lockdown as an extra security feature."
+$Header = "ESXi Hosts with Lockdown Mode not Enabled : $(@($Result).count)"
+$Comments = "The following ESXi Hosts do not have lockdown enabled, think about using lockdown as an extra security feature."
 $Display = "Table"
 $Author = "Alan Renouf"
 $PluginVersion = 1.1

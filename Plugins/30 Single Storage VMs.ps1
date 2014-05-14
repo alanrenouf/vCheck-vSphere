@@ -10,7 +10,7 @@ $Result
 
 $Title = "Single Storage VMs"
 $Header = "VMs stored on non shared datastores: $(@($Result).Count)"
-$Comments = "The following VMs are located on storage which is only accessible by 1 host, these will not be compatible with VMotion and may be disconnected in the event of host failure"
+$Comments = "The following VMs are located on storage which is only accessible by 1 host, these will not be compatible with vMotion and may be disconnected in the event of host failure"
 $Display = "Table"
 $Author = "Alan Renouf, Frederic Martin"
 $PluginVersion = 1.3

@@ -14,8 +14,8 @@ Foreach ($CHKVM in $FullVM){
 $VMFolder
 
 $Title = "VMs in inconsistent folders"
-$Header =  "VMs in Inconsistent folders $(@($VMFolder).Count)"
-$Comments = "The Following VM's are not stored in folders consistent to their names, this may cause issues when trying to locate them from the datastore manually"
+$Header = "VMs in Inconsistent folders $(@($VMFolder).Count)"
+$Comments = "The following VMs are not stored in folders consistent to their names, this may cause issues when trying to locate them from the datastore manually"
 $Display = "Table"
 $Author = "Alan Renouf"
 $PluginVersion = 1.1

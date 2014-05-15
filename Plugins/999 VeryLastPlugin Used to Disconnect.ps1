@@ -7,11 +7,9 @@ If ($VIConnection) {
 }
 
 $Title = "Disconnecting from vCenter"
+$Header = "Disconnects from vCenter"
+$Comments = "Disconnect plugin"
 $Display = "None"
 $Author = "Alan Renouf"
 $PluginVersion = 1.1
-$Header =  "Disconnects from vCenter"
-$Comments = "Disconnect plugin"
-$Display = "None"
-
 $PluginCategory = "vSphere"

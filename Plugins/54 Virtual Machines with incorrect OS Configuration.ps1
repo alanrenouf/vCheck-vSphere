@@ -11,7 +11,7 @@ $Result = @( $FullVM |`
 $Result
  
 $Title = "Virtual machines with incorrect OS configuration"
-$Header =  "Virtual machines with incorrect OS configuration : $(@($Result).Count)"
+$Header = "Virtual machines with incorrect OS configuration : $(@($Result).Count)"
 $Comments = "The following virtual machines have an installed OS that is different from the configured OS. This can impact the performance of the virtual machine."
 $Display = "Table"
 $Author = "Robert van den Nieuwendijk"

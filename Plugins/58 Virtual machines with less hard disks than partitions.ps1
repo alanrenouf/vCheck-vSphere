@@ -8,7 +8,7 @@ $Result = @($FullVM | `
 $Result
 
 $Title = "Virtual machines with less hard disks than partitions"
-$Header =  "Virtual machines with less hard disks than partitions : $(@($Result).count)"
+$Header = "Virtual machines with less hard disks than partitions : $(@($Result).count)"
 $Comments = "Virtual machines with less hard disks than partitions probably have more than one partition on a hard disk."
 $Display = "Table"
 $Author = "Robert van den Nieuwendijk"

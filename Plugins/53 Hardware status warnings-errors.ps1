@@ -38,7 +38,7 @@ foreach ($HostsView in ($HostsViews|?{$_.runtime.connectionstate -eq "Connected"
 $HWalarms
 
 $Title = "Hardware status warnings/errors"
-$Header =  "Hardware status warnings/errors"
+$Header = "Hardware status warnings/errors"
 $Comments = "Details can be found in the Hardware Status tab"
 $Display = "Table"
 $Author = "Raphael Schitz"

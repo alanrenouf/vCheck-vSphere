@@ -3,7 +3,7 @@
 
 # Note: This plugin needs the vCenter Update Manager PowerCLI snap-in installed
 # https://communities.vmware.com/community/vmtn/automationtools/powercli/updatemanager
-# (Current version 5.1 locks up in powershell v3; use "-version 2" when launching.)
+# (Current version 5.1 locks up in PowerShell v3; use "-version 2" when launching.)
 
 $Results = @()
 
@@ -21,7 +21,7 @@ If (Get-PSSnapin Vmware.VumAutomation -ErrorAction SilentlyContinue) {
 $Results
 
 $Title = "Missing ESX(i) updates and patches"
-$Header =  "Missing ESX(i) updates and patches: $(@($Results).Count)"
+$Header = "Missing ESX(i) updates and patches: $(@($Results).Count)"
 $Comments = "The following updates and/or patches are not applied."
 $Display = "Table"
 $Author = "Luc Dekens"

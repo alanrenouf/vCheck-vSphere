@@ -12,10 +12,9 @@ foreach ($VMHost in $VMH) {
 
 
 $Title = "Network redundancy lost"
-$Header =  "Network redundancy lost: $(@($Result).Count)"
+$Header = "Network redundancy lost: $(@($Result).Count)"
 $Comments = "The following Hosts have lost network redundancy"
 $Display = "Table"
 $Author = "Olivier TABUT"
 $PluginVersion = 1.1
 $PluginCategory = "vSphere"
-

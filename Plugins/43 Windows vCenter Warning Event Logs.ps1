@@ -27,7 +27,7 @@ If (! $VCSA) {
 }
 
 $Title = "Windows vCenter Warning Event Logs"
-$Header =  "$VIServer Event Logs ($VCEvntlgAge day(s)): $(@($WMI).Count)"
+$Header = "$VIServer Event Logs ($VCEvntlgAge day(s)): $(@($WMI).Count)"
 $Comments = "The following warnings were found in the vCenter Event Logs, you may wish to check these further"
 $Display = "Table"
 $Author = "Alan Renouf"

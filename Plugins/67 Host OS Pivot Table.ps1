@@ -19,7 +19,7 @@ foreach ( $hosname in $HostOSVers.Keys | sort) {
 $myCol | sort Count -desc
 
 $Title = "Host Build versions in use"
-$Header =  "Host Build versions in use"
+$Header = "Host Build versions in use"
 $Comments = "The following host builds are in use in this vCenter"
 $Display = "Table"
 $Author = "Frederic Martin"

@@ -6,7 +6,7 @@ $Result = @( $Clusters | Where-Object {-not $_.HAEnabled} | Select-Object -Prope
 $Result
  
 $Title = "Clusters with HA disabled"
-$Header =  "Clusters with HA disabled : $(@($Result).Count)"
+$Header = "Clusters with HA disabled : $(@($Result).Count)"
 $Comments = "The following clusters have HA disabled. This will impact your disaster recovery."
 $Display = "Table"
 $Author = "Robert van den Nieuwendijk"

@@ -25,7 +25,7 @@ $RPOviolationMins = 240
 # SRM RPO Violations: Only look for RPO events on VMs with these names: (regex)
 $VMNameRegex =""
 # SRM RPO Violations: Report on unresolved RPO violations only?
-$ActiveViolationsOnly =$true
+$ActiveViolationsOnly = $true
 # End of Settings
  
 # Changelog
@@ -102,11 +102,11 @@ if ($ActiveViolationsOnly) {
  
     }
   
-## output VMs that have exeeded their RPO by $RPOviolationMins, based on defined criteria
+## output VMs that have exceeded their RPO by $RPOviolationMins, based on defined criteria
 $Results
  
 $Title = "Site Recovery Manager - RPO Violation Report"
-$Header =  "Site Recovery Manager - RPO Violations: $(@($Results).count)"
+$Header = "Site Recovery Manager - RPO Violations: $(@($Results).count)"
 $Comments = "This is a customizable report of RPO violations found in the vCenter event log."
 $Display = "Table"
 $Author = "Joel Gibson, based on work by Alan Renouf"

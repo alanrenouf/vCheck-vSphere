@@ -13,7 +13,7 @@ if ($IncludeMaintenance -eq $false) {
 $AlarmActionsEnabled
 
 $Title = "Hosts with Alarm disabled"
-$Header =  "Hosts with Alarms disabled : $(@($AlarmActionsEnabled).Count)"
+$Header = "Hosts with Alarms disabled : $(@($AlarmActionsEnabled).Count)"
 $Comments = "The following Hosts have Alarm disabled. This may impact the Alarming of your infrastructure."
 $Display = "Table"
 $Author = "Denis Gauthier"

@@ -73,7 +73,7 @@ If (! $VCSA) {
 }
 
 $Title = "VC Services"
-$Header =  "$VIServer Service Details: $(@($Results).Count)"
+$Header = "$VIServer Service Details: $(@($Results).Count)"
 $Comments = "The following vCenter Services are not in the required state"
 $Display = "Table"
 $Author = "Alan Renouf"

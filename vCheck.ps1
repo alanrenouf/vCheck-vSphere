@@ -546,7 +546,7 @@ if ($Outputpath) {
 	$Filename = $ArchiveFilePath + "\" + $VIServer + "_vCheck_" + $DateHTML + ".htm"
 }
 else {
-   $Filename = $Env:TEMP + "\" + $Server + "vCheck" + "_" + $Date.Day + "-" + $Date.Month + "-" + $Date.Year + ".htm"
+   $Filename = $Env:TEMP + "\" + $Server + "_vCheck_" + $Date.Day + "-" + $Date.Month + "-" + $Date.Year + ".htm"
 }
 
 # Always generate the report with embedded images

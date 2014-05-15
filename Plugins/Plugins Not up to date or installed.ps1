@@ -1,6 +1,6 @@
 # Start of Settings 
 # If you use a proxy to access the internet please specify the proxy address here, for example http://127.0.0.1:3128 else use $false 
-$proxy ="$false"
+$proxy = "$false"
 # End of Settings
 
 # Changelog
@@ -17,7 +17,7 @@ if ($proxy -eq "$false"){
 $NotInstalled
 
 $Title = "Plugins not up to date or not installed"
-$Header =  "Plugins not up to date or not installed: $(@($NotInstalled).count)"
+$Header = "Plugins not up to date or not installed: $(@($NotInstalled).count)"
 $Comments = "The following Plugins are not up to date or not installed"
 $Display = "Table"
 $Author = "Alan Renouf, Jake Robinson, Frederic Martin"

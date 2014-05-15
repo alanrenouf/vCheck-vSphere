@@ -1,4 +1,4 @@
-﻿# Start of Settings 
+# Start of Settings 
 # End of Settings
 
 $OutputPhantomSnapshots = @()
@@ -33,7 +33,7 @@ ForEach ($theVM in $VM){
 $OutputPhantomSnapshots
 
 $Title = "Find Phantom Snapshots"
-$Header =  "VM's with Phantom Snapshots : $(@($OutputPhantomSnapshots).count)"
+$Header = "VM's with Phantom Snapshots : $(@($OutputPhantomSnapshots).count)"
 $Comments = "The following VM's have Phantom Snapshots"
 $Display = "Table"
 $Author = "Mads Fog Albrechtslund"

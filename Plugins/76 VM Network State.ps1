@@ -16,8 +16,8 @@ foreach ($myVM in $FullVM | ?{$_.runtime.powerState -eq "PoweredOn"}) {
 
 $VMsNetworkNotConnected
 
-$Title = "VM - is my network connected ?"
-$Header =  "VM - is my network connected ?"
+$Title = "VM - is my network connected?"
+$Header = "VM - is my network connected?"
 $Comments = "Check if all network cards are connected"
 $Display = "Table"
 $Author = "Cyril Epiney"

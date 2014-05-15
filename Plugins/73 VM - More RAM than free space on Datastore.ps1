@@ -13,7 +13,7 @@ $Result = @($vmInfo | Where {($_.FreeSpaceMB -ne $null) -and ($_.MemoryMB -gt $_
 $Result
 
 $Title = "More RAM than free space on Datastore"
-$Header =  "More RAM than free space on Datastore: $(@($Result).Count)"
+$Header = "More RAM than free space on Datastore: $(@($Result).Count)"
 $Comments = "The following VMs can't vMotion because they have more RAM than free space on datastore"
 $Display = "Table"
 $Author = "Olivier TABUT, Bob Cote"

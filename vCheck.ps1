@@ -490,54 +490,67 @@ if(!(Test-Path ($StylePath))) {
 #                                 Script logic                                 #
 ################################################################################
 # Start generating the report
-$TTRReport = @()
-$MyReport = Get-CustomHTML -Header "$Server vCheck"
-$MyReport += Get-CustomHeader0 ($Server)
+$PluginResult = @()
 
 Write-Host "`nBegin Plugin Processing" -foreground $host.PrivateData.WarningForegroundColor -background $host.PrivateData.WarningBackgroundColor
 # Loop over all enabled plugins
 $p = 0 
 $vCheckPlugins | Foreach {
-   $TableFormat = $null
-	$IDinfo = Get-PluginID $_.Fullname
-   $p++
-	Write-CustomOut ($lang.pluginStart -f $IDinfo["Title"], $IDinfo["Author"], $IDinfo["Version"], $p, $vCheckPlugins.count)
-   $pluginStatus = ($lang.pluginStatus -f $p, $vCheckPlugins.count, $_.Name)
-   Write-Progress -ID 1 -Activity $lang.pluginActivity -Status $pluginStatus -PercentComplete (100*$p/($vCheckPlugins.count))
+	$TableFormat = $null
+	$PluginInfo = Get-PluginID $_.Fullname
+	$p++
+	Write-CustomOut ($lang.pluginStart -f $PluginInfo["Title"], $PluginInfo["Author"], $PluginInfo["Version"], $p, $vCheckPlugins.count)
+	$pluginStatus = ($lang.pluginStatus -f $p, $vCheckPlugins.count, $_.Name)
+	Write-Progress -ID 1 -Activity $lang.pluginActivity -Status $pluginStatus -PercentComplete (100*$p/($vCheckPlugins.count))
 	$TTR = [math]::round((Measure-Command {$Details = . $_.FullName}).TotalSeconds, 2)
-	$TTRReport += New-Object PSObject -Property @{"Name"=$_.Name; "TimeToRun"=$TTR}	
-	$ver = "{0:N1}" -f $PluginVersion
-	Write-CustomOut ($lang.pluginEnd -f $IDinfo["Title"], $IDinfo["Author"], $IDinfo["Version"], $p, $vCheckPlugins.count)
-   
-	If ($Details) {
-   	$MyReport += Get-CustomHeader $Header $Comments
-		If ($Display -eq "List"){
-				$MyReport += Get-HTMLList $Details
-			}
-		If ($Display -eq "Table") {
-			$MyReport += Get-HTMLTable $Details $TableFormat
-		}
-      $MyReport += Get-CustomHeaderClose
-	}
+
+	Write-CustomOut ($lang.pluginEnd -f $PluginInfo["Title"], $PluginInfo["Author"], $PluginInfo["Version"], $p, $vCheckPlugins.count)
+
+	$PluginResult += New-Object PSObject -Property @{"Title" = $PluginInfo["Title"];
+																	 "Author" = $PluginInfo["Author"];
+																	 "Version" = $PluginInfo["Version"];
+																	 "Details" = $Details;
+																	 "Display" = $Display;
+																	 "TableFormat" = $TableFormat;
+																	 "Header" = $Header;
+																	 "Comments" = $Comments;
+																	 "TimeToRun" = $TTR; }
 }
 Write-Progress -ID 1 -Activity $lang.pluginActivity -Status $lang.Complete -Completed
+
+################################################################################
+#                                    Output                                    #
+################################################################################
+# Wrap the HTML content with header and footer from style
+$MyReport = Get-CustomHTML -Header "$Server vCheck"
+$MyReport += Get-CustomHeader0 ($Server)
+
+$p=1
+Foreach ( $pr in $PluginResult) {
+	If ($pr.Details) {
+		$MyReport += Get-CustomHeader $pr.Header $pr.Comments
+
+		switch ($pr.Display) {
+			"List"  { $MyReport += Get-HTMLList $pr.Details }
+			"Table" { $MyReport += Get-HTMLTable $pr.Details $pr.TableFormat }
+		}
+		$MyReport += Get-CustomHeaderClose
+		$p++
+	}
+}
 
 # Add Time to Run detail for plugins - if specified in GlobalVariables.ps1
 if ($TimeToRun) {
    $Finished = Get-Date
    $MyReport += Get-CustomHeader ($lang.repTime -f [math]::round(($Finished - $Date).TotalMinutes,2), ($Finished.ToLongDateString()), ($Finished.ToLongTimeString())) ($lang.slowPlugins -f $PluginSeconds)
-   $TTRReport = $TTRReport | Where { $_.TimeToRun -gt $PluginSeconds } | Sort-Object TimeToRun -Descending
+   $TTRReport = $PluginResult | Where { $_.TimeToRun -gt $PluginSeconds } | Select Title, TimeToRun | Sort-Object TimeToRun -Descending
    $MyReport += Get-HTMLList $TTRReport 
    $MyReport += Get-CustomHeaderClose
 }
-   
+
 $MyReport += Get-CustomHeader0Close
 $MyReport += Get-CustomHTMLClose
 
-
-################################################################################
-#                                    Output                                    #
-################################################################################
 # Set the output filename - if one is specified use it, otherwise just use temp
 if ($Outputpath) {
 	$DateHTML = Get-Date -Format "yyyyMMddHH"

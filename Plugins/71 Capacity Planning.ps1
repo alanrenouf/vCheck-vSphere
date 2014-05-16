@@ -58,7 +58,7 @@ foreach ($cluv in ($clusviews | Sort Name)) {
 $capacityinfo | Sort ClusterName
 
 $Title = "QuickStats Capacity Planning"
-$Header =  "QuickStats Capacity Planning"
+$Header = "QuickStats Capacity Planning"
 $Comments = "The following gives brief capacity information for each cluster based on QuickStats CPU/Mem usage and counting for HA failover requirements"
 $Display = "Table"
 $Author = "Raphael Schitz, Frederic Martin"

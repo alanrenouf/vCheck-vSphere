@@ -5,8 +5,8 @@ $HAmonitor = $clusviews | where {$_.Configuration.DasConfig.HostMonitoring -eq "
 $HAmonitor
 
 $Title = "Find clusters that have HA host monitoring disabled"
-$Header =  "Clusters with HA host monitoring disabled: $(@($HAmonitor).count)"
-$Comments = "The following clusters have HA host monitoring dsiabled"
+$Header = "Clusters with HA host monitoring disabled: $(@($HAmonitor).count)"
+$Comments = "The following clusters have HA host monitoring disabled"
 $Display = "Table"
 $Author = "David Chung"
 $PluginVersion = 1.1

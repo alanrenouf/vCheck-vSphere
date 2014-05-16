@@ -1,7 +1,6 @@
 # Start of Settings 
 # End of Settings 
 
-
 $HostsVer = @()
 foreach ($clusview in $clusviews) {
 	$HostsVerMiss = $HostsViews | ?{ $_.Parent -match $clusview.MoRef} | select @{N="FullName";E={$_.Config.Product.FullName}} -Unique
@@ -23,7 +22,7 @@ foreach ($clusview in $clusviews) {
 $HostsVer | Sort Cluster
 
 $Title = "Cluster Node version"
-$Header =  "Cluster Node version"
+$Header = "Cluster Node version"
 $Comments = "Display per cluster nodes version if unique or mismatch"
 $Display = "Table"
 $Author = "Raphael Schitz, Frederic Martin"

@@ -1,6 +1,6 @@
 # Start of Settings
 # Do not report on any VMs who are defined here (regex)
-$VMTDoNotInclude =" VM1_*|VM2_*"
+$VMTDoNotInclude = "VM1_*|VM2_*"
 # Maximum number of VMs shown
 $VMTMaxReturn = 30
 # End of Settings
@@ -17,7 +17,7 @@ $Return
 
 
 $Title = "VM Tools Not Up to Date"
-$Header =  "VM Tools Not Up to Date: $(@($Result).Count)"
+$Header = "VM Tools Not Up to Date: $(@($Result).Count)"
 $Comments = "The following VMs are running an older version of Tools than is available on its Host (Max Shown: $VMTMaxReturn Exceptions: $VMTDoNotInclude)"
 $Display = "Table"
 $Author = "Alan Renouf, Shawn Masterson"

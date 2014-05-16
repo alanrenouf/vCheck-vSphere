@@ -5,7 +5,7 @@ $Results = $FullVM | ?{$_.snapshot | %{$_.rootsnapshotlist | ?{$_.name -contains
 $Results
 
 $Title = "VCB/Veeam/NetBackup Garbage"
-$Header =  "VCB/Veeam/Netbackup Garbage: $(@($Results).Count)"
+$Header = "VCB/Veeam/Netbackup Garbage: $(@($Results).Count)"
 $Comments = "The following snapshots have been left over from using VCB/Veeam or Netbackup, you may wish to investigate if these are still needed"
 $Display = "Table"
 $Author = "Alan Renouf, Frederic Martin"

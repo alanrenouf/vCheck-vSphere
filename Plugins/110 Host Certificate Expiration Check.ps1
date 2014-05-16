@@ -87,5 +87,6 @@ $Title = "Hosts with Upcoming Certificate Expiration"
 $Header = "Hosts with upcoming Certificate Expirations: $WarningDays Days"
 $Comments = "The following hosts have certificates that will expire soon and will need to be replaced."
 $Display = "Table"
+$Author = ""
 $PluginVersion = 1.1
 $PluginCategory = "vSphere"

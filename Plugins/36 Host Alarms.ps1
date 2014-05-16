@@ -21,7 +21,7 @@ foreach ($HostsView in $HostsViews){
 @($hostsalarms |sort Object)
     
 $Title = "Host Alarms"
-$Header =  "Host(s) Alarm(s): $(@($hostsalarms).Count)"
+$Header = "Host(s) Alarm(s): $(@($hostsalarms).Count)"
 $Comments = "The following alarms have been registered against hosts in vCenter"
 $Display = "Table"
 $Author = "Alan Renouf, John Sneddon"

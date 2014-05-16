@@ -6,7 +6,7 @@ $Result = @( $Clusters | Where-Object {-not $_.DRSEnabled} | Select-Object -Prop
 $Result
  
 $Title = "Clusters with DRS disabled"
-$Header =  "Clusters with DRS disabled : $(@($Result).Count)"
+$Header = "Clusters with DRS disabled : $(@($Result).Count)"
 $Comments = "The following clusters have DRS disabled. This may impact the performance of your cluster."
 $Display = "Table"
 $Author = "Robert van den Nieuwendijk"

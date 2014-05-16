@@ -13,9 +13,9 @@ Function Get-VmSize($vmname) {
 	$searchSpec = New-Object VMware.Vim.HostDatastoreBrowserSearchSpec
 	$searchSpec.details = $fileQueryFlags
 	$vmname | ForEach {
-		#Create an array with the vm's directories
+		#Create an array with the VM's directories
 		$VmDirs += $_.Config.Files.SnapshotDirectory.split("/")[0]
-		#Add directories of the vm's virtual disk files
+		#Add directories of the VM's virtual disk files
 		ForEach ($disk in $_.Layout.Disk) {
 			ForEach ($diskfile in $disk.diskfile) {
 				$VmDirs += $diskfile.split("/")[0]
@@ -98,7 +98,7 @@ Function Get-hypersnapshot($FullVM) {
 Get-hypersnapshot($FullVM) | sort OverSize -Descending
 
 $Title = "Snapshots Oversize"
-$Header =  "Snapshots Oversize"
+$Header = "Snapshots Oversize"
 $Comments = ""
 $Display = "Table"
 $Author = "Raphael Schitz"

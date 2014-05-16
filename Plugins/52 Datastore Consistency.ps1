@@ -23,7 +23,7 @@ if ($Clusters -ne $null) {
 @($problemDatastores  | Where { $_.Datastore -notmatch $DSDoNotInclude })
 
 $Title = "Datastore Consistency"
-$Header =  "Datastores not connected to every host in cluster"
+$Header = "Datastores not connected to every host in cluster"
 $Comments = "Virtual Machines residing on these datastores will not be able to run on all hosts in the cluster"
 $Display = "Table"
 $Author = "Robert Sexstone"

@@ -13,7 +13,7 @@ foreach ($vmguest in ($FullVM | where ({ $_.Guest.GuestFullname -ne $NULL -AND $
 $wrongOS | Sort Name
 
 $Title = "Guests with wrong OS"
-$Header =  "Guests with wrong OS"
+$Header = "Guests with wrong OS"
 $Comments = "The following virtual machines contain operating systems other than the ones selected in the VM configuration."
 $Display = "Table"
 $Author = "Frederic Martin"

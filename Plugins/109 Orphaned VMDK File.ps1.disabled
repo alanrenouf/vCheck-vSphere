@@ -40,7 +40,7 @@ $excludeVMPathRegex =""
 
 # Begin code block obtained from: http://virtuallyjason.blogspot.ca/2013/08/orphaned-vmdk-files.html
 
-# Powershell script to discover VMDK files that are not referenced in any VM's VMX file.
+# PowerShell script to discover VMDK files that are not referenced in any VM's VMX file.
 # Also detects VMDKs from machines that need snapshot consolidation (from differentials that exist but are not part of the tree).
 # Author: HJA van Bokhoven
 # Modifications: LucD, and Joel Gibson
@@ -117,7 +117,7 @@ if ($excludeVMPathRegex -ne "") {
 $Results
 
 $Title = "Orphaned VMDK File Plugin"
-$Header =  "Orphaned VMDK Files: $(@($Results).count)"
+$Header = "Orphaned VMDK Files: $(@($Results).count)"
 $Comments = "This plugin can be used to generate a custom report of orphaned VMDK files. Note: This plugin can take quite a while to run, depending on the environment."
 $Display = "Table"
 $Author = "Joel Gibson et al."

@@ -19,7 +19,7 @@ foreach ($VMView in $FullVM){
 $vmsalarms | sort Object
 
 $Title = "VM Alarms"
-$Header =  "VM(s) Alarm(s): $(@($vmsalarms).Count)"
+$Header = "VM(s) Alarm(s): $(@($vmsalarms).Count)"
 $Comments = "The following alarms have been registered against VMs in vCenter"
 $Display = "Table"
 $Author = "Alan Renouf"

@@ -8,7 +8,7 @@ ConvertFrom-StringData @'
    setupMsg07  = To get usage information, please use Get-Help vCheck.ps1
    setupMsg08  =
    setupMsg09  = Please complete the following questions or hit Enter to accept the current setting
-   setupMsg10  = After completing ths wizard the vCheck report will be displayed on the screen.
+   setupMsg10  = After completing this wizard the vCheck report will be displayed on the screen.
    setupMsg11  =
    resFileWarn = Image File not found for {0}!
    pluginInvalid = Plugin does not exist: {0}

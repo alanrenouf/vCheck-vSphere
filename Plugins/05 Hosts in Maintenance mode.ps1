@@ -5,8 +5,8 @@ $MaintHosts = @($VMH | where {$_.ConnectionState -match "Maintenance"} | Select 
 $MaintHosts
 
 $Title = "Hosts in Maintenance Mode"
-$Header =  "Hosts in Maintenance Mode : $(@($MaintHosts).count)"
-$Comments = "Hosts held in Maintenance mode will not be running any virtual machine worloads, check the below Hosts are in an expected state"
+$Header = "Hosts in Maintenance Mode : $(@($MaintHosts).count)"
+$Comments = "Hosts held in Maintenance mode will not be running any virtual machine workloads, check the below Hosts are in an expected state"
 $Display = "Table"
 $Author = "Alan Renouf"
 $PluginVersion = 1.1

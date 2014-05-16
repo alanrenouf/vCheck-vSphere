@@ -54,7 +54,7 @@ foreach ($Profile in $HostProfiles) {
 }
 
 $Title = "Host Profile Compliance"
-$Header =  "List of host profiles and compliance status"
+$Header = "List of host profiles and compliance status"
 $Comments = ""
 $Display = "Table"
 $Author = "John Sneddon"

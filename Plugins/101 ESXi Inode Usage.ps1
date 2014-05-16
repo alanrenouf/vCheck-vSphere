@@ -3,17 +3,14 @@
 $InodeThreshold = 40
 # End of Settings
 
-
 # Changelog
 ## 1.1 : Added filter for connected Hosts only
-
 
 $Result = @($VMH | Where-Object {$_.Version -match "^5\." -and ($_.ConnectionState -eq "Connected" -or $_.ConnectionState -eq "Maintenance")} | Sort-Object | ForEach-Object {
 	$EsxCli = Get-EsxCli -VMHost $_
 	$EsxCli.system.visorfs.get() | Where-Object {[int]$_.FreeInodePercent -lt $InodeThreshold} | Add-Member -MemberType NoteProperty -Name VMHost -Value $_.Name -PassThru | Select-Object VMHost, FreeInodePercent, TotalInodes, UsedInodes
 })
 $Result
-
 
 $Title = "ESXi Inode Exhaustion"
 $Header = "Hosts with few free Inodes (< ${InodeThreshold}%) on the local ESXi visorfs: $(@($Result).count)"

@@ -7,7 +7,7 @@ if ($VIVersion -ge 5) {
 }
 
 $Title = "Datastores in Maintenance Mode"
-$Header =  "Datastores in Maintenance Mode : $(@($MaintDatastores).count)"
+$Header = "Datastores in Maintenance Mode : $(@($MaintDatastores).count)"
 $Comments = "Datastore held in Maintenance mode will not be hosting any virtual machine, check the below Datastore are in an expected state"
 $Display = "Table"
 $Author = "Frederic Martin"

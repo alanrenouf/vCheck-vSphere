@@ -31,7 +31,7 @@ foreach ($eachVM in $FullVM) {
 $VMFolder
 
 $Title = "VMs in uncontrolled snapshot mode"
-$Header =  "VMs in uncontrolled snapshot mode: $(@($Result).Count)"
+$Header = "VMs in uncontrolled snapshot mode: $(@($Result).Count)"
 $Comments = "The following VMs are in snapshot mode, but vCenter isn't aware of it. See http://kb.vmware.com/kb/1002310"
 $Display = "Table"
 $Author = "Rick Glover, Matthias Koehler"

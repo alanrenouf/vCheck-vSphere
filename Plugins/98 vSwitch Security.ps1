@@ -81,7 +81,7 @@ else {
 }
 
 $Title = "vSwitch Security"
-$Header =  "vSwitch and portgroup security settings"
+$Header = "vSwitch and portgroup security settings"
 $Comments = "All security options for standard vSwitches should be set to REJECT.  Distributed vSwitches may require <em>ForgedTrasmits</em> in the default portgroup but should be disabled in other VM Network portgroups unless expressly required."
 $Display = "Table"
 $Author = "Justin Mercier, Sam McGeown, John Sneddon"

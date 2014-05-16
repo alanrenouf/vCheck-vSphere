@@ -415,13 +415,13 @@ if ($job) {
    $PluginPaths = $PluginPaths | Sort-Object -unique
    
    # Get all plugins and test they are correct
-   $Plugins = @()
+   $vCheckPlugins = @()
    foreach ($plugin in $jobConfig.vCheck.plugins.plugin) {
       $testedPaths = 0
       foreach ($PluginPath in $PluginPaths) {        
          $testedPaths++
          if (Test-Path ("{0}\{1}" -f $PluginPath, $plugin)) {
-            $Plugins += Get-Item ("{0}\{1}" -f $PluginPath, $plugin)
+            $vCheckPlugins += Get-Item ("{0}\{1}" -f $PluginPath, $plugin)
             break;
          }
          # Plugin not found in any search path
@@ -432,13 +432,13 @@ if ($job) {
    }
    
    # if no valid plugins specified, fall back to default
-   if (!$Plugins) {
-      $Plugins = Get-ChildItem -Path $PluginPath -filter "*.ps1" | Sort Name
+   if (!$vCheckPlugins) {
+      $vCheckPlugins = Get-ChildItem -Path $PluginPath -filter "*.ps1" | Sort Name
    }
 }
 else {
    $PluginsFolder = $ScriptPath + "\Plugins\"
-   $Plugins = Get-ChildItem -Path $PluginsFolder -filter "*.ps1" | Sort Name
+   $vCheckPlugins = Get-ChildItem -Path $PluginsFolder -filter "*.ps1" | Sort Name
    $GlobalVariables = $ScriptPath + "\GlobalVariables.ps1"
 }
 
@@ -455,7 +455,7 @@ if ($SetupSetting -or $config) {
    }
 	
 	Invoke-Settings -Filename $GlobalVariables -GB $true
-	Foreach ($plugin in $Plugins) { 
+	Foreach ($plugin in $vCheckPlugins) { 
 		Invoke-Settings -Filename $plugin.Fullname
 	}
 }
@@ -497,17 +497,17 @@ $MyReport += Get-CustomHeader0 ($Server)
 Write-Host "`nBegin Plugin Processing" -foreground $host.PrivateData.WarningForegroundColor -background $host.PrivateData.WarningBackgroundColor
 # Loop over all enabled plugins
 $p = 0 
-$Plugins | Foreach {
+$vCheckPlugins | Foreach {
    $TableFormat = $null
 	$IDinfo = Get-PluginID $_.Fullname
    $p++
-	Write-CustomOut ($lang.pluginStart -f $IDinfo["Title"], $IDinfo["Author"], $IDinfo["Version"], $p, $plugins.count)
-   $pluginStatus = ($lang.pluginStatus -f $p, $plugins.count, $_.Name)
-   Write-Progress -ID 1 -Activity $lang.pluginActivity -Status $pluginStatus -PercentComplete (100*$p/($plugins.count))
+	Write-CustomOut ($lang.pluginStart -f $IDinfo["Title"], $IDinfo["Author"], $IDinfo["Version"], $p, $vCheckPlugins.count)
+   $pluginStatus = ($lang.pluginStatus -f $p, $vCheckPlugins.count, $_.Name)
+   Write-Progress -ID 1 -Activity $lang.pluginActivity -Status $pluginStatus -PercentComplete (100*$p/($vCheckPlugins.count))
 	$TTR = [math]::round((Measure-Command {$Details = . $_.FullName}).TotalSeconds, 2)
 	$TTRReport += New-Object PSObject -Property @{"Name"=$_.Name; "TimeToRun"=$TTR}	
 	$ver = "{0:N1}" -f $PluginVersion
-	Write-CustomOut ($lang.pluginEnd -f $IDinfo["Title"], $IDinfo["Author"], $IDinfo["Version"], $p, $plugins.count)
+	Write-CustomOut ($lang.pluginEnd -f $IDinfo["Title"], $IDinfo["Author"], $IDinfo["Version"], $p, $vCheckPlugins.count)
    
 	If ($Details) {
    	$MyReport += Get-CustomHeader $Header $Comments

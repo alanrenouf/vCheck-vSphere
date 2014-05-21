@@ -5,6 +5,13 @@ $Colour2 ="1D6325"
 # Use the following area to define the Title text color
 $TitleTxtColour ="FFFFFF"
 
+# Define Chart Colours
+$ChartColours = @("377C2B", "0A77BA", "1D6325", "89CBE1")
+$ChartBackground = "FFFFFF"
+
+# Set Chart dimensions (WidthxHeight)
+$ChartSize = "200x200"
+
 # Header Images
 Add-ReportResource "Header-vCheck" ($StylePath + "\Header.jpg") -Used $true
 Add-ReportResource "Header-VMware" ($StylePath + "\Header-vmware.png") -Used $true

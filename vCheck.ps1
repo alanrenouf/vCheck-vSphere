@@ -613,6 +613,8 @@ if ($SendEmail) {
       $smtpClient.EnableSsl = $true
    }
    $smtpClient.Send($msg)
+   If ($SendAttachment) { $attachment.Dispose() }
+   $msg.Dispose()
 }
 
 # Run EndScript once everything else is complete

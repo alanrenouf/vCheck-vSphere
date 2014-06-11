@@ -331,6 +331,206 @@ function Get-vCheckPluginXML
    $xml.save($outputFile)
 }
 
+<#
+.SYNOPSIS
+   Returns settings from vCheck plugins.
+
+.DESCRIPTION
+   Get-PluginSettings will return an array of settings contained
+   within a supplied plugin. Used by Export-vCheckSettings.
+     
+.PARAMETER filename
+   Full path to plugin file
+ #>
+Function Get-PluginSettings {
+	Param
+    (
+        [Parameter(mandatory=$true)] [String]$filename
+    )
+	$psettings = @()
+	$file = Get-Content $filename
+	$OriginalLine = ($file | Select-String -Pattern "# Start of Settings").LineNumber
+	$EndLine = ($file | Select-String -Pattern "# End of Settings").LineNumber
+	if (!(($OriginalLine +1) -eq $EndLine)) {		
+		$Line = $OriginalLine		
+		do {
+			$Question = $file[$Line]
+			$Line ++
+			$Split= ($file[$Line]).Split("=")
+			$Var = $Split[0]
+			$CurSet = $Split[1]			
+			$settings = @{}
+			$settings.filename = $filename
+			$settings.question = $Question
+			$settings.var = $CurSet
+			$currentsetting = New-Object –TypeName PSObject –Prop $settings
+			$psettings += $currentsetting
+			$Line ++ 
+		} Until ( $Line -ge ($EndLine -1) )
+	}
+	$psettings
+}
+
+ <#
+.SYNOPSIS
+   Applies settings to vCheck plugins.
+
+.DESCRIPTION
+   Set-PluginSettings will apply settings supplied to a given vCheck plugin.
+   Used by Export-vCheckSettings.
+     
+.PARAMETER filename
+   Full path to plugin file
+
+.PARAMETER settings
+   Array of settings to apply to plugin
+
+.PARAMETER GB
+   Switch to disable Setup Wizard when processing GlobalVariables.ps1
+ #>
+Function Set-PluginSettings {	
+	Param
+    (
+        [Parameter(mandatory=$true)] [String]$filename,
+		[Parameter(mandatory=$false)] [Array]$settings,
+		[Parameter(mandatory=$false)] [Switch]$GB
+    )
+	$file = Get-Content $filename
+	$OriginalLine = ($file | Select-String -Pattern "# Start of Settings").LineNumber
+	$EndLine = ($file | Select-String -Pattern "# End of Settings").LineNumber
+	$PluginName = ($filename.split("\")[-1]).split(".")[0]
+	Write-Host "`nProcessing - $PluginName" -foreground $host.PrivateData.WarningForegroundColor -background $host.PrivateData.WarningBackgroundColor
+	if (!(($OriginalLine +1) -eq $EndLine)) {
+		$Array = @()
+		$Line = $OriginalLine
+		do {
+			$Question = $file[$Line]
+			$Found = $false
+			$Line ++
+			$Split= ($file[$Line]).Split("=")
+			$Var = $Split[0]
+			$CurSet = $Split[1]
+			Foreach ($setting in $settings) {
+				If ($question -eq $setting.question) {	
+					$NewSet = $setting.var
+					$Found = $true
+				}
+			}
+			If (!$Found) {
+				# Check if the current setting is in speech marks
+				$String = $false
+				if ($CurSet -match '"') {
+					$String = $true
+					$CurSet = $CurSet.Replace('"', '')
+				}
+				$NewSet = Read-Host "$Question [$CurSet]"
+				If (-not $NewSet) {
+					$NewSet = $CurSet
+				}
+				If ($String) {
+					$NewSet = "`"$NewSet`""
+				}
+			}
+			$Array += $Question
+			$Array += "$Var=$NewSet"
+			$Line ++ 
+		} Until ( $Line -ge ($EndLine -1) )
+		$Array += "# End of Settings"
+
+		$out = @()
+		$out = $File[0..($OriginalLine -1)]
+		$out += $Array
+		$out += $File[$Endline..($file.count -1)]
+		If ($GB) {
+			$Setup = ($file | Select-String -Pattern '# Set the following to true to enable the setup wizard for first time run').LineNumber
+			$SetupLine = $Setup ++
+			$out[$SetupLine] = '$SetupWizard =$False'
+		}
+		$out | Out-File $filename
+	}
+}
+
+ <#
+.SYNOPSIS
+   Retrieves configured vCheck plugin settings and exports them to CSV.
+
+.DESCRIPTION
+   Export-vCheckSettings will retrieve the settings from each plugin and export them to a CSV file.
+   By default, the CSV file will be created in the vCheck folder named vCheckSettings.csv.
+   You can also specify a custom path using -outfile.
+   Once the export has been created the settings can then be imported via Import-vCheckSettings.
+     
+.PARAMETER outfile
+   Full path to CSV file
+
+.EXAMPLE
+   Export-vCheckSettings
+   Creates vCheckSettings.csv file in default location (vCheck folder)
+
+.EXAMPLE
+   Export-vCheckSettings -outfile "E:\vCheck-vCenter01.csv"
+   Creates CSV file in custom location E:\vCheck-vCenter01.csv
+ #>
+Function Export-vCheckSettings {
+	Param
+    (
+        [Parameter(mandatory=$false)] [String]$outfile = "$vCheckPath\vCheckSettings.csv"
+    )
+	
+	$Export = @()
+	$GlobalVariables = "$vCheckPath\GlobalVariables.ps1"
+	$Export = Get-PluginSettings -Filename $GlobalVariables
+	Foreach ($plugin in (Get-ChildItem -Path $vCheckPath\Plugins\* -Include *.ps1, *.ps1.disabled)) { 
+		$Export += Get-PluginSettings -Filename $plugin.Fullname
+	}
+	$Export | Select filename, question, var | Export-Csv -NoTypeInformation $outfile
+}
+
+ <#
+.SYNOPSIS
+   Retreives settings from CSV and applies them to vCheck.
+
+.DESCRIPTION
+   Import-vCheckSettings will retrieve the settings exported via Export-vCheckSettings and apply them to the
+   current vCheck folder.
+   By default, the CSV file is expected to be located in the vCheck folder named vCheckSettings.csv.
+   You can also specify a custom path using -csvfile.
+   If the CSV file is not found you will be asked to provide the path.
+   The Setup Wizard will be disabled.
+   You will be asked any questions not found in the export. This would occur for new settings introduced
+   enabling a quick update between versions.
+     
+.PARAMETER csvfile
+   Full path to CSV file
+
+.EXAMPLE
+   Import-vCheckSettings
+   Imports settings from vCheckSettings.csv file in default location (vCheck folder)
+
+.EXAMPLE
+   Import-vCheckSettings -outfile "E:\vCheck-vCenter01.csv"
+   Imports settings from CSV file in custom location E:\vCheck-vCenter01.csv
+ #>
+Function Import-vCheckSettings {
+	Param
+    (
+        [Parameter(mandatory=$false)] [String]$csvfile = "$vCheckPath\vCheckSettings.csv"
+    )
+	
+	If (!(Test-Path $csvfile)) {
+		$csvfile = Read-Host "Enter full path to settings CSV file you want to import"
+	}
+	$Import = Import-Csv $csvfile
+	$GlobalVariables = "$vCheckPath\GlobalVariables.ps1"
+	$settings = $Import | Where {($_.filename).Split("\")[-1] -eq ($GlobalVariables).Split("\")[-1]}
+	Set-PluginSettings -Filename $GlobalVariables -Settings $settings -GB
+	Foreach ($plugin in (Get-ChildItem -Path $vCheckPath\Plugins\* -Include *.ps1, *.ps1.disabled)) { 
+		$settings = $Import | Where {($_.filename).Split("\")[-1] -eq ($plugin.Fullname).Split("\")[-1]}
+		Set-PluginSettings -Filename $plugin.Fullname -Settings $settings
+	}
+	Write-Host "`nImport Complete!`n" -foreground $host.PrivateData.WarningForegroundColor -background $host.PrivateData.WarningBackgroundColor
+}
+
 Function Get-vCheckCommand {
 	Get-Command *vCheck*
 }

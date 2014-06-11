@@ -1,4 +1,4 @@
-# Start of Settings 
+﻿# Start of Settings 
 # End of Settings
 
 # —- VM Guest OS Pivot Table —-

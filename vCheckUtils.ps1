@@ -409,7 +409,7 @@ Function Set-PluginSettings {
 			$Line ++
 			$Split= ($file[$Line]).Split("=")
 			$Var = $Split[0]
-			$CurSet = $Split[1]
+			$CurSet = $Split[1].Trim()
 			Foreach ($setting in $settings) {
 				If ($question -eq $setting.question) {	
 					$NewSet = $setting.var
@@ -421,7 +421,7 @@ Function Set-PluginSettings {
 				$String = $false
 				if ($CurSet -match '"') {
 					$String = $true
-					$CurSet = $CurSet.Replace('"', '')
+					$CurSet = $CurSet.Replace('"', '').Trim()
 				}
 				$NewSet = Read-Host "$Question [$CurSet]"
 				If (-not $NewSet) {
@@ -432,7 +432,7 @@ Function Set-PluginSettings {
 				}
 			}
 			$Array += $Question
-			$Array += "$Var=$NewSet"
+			$Array += "$Var= $NewSet"
 			$Line ++ 
 		} Until ( $Line -ge ($EndLine -1) )
 		$Array += "# End of Settings"
@@ -444,7 +444,7 @@ Function Set-PluginSettings {
 		If ($GB) {
 			$Setup = ($file | Select-String -Pattern '# Set the following to true to enable the setup wizard for first time run').LineNumber
 			$SetupLine = $Setup ++
-			$out[$SetupLine] = '$SetupWizard =$False'
+			$out[$SetupLine] = '$SetupWizard = $False'
 		}
 		$out | Out-File $filename
 	}

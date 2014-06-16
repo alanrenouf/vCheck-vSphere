@@ -111,13 +111,13 @@ Function Invoke-Settings ($Filename, $GB) {
 			$Line ++
 			$Split= ($file[$Line]).Split("=")
 			$Var = $Split[0]
-			$CurSet = $Split[1]
+			$CurSet = $Split[1].Trim()
 			
 			# Check if the current setting is in speech marks
 			$String = $false
 			if ($CurSet -match '"') {
 				$String = $true
-				$CurSet = $CurSet.Replace('"', '')
+				$CurSet = $CurSet.Replace('"', '').Trim()
 			}
 			$NewSet = Read-Host "$Question [$CurSet]"
 			If (-not $NewSet) {
@@ -125,10 +125,10 @@ Function Invoke-Settings ($Filename, $GB) {
 			}
 			If ($String) {
 				$Array += $Question
-				$Array += "$Var=`"$NewSet`""
+				$Array += "$Var= `"$NewSet`""
 			} Else {
 				$Array += $Question
-				$Array += "$Var=$NewSet"
+				$Array += "$Var= $NewSet"
 			}
 			$Line ++ 
 		} Until ( $Line -ge ($EndLine -1) )
@@ -138,7 +138,7 @@ Function Invoke-Settings ($Filename, $GB) {
 		$out = $File[0..($OriginalLine -1)]
 		$out += $array
 		$out += $File[$Endline..($file.count -1)]
-		if ($GB) { $out[$SetupLine] = '$SetupWizard =$False' }
+		if ($GB) { $out[$SetupLine] = '$SetupWizard = $False' }
 		$out | Out-File $Filename
 	}
 }

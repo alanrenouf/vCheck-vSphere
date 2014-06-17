@@ -1,26 +1,17 @@
 # Start of Settings 
 # Set the warning threshold for snapshots in days old
-$SnapshotAge =14
+$SnapshotAge = 14
+# Set snapshot name exception (regex)
+$excludeName = "ExcludeMe"
+# Set snapshot description exception (regex)
+$excludeDesc = "ExcludeMe"
+# Set snapshot creator exception (regex)
+$excludeCreator = "ExcludeMe"
 # End of Settings
 
+# Changelog
+## 1.3 : Cleanup - Fixed Creator - Changed Size to GB
 
-
-Function Find-Username ($username){
-	if ($username -ne $null)
-	{
-		$root = [ADSI]""
-		$filter = ("(&(objectCategory=user)(samAccountName=$Username))")
-		$ds = new-object  system.DirectoryServices.DirectorySearcher($root,$filter)
-		$ds.PageSize = 1000
-		$UN = $ds.FindOne()
-		If ($UN -eq $null){
-			Return $username
-		}
-		Else {
-			Return $UN
-		}
-	}
-}
 
 function Get-SnapshotSummary {
 	param(
@@ -41,7 +32,7 @@ function Get-SnapshotSummary {
 				$mySnaps += $SnapshotInfo
 			}
 
-			$mySnaps | Select VM, Name, @{N="DaysOld";E={((Get-Date) - $_.Created).Days}}, @{N="Creator";E={(Find-Username (($_.Creator.split("\"))[1])).Properties.displayname}}, @{N="SizeMB";E={$_.SizeMB -as [int]}}, Created, Description -ErrorAction SilentlyContinue | Sort DaysOld
+			$mySnaps | Select VM, @{N="SnapName";E={$_.Name}}, @{N="DaysOld";E={((Get-Date) - $_.Created).Days}}, @{N="Creator";E={$_.Creator}}, @{N="SizeGB";E={$_.SizeGB -as [int]}}, Created, Description -ErrorAction SilentlyContinue | Sort DaysOld
 
 		} else {
 			throw 'ParameterBinderStrings\InputObjectNotBound'
@@ -106,7 +97,8 @@ function Get-SnapshotExtra ($snap){
 
 	# Get the guest's snapshots and add the user
 	$snapshotsExtra = $snap | % {
-		$key = $_.vm.Name + "&" + ($_.Created.ToString())
+		$key = $_.vm.Name + "&" + ($_.Created.ToUniversalTime().ToString())
+		$str = $report | Out-String
 		if($report.ContainsKey($key)){
 			$_ | Add-Member -MemberType NoteProperty -Name Creator -Value $report[$key].User
 		}
@@ -115,7 +107,7 @@ function Get-SnapshotExtra ($snap){
 	$snapshotsExtra
 }
 
-$Snapshots = @($VM | Get-Snapshot | Where {$_.Created -lt (($Date).AddDays(-$SnapshotAge))} | Get-SnapshotSummary)
+$Snapshots = @($VM | Get-Snapshot | Where {$_.Created -lt (($Date).AddDays(-$SnapshotAge))} | Get-SnapshotSummary | Where {$_.SnapName -notmatch $excludeName -and $_.Description -notmatch $excludeDesc -and $_.Creator -notmatch $excludeCreator})
 $Snapshots
 
 $Title = "Snapshot Information"
@@ -123,6 +115,5 @@ $Header =  "Snapshots (Over $SnapshotAge Days Old) : $(@($snapshots).count)"
 $Comments = "VMware snapshots which are kept for a long period of time may cause issues, filling up datastores and also may impact performance of the virtual machine."
 $Display = "Table"
 $Author = "Alan Renouf, Raphael Schitz"
-$PluginVersion = 1.2
+$PluginVersion = 1.3
 $PluginCategory = "vSphere"
-

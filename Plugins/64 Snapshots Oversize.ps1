@@ -13,7 +13,7 @@ Foreach ($vmg in $VM) {
 		}
 		$snaps = $vmg | Get-Snapshot
 		$snapsize = 0
-		ForEach ($snap in $snaps) { # Loop through VM's harddisks 
+		ForEach ($snap in $snaps) { # Loop through VM's snapshots 
 				$snapsize = $snapsize+[math]::round($snap.SizeGB, 0)
 		}
 		$oversize = [math]::round((((($snapsize + $hddsize)*100)/$hddsize)-100), 0)

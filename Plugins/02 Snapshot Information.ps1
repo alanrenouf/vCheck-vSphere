@@ -32,7 +32,7 @@ function Get-SnapshotSummary {
 				$mySnaps += $SnapshotInfo
 			}
 
-			$mySnaps | Select VM, @{N="SnapName";E={$_.Name}}, @{N="DaysOld";E={((Get-Date) - $_.Created).Days}}, @{N="Creator";E={$_.Creator}}, @{N="SizeGB";E={$_.SizeGB -as [int]}}, Created, Description -ErrorAction SilentlyContinue | Sort DaysOld
+			$mySnaps | Select VM, @{N="SnapName";E={$_.Name}}, @{N="DaysOld";E={((Get-Date) - $_.Created).Days}}, Creator, @{N="SizeGB";E={$_.SizeGB -as [int]}}, Created, Description -ErrorAction SilentlyContinue | Sort DaysOld
 
 		} else {
 			throw 'ParameterBinderStrings\InputObjectNotBound'

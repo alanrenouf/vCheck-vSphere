@@ -529,6 +529,7 @@ function Get-ReportResource {
 ################################################################################
 # Setup all paths required for script to run
 $ScriptPath = (Split-Path ((Get-Variable MyInvocation).Value).MyCommand.Path)
+$PluginsFolder = $ScriptPath + "\Plugins\"
 
 # Setup language hashtable
 Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable lang
@@ -578,12 +579,11 @@ if ($job) {
    
    # if no valid plugins specified, fall back to default
    if (!$vCheckPlugins) {
-      $vCheckPlugins = Get-ChildItem -Path $PluginPath -filter "*.ps1" | Sort Name
+      $vCheckPlugins = Get-ChildItem -Path $PluginsFolder -filter "*.ps1" -Recurse | Sort FullName
    }
 }
 else {
-   $PluginsFolder = $ScriptPath + "\Plugins\"
-   $vCheckPlugins = Get-ChildItem -Path $PluginsFolder -filter "*.ps1" | Sort Name
+   $vCheckPlugins = Get-ChildItem -Path $PluginsFolder -filter "*.ps1" -Recurse | Sort FullName
    $GlobalVariables = $ScriptPath + "\GlobalVariables.ps1"
 }
 

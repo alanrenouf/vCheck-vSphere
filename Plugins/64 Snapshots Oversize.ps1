@@ -36,7 +36,7 @@ $snapp | select VM, vmdkSizeGB, SnapSizeGB, SnapCount, @{N="OverSize %";E={$_.Ov
 
 
 
-$Title = "Snapshots Oversize Part Duex"
+$Title = "Snapshots Oversize"
 $Header = "Snapshots Oversize"
 $Comments = "VMware snapshots which are kept for a long period of time may cause issues, filling up datastores and also may impact performance of the virtual machine."
 $Display = "Table"

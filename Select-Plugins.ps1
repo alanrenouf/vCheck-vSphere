@@ -25,7 +25,7 @@
 
 $Title = "Plugin Selection Plugin"
 $Author = "Phil Randal"
-$PluginVersion = 2.0
+$PluginVersion = 2.1
 $Header =  "Plugin Selection"
 $Comments = "Plugin Selection"
 $Display = "None"
@@ -33,15 +33,30 @@ $Display = "None"
 # Start of Settings
 # End of Settings
 
+# Changelog
+## 2.1 : Added Select All/Deselect All buttons - Changed sort to numeric
+
 $PluginPath = (Split-Path ((Get-Variable MyInvocation).Value).MyCommand.Path)
 If ($PluginPath -notmatch 'plugins$') {
   $PluginPath += "\Plugins"
 }
-$plugins=get-childitem -Path $PluginPath | where {$_.name -match '.*\.ps1(?:\.disabled|)$'} |
-   Sort Name |
-   Select Name, 
+$plugins = Get-ChildItem -Path $PluginPath -Include *.ps1, *.ps1.disabled -Recurse |
+   Sort {[int]($_.Name -replace '\D')} |
+   Select FullName, Name, 
           @{Label="Plugin";expression={$_.Name -replace '(.*)\.ps1(?:\.disabled|)$', '$1'}},
           @{Label="Enabled";expression={$_.Name -notmatch '.*\.disabled$'}}
+
+$selectallButton_OnClick = {
+	for($i = 0; $i -lt $listbox.Items.Count; $i++) {
+    	$listbox.SetItemChecked($i,$true)
+	}
+}
+
+$deselectallButton_OnClick = {
+	for($i = 0; $i -lt $listbox.Items.Count; $i++) {
+    	$listbox.SetItemChecked($i,$false)
+	}
+}
 
 ## Load the Windows Forms assembly
 [void] [Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
@@ -82,9 +97,27 @@ $okButton.Top = $cancelButton.Top
 $okButton.Left = $cancelButton.Left - $okButton.Width - 5
 $okButton.Anchor = "Right"
 
+## Create the Select All button, which will anchor to the bottom left
+$selectallButton = New-Object Windows.Forms.Button
+$selectallButton.Text = "Select All"
+$selectallButton.Top = $cancelButton.Top
+$selectallButton.Left = 10
+$selectallButton.Anchor = "Left"
+$selectallButton.add_Click($selectallButton_OnClick)
+
+## Create the Deselect All button, which will anchor to the right of Select All
+$deselectallButton = New-Object Windows.Forms.Button
+$deselectallButton.Text = "Deselect All"
+$deselectallButton.Top = $cancelButton.Top
+$deselectallButton.Left = $selectallButton.Width + 15
+$deselectallButton.Anchor = "Left"
+$deselectallButton.add_Click($deselectallButton_OnClick)
+
 ## Add the buttons to the button panel
 $buttonPanel.Controls.Add($okButton)
 $buttonPanel.Controls.Add($cancelButton)
+$buttonPanel.Controls.Add($selectallButton)
+$buttonPanel.Controls.Add($deselectallButton)
 
 ## Add the button panel and list box to the form, and also set
 ## the actions for the buttons
@@ -105,10 +138,10 @@ if($result -eq "OK") {
     $oldname = $plugin.Name
     $newname = $plugin.Plugin + $(If ($listbox.GetItemChecked($i)) {'.ps1'} else {'.ps1.disabled'})
     If ($newname -ne $oldname) {
-      If (Test-Path ($PluginPath + "\" + $newname)) {
+      If (Test-Path (($plugin.FullName | Split-Path) + "\" + $newname)) {
         Write-Host "Attempting to rename ""$oldname"" to ""$newname"", which already exists - please delete or rename the superfluous file and try again"
       } Else {
-        Rename-Item ($PluginPath + "\" + $oldname) $newname
+        Rename-Item (($plugin.FullName | Split-Path) + "\" + $oldname) $newname
       }
     }
     $i++

@@ -43,7 +43,7 @@ function Get-VCheckPlugin
         [Parameter(mandatory=$false)] [String]$proxy,
         [Parameter(mandatory=$false)] [Switch]$installed,
         [Parameter(mandatory=$false)] [Switch]$notinstalled,
-      [Parameter(mandatory=$false)] [String]$category
+        [Parameter(mandatory=$false)] [String]$category
     )
     Process
     {
@@ -480,7 +480,7 @@ Function Export-vCheckSettings {
 	$Export = @()
 	$GlobalVariables = "$vCheckPath\GlobalVariables.ps1"
 	$Export = Get-PluginSettings -Filename $GlobalVariables
-	Foreach ($plugin in (Get-ChildItem -Path $vCheckPath\Plugins\* -Include *.ps1, *.ps1.disabled)) { 
+	Foreach ($plugin in (Get-ChildItem -Path $vCheckPath\Plugins\* -Include *.ps1, *.ps1.disabled -Recurse)) { 
 		$Export += Get-PluginSettings -Filename $plugin.Fullname
 	}
 	$Export | Select filename, question, var | Export-Csv -NoTypeInformation $outfile
@@ -524,7 +524,7 @@ Function Import-vCheckSettings {
 	$GlobalVariables = "$vCheckPath\GlobalVariables.ps1"
 	$settings = $Import | Where {($_.filename).Split("\")[-1] -eq ($GlobalVariables).Split("\")[-1]}
 	Set-PluginSettings -Filename $GlobalVariables -Settings $settings -GB
-	Foreach ($plugin in (Get-ChildItem -Path $vCheckPath\Plugins\* -Include *.ps1, *.ps1.disabled)) { 
+	Foreach ($plugin in (Get-ChildItem -Path $vCheckPath\Plugins\* -Include *.ps1, *.ps1.disabled -Recurse)) { 
 		$settings = $Import | Where {($_.filename).Split("\")[-1] -eq ($plugin.Fullname).Split("\")[-1]}
 		Set-PluginSettings -Filename $plugin.Fullname -Settings $settings
 	}

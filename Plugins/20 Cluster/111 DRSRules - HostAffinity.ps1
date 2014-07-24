@@ -6,7 +6,7 @@
 
 $Clusters | Foreach {
 	Get-DrsRule -Cluster $_ -Type VMHostAffinity |
-	Select Cluster, Enabled, Name, @{N="Keep Together";E={if ($_.Keeptogether){"True"}Else{"False"}}}, @{N="VM";E={Get-View $_.VMIDS | Select -ExpandProperty Name}},
+	Select Cluster, Enabled, Name, @{N="Keep Together";E={"True"}}, @{N="VM";E={Get-View $_.VMIDS | Select -ExpandProperty Name}},
 	  @{N="Rule Host";E={Get-View $_.AffineHostIds | Select -ExpandProperty Name}},
 	  @{N="Running on";E={Get-View (Get-View $_.VMIDS | %{$_.Runtime.Host}) | Select -ExpandProperty Name}}
 }

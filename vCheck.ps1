@@ -583,9 +583,6 @@ if ($job) {
    }
 }
 else {
-	#$vCheckPlugins = Get-ChildItem -Path $PluginsFolder -filter "*.ps1" -Recurse | Sort FullName
-	#$GlobalVariables = $ScriptPath + "\GlobalVariables.ps1"
-	# better sorting (Christian Kotte)
 	$ToNatural = { [regex]::Replace($_, '\d+', { $args[0].Value.PadLeft(20) }) }
 	$vCheckPlugins = Get-ChildItem -Path $PluginsFolder -filter "*.ps1" -Recurse | where {$_.Directory -match "initialize"} | Sort $ToNatural
 	$PluginsSubFolder = Get-ChildItem -Path $PluginsFolder | where {($_.Name -notmatch "initialize") -and ($_.Name -notmatch "finish")}

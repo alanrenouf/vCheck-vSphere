@@ -388,12 +388,12 @@ function Get-ChartResource {
 	# Do some funky work to increase the DPI so charts look nice. Default 96 DPI looks terrible :(
 	[void][System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
 
-	$bmp = New-Object System.Drawing.Bitmap(($ChartDef.height), ($ChartDef.width))
+	$bmp = New-Object System.Drawing.Bitmap(($ChartDef.width), ($ChartDef.height))
 	$bmp.SetResolution(384, 384);
 	if ($ChartArea.BackColor -eq [System.Drawing.Color]::Transparent) {
 		$bmp.MakeTransparent()
 	}
-	$chart.DrawToBitmap($bmp, (new-object System.Drawing.Rectangle(0, 0, $ChartDef.height, $ChartDef.width)))
+	$chart.DrawToBitmap($bmp, (new-object System.Drawing.Rectangle(0, 0, $ChartDef.width, $ChartDef.height)))
 	$ms = new-Object IO.MemoryStream
 	$bmp.Save($ms, [System.Drawing.Imaging.ImageFormat]::Png);
 	$ms.Seek(0, [System.IO.SeekOrigin]::Begin) | Out-Null

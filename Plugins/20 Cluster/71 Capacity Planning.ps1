@@ -16,7 +16,7 @@ foreach ($cluv in ($clusviews | Sort Name)) {
 			$DasRealMemCapacity = $cluv.Summary.EffectiveMemory * $limitResourceMEMClusNonHA
 		}
 		
-		$cluvmlist = $VM | where { $cluv.Host -contains $_.Host.Id  }
+		$cluvmlist = $VM | where { $cluv.Host -contains $_.VMHost.Id  }
 		
 		#CPU
 			$CluCpuUsage = (get-view $cluv.ResourcePool).Summary.runtime.cpu.OverallUsage

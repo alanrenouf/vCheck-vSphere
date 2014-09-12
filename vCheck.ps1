@@ -655,7 +655,7 @@ $vCheckPlugins | Foreach {
 
 	Write-CustomOut ($lang.pluginEnd -f $PluginInfo["Title"], $PluginInfo["Author"], $PluginInfo["Version"], $p, $vCheckPlugins.count)
 	# Do a replacement for {count} for number of items returned in $header
-	$Header = $Header -replace "[count]", $Details.count
+	$Header = $Header -replace "`[count`]", $Details.count
 	
 	$PluginResult += New-Object PSObject -Property @{"Title" = $PluginInfo["Title"];
 																	 "Author" = $PluginInfo["Author"];

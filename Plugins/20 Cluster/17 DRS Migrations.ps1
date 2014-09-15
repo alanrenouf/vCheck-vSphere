@@ -7,7 +7,14 @@
 
 
 $DRSMigrations = @($MigrationQuery1 | Where {$_.Gettype().Name -eq "DrsVmMigratedEvent"} | Select createdTime, fullFormattedMessage)
-$SDRSMigrations = @($MigrationQuery2 | Where {$_.FullFormattedMessage -imatch "(Storage vMotion){1}.*(DRS){1}"} | Select createdTime, fullFormattedMessage)
+if ($VIVersion -ge 5) {
+	if ($DRSMigrateAge -eq $SDRSMigrateAge) {
+		$SDRSMigrations = @($MigrationQuery1 | Where {$_.FullFormattedMessage -imatch "(Storage vMotion){1}.*(DRS){1}"} | Select createdTime, fullFormattedMessage)
+	}
+	else {
+		$SDRSMigrations = @($MigrationQuery2 | Where {$_.FullFormattedMessage -imatch "(Storage vMotion){1}.*(DRS){1}"} | Select createdTime, fullFormattedMessage)
+	}
+}
 
 $DRSMigrations
 $SDRSMigrations

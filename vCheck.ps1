@@ -30,7 +30,7 @@
 .NOTES 
    File Name  : vCheck.ps1 
    Author     : Alan Renouf - @alanrenouf
-   Version    : 6.21-alpha-1
+   Version    : 6.21-alpha-2
    
    Thanks to all who have commented on my blog to help improve this project
    all beta testers and previous contributors to this script.
@@ -655,7 +655,7 @@ $vCheckPlugins | Foreach {
 
 	Write-CustomOut ($lang.pluginEnd -f $PluginInfo["Title"], $PluginInfo["Author"], $PluginInfo["Version"], $p, $vCheckPlugins.count)
 	# Do a replacement for {count} for number of items returned in $header
-	$Header = $Header -replace "`[count`]", $Details.count
+	$Header = $Header -replace "\[count\]", $Details.count
 	
 	$PluginResult += New-Object PSObject -Property @{"Title" = $PluginInfo["Title"];
 																	 "Author" = $PluginInfo["Author"];

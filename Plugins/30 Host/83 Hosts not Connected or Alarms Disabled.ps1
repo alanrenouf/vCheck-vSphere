@@ -12,4 +12,8 @@ $Author = "Chris Monahan"
 $PluginVersion = 1.0
 $PluginCategory = "vSphere"
 
-# Combines/replaces two plugins, "05 Hosts in Maintenance mode.ps1" and "117 Hosts with Alarm disabled.ps1".
+<# 
+  Essentially a hosts not happy report.
+  Combines/replaces three plugins, "05 Hosts in Maintenance mode.ps1", "06 Hosts not responding or Disconnected.ps1" and "117 Hosts with Alarm disabled.ps1".
+  It's useful to have host status and alarm reporting status close instead of different areas of the report.
+#>

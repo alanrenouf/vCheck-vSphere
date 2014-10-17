@@ -1,6 +1,6 @@
 $Title = "Connection settings for vCenter"
 $Author = "Alan Renouf"
-$PluginVersion = 1.4
+$PluginVersion = 1.5
 $Header = "Connection Settings"
 $Comments = "Connection Plugin for connecting to vSphere"
 $Display = "List"
@@ -11,8 +11,16 @@ $PluginCategory = "vSphere"
 $MaxSampleVIEvent = 100000
 # End of Settings
 
-# Find the VI Server from the global settings file
-$VIServer = $Server
+# Find the VI Server and port from the global settings file
+$VIServer = ($Server -Split ":")[0]
+if (($server -split ":")[1]) {
+   $port = ($server -split ":")[1]
+}
+else
+{
+   $port = 443
+}
+
 # Path to credentials file which is automatically created if needed
 $Credfile = $ScriptPath + "\Windowscreds.xml"
 

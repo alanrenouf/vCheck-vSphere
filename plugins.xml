@@ -1,9 +1,11 @@
 <pluginlist>
   <plugin>
     <name>Connection settings for vCenter</name>
-    <description>Connection Plugin for connecting to vSphere</description>
-    <author>Alan Renouf</author>
-    <version>1.4</version>
+    <description>
+    </description>
+    <author>
+    </author>
+    <version>1.5</version>
     <category>vSphere</category>
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/00 Connection Plugin for vCenter.ps1</href>
   </plugin>
@@ -16,109 +18,44 @@
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/01 General Information.ps1</href>
   </plugin>
   <plugin>
-    <name>Snapshot Information</name>
-    <description>
-    </description>
-    <author>Alan Renouf, Raphael Schitz</author>
-    <version>1.2</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/02 Snapshot Information.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Datastore Information</name>
-    <description>Datastores which run out of space will cause impact on the virtual machines held on these datastores</description>
-    <author>Alan Renouf, Jonathan Medd</author>
-    <version>1.3</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/03 Datastore Information.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Map disk region event</name>
-    <description>These may occur due to VCB issues, check &lt;a href='http://kb.vmware.com/kb/1007331' target='_blank'&gt;this article&lt;/a&gt; for more details</description>
+    <name>Checking VI Events</name>
+    <description>The following errors were logged in the vCenter Events tab, you may wish to investigate these</description>
     <author>Alan Renouf</author>
     <version>1.1</version>
     <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/04 Map disk region event.ps1</href>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/23 VI Events.ps1</href>
   </plugin>
   <plugin>
-    <name>Hosts in Maintenance Mode</name>
-    <description>Hosts held in Maintenance mode will not be running any virtual machine worloads, check the below Hosts are in an expected state</description>
+    <name>VC Services</name>
+    <description>The following vCenter Services are not in the required state</description>
     <author>Alan Renouf</author>
     <version>1.1</version>
     <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/05 Hosts in Maintenance mode.ps1</href>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/41 vCenter Services.ps1</href>
   </plugin>
   <plugin>
-    <name>Hosts Not responding or Disconnected</name>
-    <description>Hosts which are in a disconnected state will not be running any virtual machine worloads, check the below Hosts are in an expected state</description>
+    <name>Windows vCenter Error Event Logs</name>
+    <description>The following errors were found in the vCenter Event Logs, you may wish to check these further</description>
     <author>Alan Renouf</author>
     <version>1.1</version>
     <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/06 Hosts not responding or Disconnected.ps1</href>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/42 Windows vCenter Error Event Logs.ps1</href>
   </plugin>
   <plugin>
-    <name>Hosts Overcommit state</name>
-    <description>Overcommitted hosts may cause issues with performance if memory is not issued when needed, this may cause ballooning and swapping</description>
-    <author>Alan Renouf</author>
-    <version>1.3</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/07 Hosts Overcommit State.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Hosts Dead Lun Path</name>
-    <description>Dead LUN Paths may cause issues with storage performance or be an indication of loss of redundancy</description>
-    <author>Alan Renouf, Frederic Martin</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/08 Hosts Dead Lun Path.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Created or cloned VMs</name>
-    <description>The following VMs have been created over the last $($VMsNewRemovedAge) Days</description>
+    <name>Windows vCenter Warning Event Logs</name>
+    <description>The following warnings were found in the vCenter Event Logs, you may wish to check these further</description>
     <author>Alan Renouf</author>
     <version>1.1</version>
     <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/09 Created or cloned VMs.ps1</href>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/43 Windows vCenter Warning Event Logs.ps1</href>
   </plugin>
   <plugin>
-    <name>Removed VMs</name>
-    <description>The following VMs have been removed/deleted over the last $($VMsNewRemovedAge) days</description>
-    <author>Alan Renouf</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/10 Removed VMs.ps1</href>
-  </plugin>
-  <plugin>
-    <name>VMs with CPU or Memory Reservations Configured</name>
-    <description>The following VMs have a CPU or Memory Reservation configured which may impact the performance of the VM. Note: -1 indicates no reservation</description>
-    <author>Dan Jellesma</author>
+    <name>vCenter License Report</name>
+    <description>The following displays licenses registered with this server and usage.</description>
+    <author>Justin Mercier</author>
     <version>1.0</version>
     <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/100 VMs with CPU or Memory Reservations.ps1</href>
-  </plugin>
-  <plugin>
-    <name>ESXi Inode Exhaustion</name>
-    <description>The following hosts have an excessive amount of Inodes in use on the local ESXi filesystem. This can cause hosts to disconnect from vCenter and becoming completely unmanageable even locally, requiring a hard reboot. See &lt;a href=`</description>
-    <author>Matthias Koehler</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/101 ESXi Inode Usage.ps1</href>
-  </plugin>
-  <plugin>
-    <name>VM Logging</name>
-    <description>The following virtual machines are not configured to rotate logs at $RotateSize bytes and/or to store $KeepOld logs.</description>
-    <author>Bob Cote</author>
-    <version>1.0</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/102 VM Logging.ps1</href>
-  </plugin>
-  <plugin>
-    <name>CPU/Mem HotPlug</name>
-    <description>VMs needs to be shutdown to modify CPU/Mem HotPlug in case this settings is disabled.</description>
-    <author>Eric Lannier</author>
-    <version>1.0</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/103 VMs CPU MEM Add Hot Disabled.ps1</href>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/82 License Report.ps1</href>
   </plugin>
   <plugin>
     <name>Clusters Without Host Profile attached</name>
@@ -127,54 +64,6 @@
     <version>1.0</version>
     <category>vSphere</category>
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/104 Clusters with no Host Profile.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Host Profile Compliance</name>
-    <description>Failures</description>
-    <author>John Sneddon</author>
-    <version>1.2</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/105 Host Profile Compliance.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Find Phantom Snapshots</name>
-    <description>The following VM's have Phantom Snapshots</description>
-    <author>Mads Fog Albrechtslund</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/106 Find Phantom Snapshots.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Quantity of snapshots</name>
-    <description>The following VMs have more than $MaxNumberSnapshots snapshot(s)</description>
-    <author>Mads Fog Albrechtslund</author>
-    <version>1.0</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/107 Quantity of snapshots.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Site Recovery Manager - RPO Violation Report</name>
-    <description>This is a customizable report of RPO violations found in the vCenter event log.</description>
-    <author>Joel Gibson, based on work by Alan Renouf</author>
-    <version>0.5</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/108 SRM RPO Violations.ps1</href>
-  </plugin>
-  <plugin>
-    <name>VMs with over $vCPU vCPUs</name>
-    <description>The following VMs have over $vCPU CPU(s) and may impact performance due to CPU scheduling</description>
-    <author>Alan Renouf</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/11 VMs with over CPU Count.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Hosts with Upcoming Certificate Expiration</name>
-    <description>The following hosts have certificates that will expire soon and will need to be replaced.</description>
-    <author>Alan Renouf</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/110 Host Certificate Expiration Check.ps1</href>
   </plugin>
   <plugin>
     <name>DRSRules - HostAffinity</name>
@@ -204,62 +93,6 @@
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/113 DRSRules - VMAntiAffinity.ps1</href>
   </plugin>
   <plugin>
-    <name>VM Tools Not Up to Date</name>
-    <description>The following VMs are running an older version of Tools than is available on its Host (Max Shown: $VMTMaxReturn Exceptions: $VMTDoNotInclude)</description>
-    <author>Alan Renouf, Shawn Masterson</author>
-    <version>1.0</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/114 VM Tools Not Up to Date.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Datastore Clusters with sDRS Disabled</name>
-    <description>The following Datastore Clusters either do not have sDRS enabled or it is set to manual</description>
-    <author>Shawn Masterson</author>
-    <version>1.0</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/115 Datastore Clusters with sDRS Disabled.ps1</href>
-  </plugin>
-  <plugin>
-    <name>sDRS VM Behavior not Default</name>
-    <description>The following VMs are overriding the Datastore Cluster sDRS automation level</description>
-    <author>Shawn Masterson</author>
-    <version>1.0</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/116 sDRS VM Behavior not Default.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Hosts with Alarm disabled</name>
-    <description>The following Hosts have Alarm disabled. This may impact the Alarming of your infrastructure.</description>
-    <author>Denis Gauthier</author>
-    <version>1.2</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/117 Hosts with Alarm disabled.ps1</href>
-  </plugin>
-  <plugin>
-    <name>VMs Ballooning or Swapping</name>
-    <description>Ballooning and swapping may indicate a lack of memory or a limit on a VM, this may be an indication of not enough memory in a host or a limit held on a VM, &lt;a href='http://www.virtualinsanity.com/index.php/2010/02/19/performance-troubleshooting-vmware-vsphere-memory/' target='_blank'&gt;further information is available here&lt;/a&gt;.</description>
-    <author>Alan Renouf, Frederic Martin</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/12 VMs Swapping or Ballooning.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Invalid or inaccessible VM</name>
-    <description>The following VMs are marked as inaccessible or invalid</description>
-    <author>Alan Renouf</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/13 invalid or inaccessible VMs.ps1</href>
-  </plugin>
-  <plugin>
-    <name>VMs restarted due to Guest OS Error</name>
-    <description>The following VMs have been restarted by HA in the last $HAVMresetold days</description>
-    <author>Alan Renouf</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/14 VMs restarted due to Guest OS Error.ps1</href>
-  </plugin>
-  <plugin>
     <name>HA VMs restarted</name>
     <description>The following VMs have been restarted by HA in the last $HAVMresetold days</description>
     <author>Alan Renouf</author>
@@ -268,16 +101,8 @@
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/15 HA VMs restarted.ps1</href>
   </plugin>
   <plugin>
-    <name>Host Swapfile datastores</name>
-    <description>The following hosts are in a cluster which is set to store the swapfile in the datastore specified by the host but no location has been set on the host</description>
-    <author>Alan Renouf</author>
-    <version>1.2</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/16 Host Swapfile datastores.ps1</href>
-  </plugin>
-  <plugin>
     <name>DRS &amp; SDRS Migrations</name>
-    <description>Multiple DRS Migrations may be an indication of overloaded hosts, check resouce levels of the cluster</description>
+    <description>Multiple DRS Migrations may be an indication of overloaded hosts, check resource levels of the cluster</description>
     <author>Alan Renouf, Jonathan Medd</author>
     <version>1.2</version>
     <category>vSphere</category>
@@ -292,158 +117,6 @@
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/18 Cluster Slot Sizes.ps1</href>
   </plugin>
   <plugin>
-    <name>Guests with less than $MBFree MB</name>
-    <description>The following guests have less than $MBFree MB Free, if a guest disk fills up it may cause issues with the guest Operating System</description>
-    <author>Alan Renouf</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/19 Guests with less than X MB free.ps1</href>
-  </plugin>
-  <plugin>
-    <name>ESXi with Technical Support mode or ESXi Shell enabled</name>
-    <description>The following ESXi Hosts have Technical support mode or ESXi Shell enabled, this may not be the best security option, see here for more information: &lt;a href='http://www.yellow-bricks.com/2010/03/01/disable-tech-support-on-esxi/' target='_blank'&gt;Yellow-Bricks Disable Tech Support on ESXi&lt;/a&gt;.</description>
-    <author>Alan Renouf</author>
-    <version>1.2</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/20 ESXi with Technical Support mode enabled.ps1</href>
-  </plugin>
-  <plugin>
-    <name>ESXi hosts which do not have Lockdown mode enabled</name>
-    <description>The following ESXi Hosts do not have lockdown enabled, think about using Lockdown as an extra security feature.</description>
-    <author>Alan Renouf</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/21 ESXi hosts which do not have Lockdown mode enabled.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Checking VM Hardware Version</name>
-    <description>The following VMs are not at the latest hardware version, you may gain performance enhancements if you convert them to the latest version</description>
-    <author>Alan Renouf</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/22 Checking VM Hardware Version.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Checking VI Events</name>
-    <description>The Following Errors were logged in the vCenter Events tab, you may wish to investigate these</description>
-    <author>Alan Renouf</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/23 VI Events.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Checking Standard vSwitch Ports Free</name>
-    <description>The following standard vSwitches have less than $vSwitchLeft left</description>
-    <author>Alan Renouf</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/24 vSwitch with less than x Ports Free.ps1</href>
-  </plugin>
-  <plugin>
-    <name>VMs in inconsistent folders</name>
-    <description>The Following VM's are not stored in folders consistent to their names, this may cause issues when trying to locate them from the datastore manually</description>
-    <author>Alan Renouf</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/25 VMs in inconsistent folders.ps1</href>
-  </plugin>
-  <plugin>
-    <name>NO VM Tools</name>
-    <description>The following VMs have No VMTools installed, for optimal configuration and performance these should be installed</description>
-    <author>Alan Renouf</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/26 No VM Tools.ps1</href>
-  </plugin>
-  <plugin>
-    <name>VM Tools Issues</name>
-    <description>The following VMs have issues with VMTools, these should be checked and reinstalled if necessary</description>
-    <author>Alan Renouf</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/27 VM Tools Issues.ps1</href>
-  </plugin>
-  <plugin>
-    <name>CD-Roms Connected</name>
-    <description>The following VMs have a CD-ROM connected, this may cause issues if this machine needs to be migrated to a different host</description>
-    <author>Alan Renouf, Frederic Martin</author>
-    <version>1.2</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/28 CD-Roms Connected.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Floppys Connected</name>
-    <description>The following VMs have a floppy disk connected, this may cause issues if this machine needs to be migrated to a different host</description>
-    <author>Alan Renouf, Frederic Martin</author>
-    <version>1.2</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/29 Floppy Drive Connected.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Single Storage VMs</name>
-    <description>The following VMs are located on storage which is only accesible by 1 host, these will not be compatible with VMotion and may be disconnected in the event of host failure</description>
-    <author>Alan Renouf, Frederic Martin</author>
-    <version>1.3</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/30 Single storage VMs.ps1</href>
-  </plugin>
-  <plugin>
-    <name>NTP Name and Service</name>
-    <description>The following hosts do not have the correct NTP settings and may cause issues if the time becomes far apart from the vCenter/Domain or other hosts</description>
-    <author>Alan Renouf</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/31 NTP Name and Service.ps1</href>
-  </plugin>
-  <plugin>
-    <name>VM CPU %RDY</name>
-    <description>The following VMs have high CPU RDY times, this can cause performance issues for more information please read &lt;a href='http://communities.vmware.com/docs/DOC-7390' target='_blank'&gt;This article&lt;/a&gt;</description>
-    <author>Alan Renouf</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/32 VM CPU Percent RDY.ps1</href>
-  </plugin>
-  <plugin>
-    <name>VM CPU Usage</name>
-    <description>The following VMs have high CPU usage and may have rogue guest processes or not enough CPU resource assigned</description>
-    <author>Alan Renouf, Sam McGeown</author>
-    <version>1.3			</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/33 VM CPU Usage.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Number of VMs per Datastore</name>
-    <description>The Maximum number of VMs per datastore is 256, the following VMs are above the defined $NumVMsPerDatastore and may cause performance issues</description>
-    <author>Alan Renouf, Frederic Martin</author>
-    <version>1.2</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/34 Number of VMs per Datastore.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Host Configuration Issues</name>
-    <description>The following configuration issues have been registered against Hosts in vCenter</description>
-    <author>Alan Renouf</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/35 Host Configuration Issues.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Host Alarms</name>
-    <description>The following alarms have been registered against hosts in vCenter</description>
-    <author>Alan Renouf, John Sneddon</author>
-    <version>1.2</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/36 Host Alarms.ps1</href>
-  </plugin>
-  <plugin>
-    <name>VM Alarms</name>
-    <description>The following alarms have been registered against VMs in vCenter</description>
-    <author>Alan Renouf</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/37 VM Alarms.ps1</href>
-  </plugin>
-  <plugin>
     <name>Cluster Configuration Issues</name>
     <description>The following alarms have been registered against clusters in vCenter</description>
     <author>Alan Renouf</author>
@@ -452,100 +125,12 @@
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/38 Cluster Configuration Issues.ps1</href>
   </plugin>
   <plugin>
-    <name>Datastore OverAllocation</name>
-    <description>The following datastores may be overcommitted it is strongly suggested you check these</description>
-    <author>Alan Renouf</author>
-    <version>1.2</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/39 Datastore OverAllocation.ps1</href>
-  </plugin>
-  <plugin>
-    <name>VCB/Veeam/NetBackup Garbage</name>
-    <description>The following snapshots have been left over from using VCB/Veeam or Netbackup, you may wish to investigate if these are still needed</description>
-    <author>Alan Renouf, Frederic Martin</author>
-    <version>1.2</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/40 VCB Garbage.ps1</href>
-  </plugin>
-  <plugin>
-    <name>VC Services</name>
-    <description>The following vCenter Services are not in the required state</description>
-    <author>Alan Renouf</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/41 vCenter Services.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Windows vCenter Error Event Logs</name>
-    <description>The following errors were found in the vCenter Event Logs, you may wish to check these further</description>
-    <author>Alan Renouf</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/42 Windows vCenter Error Event Logs.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Windows vCenter Warning Event Logs</name>
-    <description>The following warnings were found in the vCenter Event Logs, you may wish to check these further</description>
-    <author>Alan Renouf</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/43 Windows vCenter Warning Event Logs.ps1</href>
-  </plugin>
-  <plugin>
-    <name>VMKernel Warnings</name>
-    <description>The following VMKernel issues were found, it is suggested all unknown issues are explored on the VMware Knowledge Base. Use the below links to automatically search for the string</description>
-    <author>Alan Renouf, Frederic Martin</author>
-    <version>1.3</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/44 VMKernel Warnings.ps1</href>
-  </plugin>
-  <plugin>
-    <name>VMs needing snapshot consolidation</name>
-    <description>The following VMs have snapshots that failed to consolidate. See &lt;a href='http://blogs.vmware.com/vsphere/2011/08/consolidate-snapshots.html' target='_blank'&gt;this article&lt;/a&gt; for more details</description>
-    <author>Luc Dekens, Frederic Martin</author>
-    <version>1.2</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/45 VMs needing snapshot consolidation.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Missing ESX(i) updates and patches</name>
-    <description>KB</description>
-    <author>Luc Dekens</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/46 Missing ESX patches.ps1</href>
-  </plugin>
-  <plugin>
     <name>Find clusters that have HA host monitoring disabled</name>
-    <description>The following clusters have HA host monitoring dsiabled</description>
+    <description>The following clusters have HA host monitoring disabled</description>
     <author>David Chung</author>
     <version>1.1</version>
     <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/47 HAHostMonitoring.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Find VMs with thick or thin provisioned vmdk</name>
-    <description>The following VMs have have $diskformat provisioned vmdk(s)</description>
-    <author>David Chung</author>
-    <version>1.2</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/48 FindVmDiskFormat.ps1</href>
-  </plugin>
-  <plugin>
-    <name>VMs with CPU or Memory Limits Configured</name>
-    <description>The following VMs have a CPU or Memory Limit configured which may impact the performance of the VM. Note: -1 indicates no limit</description>
-    <author>Jonathan Medd</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/50 VMs with CPU or Memory Limits Configured.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Syslog Name</name>
-    <description>The following hosts do not have the correct Syslog settings which may cause issues if ESXi hosts experience issues and logs need to be investigated</description>
-    <author>Jonathan Medd</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/51 Syslog Name.ps1</href>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/47 HA Host Monitoring.ps1</href>
   </plugin>
   <plugin>
     <name>Datastore Consistency</name>
@@ -556,34 +141,10 @@
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/52 Datastore Consistency.ps1</href>
   </plugin>
   <plugin>
-    <name>Hardware status warnings/errors</name>
-    <description>Details can be found in the Hardware Status tab</description>
-    <author>Raphael Schitz</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/53 Hardware status warnings-errors.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Guests with wrong OS</name>
-    <description>The following virtual machines contain operating systems other than the ones selected in the VM configuration.</description>
-    <author>Frederic Martin</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/54 Guests with wrong OS.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Virtual machines with incorrect OS configuration</name>
-    <description>The following virtual machines have an installed OS that is different from the configured OS. This can impact the performance of the virtual machine.</description>
-    <author>Robert van den Nieuwendijk</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/54 Virtual Machines with incorrect OS Configuration.ps1</href>
-  </plugin>
-  <plugin>
     <name>Clusters with DRS disabled</name>
     <description>The following clusters have DRS disabled. This may impact the performance of your cluster.</description>
     <author>Robert van den Nieuwendijk</author>
-    <version>1.1</version>
+    <version>1.2</version>
     <category>vSphere</category>
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/55 Clusters with DRS Disabled.ps1</href>
   </plugin>
@@ -591,116 +152,9 @@
     <name>Clusters with HA disabled</name>
     <description>The following clusters have HA disabled. This will impact your disaster recovery.</description>
     <author>Robert van den Nieuwendijk</author>
-    <version>1.1</version>
+    <version>1.2</version>
     <category>vSphere</category>
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/56 Clusters with HA Disabled.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Hosts with reboot required</name>
-    <description>The following hosts require a reboot.</description>
-    <author>Robert van den Nieuwendijk</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/57 Hosts with reboot required.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Virtual machines with less hard disks than partitions</name>
-    <description>Virtual machines with less hard disks than partitions probably have more than one partition on a hard disk.</description>
-    <author>Robert van den Nieuwendijk</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/58 Virtual machines with less hard disks than partitions.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Datastores with Storage IO Control Disabled</name>
-    <description>Datastores with Storage I/O Control Disabled can impact the performance of your virtual machines.</description>
-    <author>Robert van den Nieuwendijk</author>
-    <version>1.2</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/59 Datastores with Storage IO Control Disabled.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Powered Off VMs</name>
-    <description>May want to consider deleting VMs that have been powered off for more than 30 days</description>
-    <author>Adam Schwartzberg</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/60 Powered Off VMs.ps1</href>
-  </plugin>
-  <plugin>
-    <name>VMs by Operating System</name>
-    <description>The following Operating Systems are in use in this vCenter</description>
-    <author>Raymond</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/61 Guest OS Pivot table.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Unwanted virtual hardware found</name>
-    <description>Certain kinds of hardware are unwanted on virtual machines as they may cause unnecessary vMotion constraints.</description>
-    <author>Frederic Martin</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/62 Unwanted virtual hardware.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Snapshot removed</name>
-    <description>
-    </description>
-    <author>Raphael Schitz, Frederic Martin</author>
-    <version>1.4</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/63 Snapshot removed.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Snapshots Oversize</name>
-    <description>
-    </description>
-    <author>Raphael Schitz</author>
-    <version>1.2</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/64 Snapshots Oversize.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Snapshot created</name>
-    <description>
-    </description>
-    <author>Raphael Schitz, Frederic Martin</author>
-    <version>1.4</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/65 Snapshot created.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Mis-named virtual machines</name>
-    <description>The following guest names do not match the name inside of the guest.</description>
-    <author>Frederic Martin</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/66 Misnamed VM.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Host Build versions in use</name>
-    <description>The following host builds are in use in this vCenter</description>
-    <author>Frederic Martin</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/67 Host OS Pivot Table.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Disk Max Total Latency</name>
-    <description>Check vm per LUN dispatch and esxtop for very high values over $diskmaxtotallatency</description>
-    <author>Raphael Schitz, Frederic Martin</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/68 Disk Max Total Latency.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Datastores in Maintenance Mode</name>
-    <description>Datastore held in Maintenance mode will not be hosting any virtual machine, check the below Datastore are in an expected state</description>
-    <author>Frederic Martin</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/69 Datastores in Maintenance mode.ps1</href>
   </plugin>
   <plugin>
     <name>Cluster Node version</name>
@@ -720,9 +174,9 @@
   </plugin>
   <plugin>
     <name>s/vMotion Information</name>
-    <description>TaskEvent</description>
+    <description>s/vMotions and how long they took to migrate between hosts and datastores</description>
     <author>Alan Renouf</author>
-    <version>1.0</version>
+    <version>1.1</version>
     <category>vSphere</category>
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/72 s-vMotion Information.ps1</href>
   </plugin>
@@ -732,7 +186,176 @@
     <author>Olivier TABUT, Bob Cote</author>
     <version>1.1</version>
     <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/73 - VM - More RAM than free space on Datastore.ps1</href>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/73 VM - More RAM than free space on Datastore.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Hosts in Maintenance Mode</name>
+    <description>Hosts held in Maintenance mode will not be running any virtual machine workloads, check the below Hosts are in an expected state</description>
+    <author>Alan Renouf</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/05 Hosts in Maintenance mode.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Hosts Not responding or Disconnected</name>
+    <description>Hosts which are in a disconnected state will not be running any virtual machine workloads, check the below Hosts are in an expected state</description>
+    <author>Alan Renouf</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/06 Hosts not responding or Disconnected.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Hosts Overcommit state</name>
+    <description>Overcommitted hosts may cause issues with performance if memory is not issued when needed, this may cause ballooning and swapping</description>
+    <author>Alan Renouf</author>
+    <version>1.3</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/07 Hosts Overcommit State.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Hosts Dead LUN Path</name>
+    <description>Dead LUN Paths may cause issues with storage performance or be an indication of loss of redundancy</description>
+    <author>Alan Renouf, Frederic Martin</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/08 Hosts Dead LUN Path.ps1</href>
+  </plugin>
+  <plugin>
+    <name>ESXi Inode Exhaustion</name>
+    <description>The following hosts have an excessive amount of Inodes in use on the local ESXi filesystem. This can cause hosts to disconnect from vCenter and becoming completely unmanageable even locally, requiring a hard reboot. See &lt;a href=`</description>
+    <author>Matthias Koehler</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/101 ESXi Inode Usage.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Host Profile Compliance</name>
+    <description>Failures</description>
+    <author>John Sneddon</author>
+    <version>1.2</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/105 Host Profile Compliance.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Hosts with Upcoming Certificate Expiration</name>
+    <description>The following hosts have certificates that will expire soon and will need to be replaced.</description>
+    <author>
+    </author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/110 Host Certificate Expiration Check.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Hosts with Alarm disabled</name>
+    <description>The following Hosts have Alarm disabled. This may impact the Alarming of your infrastructure.</description>
+    <author>Denis Gauthier</author>
+    <version>1.2</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/117 Hosts with Alarm disabled.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Host Swapfile datastores</name>
+    <description>The following hosts are in a cluster which is set to store the swap file in the datastore specified by the host but no location has been set on the host</description>
+    <author>Alan Renouf</author>
+    <version>1.2</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/16 Host Swapfile datastores.ps1</href>
+  </plugin>
+  <plugin>
+    <name>ESXi with Technical Support mode or ESXi Shell enabled</name>
+    <description>The following ESXi Hosts have Technical support mode or ESXi Shell enabled, this may not be the best security option, see here for more information: &lt;a href='http://www.yellow-bricks.com/2010/03/01/disable-tech-support-on-esxi/' target='_blank'&gt;Yellow-Bricks Disable Tech Support on ESXi&lt;/a&gt;.</description>
+    <author>Alan Renouf</author>
+    <version>1.2</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/20 ESXi with Technical Support mode enabled.ps1</href>
+  </plugin>
+  <plugin>
+    <name>ESXi hosts which do not have Lockdown mode enabled</name>
+    <description>The following ESXi Hosts do not have lockdown enabled, think about using lockdown as an extra security feature.</description>
+    <author>Alan Renouf</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/21 ESXi hosts which do not have Lockdown mode enabled.ps1</href>
+  </plugin>
+  <plugin>
+    <name>NTP Name and Service</name>
+    <description>The following hosts do not have the correct NTP settings and may cause issues if the time becomes far apart from the vCenter/Domain or other hosts</description>
+    <author>Alan Renouf</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/31 NTP Name and Service.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Host Configuration Issues</name>
+    <description>The following configuration issues have been registered against Hosts in vCenter</description>
+    <author>Alan Renouf</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/35 Host Configuration Issues.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Host Alarms</name>
+    <description>The following alarms have been registered against hosts in vCenter</description>
+    <author>Alan Renouf, John Sneddon</author>
+    <version>1.2</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/36 Host Alarms.ps1</href>
+  </plugin>
+  <plugin>
+    <name>VMKernel Warnings</name>
+    <description>The following VMKernel issues were found, it is suggested all unknown issues are explored on the VMware Knowledge Base. Use the below links to automatically search for the string</description>
+    <author>Alan Renouf, Frederic Martin</author>
+    <version>1.3</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/44 VMKernel Warnings.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Missing ESX(i) updates and patches</name>
+    <description>KB</description>
+    <author>Luc Dekens</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/46 Missing ESX patches.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Syslog Name</name>
+    <description>The following hosts do not have the correct Syslog settings which may cause issues if ESXi hosts experience issues and logs need to be investigated</description>
+    <author>Jonathan Medd</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/51 Syslog Name.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Hardware status warnings/errors</name>
+    <description>Details can be found in the Hardware Status tab</description>
+    <author>Raphael Schitz</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/53 Hardware status warnings-errors.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Hosts with reboot required</name>
+    <description>The following hosts require a reboot.</description>
+    <author>Robert van den Nieuwendijk</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/57 Hosts with reboot required.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Host Build versions in use</name>
+    <description>The following host builds are in use in this vCenter</description>
+    <author>Frederic Martin</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/67 Host OS Pivot Table.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Disk Max Total Latency</name>
+    <description>Check VM per LUN dispatch and esxtop for very high values over $diskmaxtotallatency</description>
+    <author>Raphael Schitz, Frederic Martin</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/68 Disk Max Total Latency.ps1</href>
   </plugin>
   <plugin>
     <name>Network redundancy lost</name>
@@ -740,7 +363,7 @@
     <author>Olivier TABUT</author>
     <version>1.1</version>
     <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/74 - Host - Network Redundancy lost.ps1</href>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/74 Host - Network Redundancy lost.ps1</href>
   </plugin>
   <plugin>
     <name>Hosts with different hostname</name>
@@ -748,47 +371,15 @@
     <author>Robert van den Nieuwendijk</author>
     <version>1.0</version>
     <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/75 Hosts with different hostnames.ps1</href>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/75 Hosts with Different Hostnames.ps1</href>
   </plugin>
   <plugin>
-    <name>VM - is my network connected ?</name>
-    <description>Check if all network cards are connected</description>
-    <author>Cyril Epiney</author>
-    <version>1.0</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/76 VM Network state.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Lost access to volume</name>
+    <name>Lost Access to Volume</name>
     <description>The following hosts have lost access to a volume. This may indicate a problem with your storage solution.</description>
     <author>Robert van den Nieuwendijk, Jonathan Medd</author>
     <version>1.1</version>
     <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/77 Lost access to volume.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Reset VMs</name>
-    <description>The following VMs have been reset over the last $($VMsResetAge) days</description>
-    <author>James Scholefield</author>
-    <version>1.0</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/78 Reset VMs.ps1</href>
-  </plugin>
-  <plugin>
-    <name>VMs in uncontrolled snapshot mode</name>
-    <description>The following VMs are in snapshot mode, but vCenter isn't aware of it. See http://kb.vmware.com/kb/1002310</description>
-    <author>Rick Glover, Matthias Koehler</author>
-    <version>1.3</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/79 Find VMs in uncontrolled snapshot mode.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Checking Distributed vSwitch Port Groups for Ports Free</name>
-    <description>The following Distributed vSwitch Port Groups have less than $vSwitchLeft left</description>
-    <author>Kyle Ruddy</author>
-    <version>1.1</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/80 DvPG with less than x Ports Free.ps1</href>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/77 Lost Access to Volume.ps1</href>
   </plugin>
   <plugin>
     <name>Check LUNS have the recommended number of paths</name>
@@ -799,20 +390,68 @@
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/81 LUN Paths Check.ps1</href>
   </plugin>
   <plugin>
-    <name>vCenter License Report</name>
-    <description>The following displays licenses registered with this server and usage.</description>
-    <author>Justin Mercier</author>
+    <name>Hosts not Connected or Alarms Disabled</name>
+    <description>Shows hosts not in service and those with alarms disabled.</description>
+    <author>Chris Monahan</author>
     <version>1.0</version>
     <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/82 License Report.ps1</href>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/83 Hosts not Connected or Alarms Disabled.ps1</href>
   </plugin>
   <plugin>
-    <name>vSwitch Security</name>
-    <description>All security options for standard vSwitches should be set to REJECT.  Distributed vSwitches may require &lt;em&gt;ForgedTrasmits&lt;/em&gt; in the default portgroup but should be disabled in other VM Network portgroups unless expressly required.</description>
-    <author>Justin Mercier, Sam McGeown, John Sneddon</author>
+    <name>Datastore Information</name>
+    <description>Datastores which run out of space will cause impact on the virtual machines held on these datastores</description>
+    <author>Alan Renouf, Jonathan Medd</author>
+    <version>1.3</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/03 Datastore Information.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Datastore Clusters with sDRS Disabled</name>
+    <description>The following Datastore Clusters either do not have sDRS enabled or it is set to manual</description>
+    <author>Shawn Masterson</author>
+    <version>1.0</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/115 Datastore Clusters with sDRS Disabled.ps1</href>
+  </plugin>
+  <plugin>
+    <name>sDRS VM Behavior not Default</name>
+    <description>The following VMs are overriding the Datastore Cluster sDRS automation level</description>
+    <author>Shawn Masterson</author>
+    <version>1.0</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/116 sDRS VM Behavior not Default.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Number of VMs per Datastore</name>
+    <description>The Maximum number of VMs per datastore is 256, the following VMs are above the defined $NumVMsPerDatastore and may cause performance issues</description>
+    <author>Alan Renouf, Frederic Martin</author>
     <version>1.2</version>
     <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/98 vSwitch Security.ps1</href>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/34 Number of VMs per Datastore.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Datastore OverAllocation</name>
+    <description>The following datastores may be overcommitted, it is strongly suggested you check these</description>
+    <author>Alan Renouf</author>
+    <version>1.2</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/39 Datastore OverAllocation.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Datastores with Storage IO Control Disabled</name>
+    <description>Datastores with Storage I/O Control Disabled can impact the performance of your virtual machines.</description>
+    <author>Robert van den Nieuwendijk</author>
+    <version>1.2</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/59 Datastores with Storage IO Control Disabled.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Datastores in Maintenance Mode</name>
+    <description>Datastore held in Maintenance mode will not be hosting any virtual machine, check the below Datastore are in an expected state</description>
+    <author>Frederic Martin</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/69 Datastores in Maintenance mode.ps1</href>
   </plugin>
   <plugin>
     <name>VSAN Datastore Capacity</name>
@@ -879,29 +518,399 @@
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/997 VSAN Configuration Maximum VMs Per Cluster Report.ps1</href>
   </plugin>
   <plugin>
-    <name>Disconnecting from vCenter</name>
-    <description>Disconnect plugin</description>
+    <name>Checking Standard vSwitch Ports Free</name>
+    <description>The following standard vSwitches have less than $vSwitchLeft left</description>
     <author>Alan Renouf</author>
     <version>1.1</version>
     <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/999 VeryLastPlugin Used to Disconnect.ps1</href>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/24 vSwitch with less than x Ports Free.ps1</href>
   </plugin>
   <plugin>
-    <name>Plugins not up to date or not installed</name>
+    <name>Checking Distributed vSwitch Port Groups for Ports Free</name>
+    <description>The following Distributed vSwitch Port Groups have less than $vSwitchLeft left</description>
+    <author>Kyle Ruddy</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/80 DvPG with less than x Ports Free.ps1</href>
+  </plugin>
+  <plugin>
+    <name>vSwitch Security</name>
+    <description>All security options for standard vSwitches should be set to REJECT.  Distributed vSwitches may require &lt;em&gt;ForgedTrasmits&lt;/em&gt; in the default portgroup but should be disabled in other VM Network portgroups unless expressly required.</description>
+    <author>Justin Mercier, Sam McGeown, John Sneddon</author>
+    <version>1.2</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/98 vSwitch Security.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Snapshot Information</name>
     <description>
     </description>
-    <author>Alan Renouf, Jake Robinson, Frederic Martin</author>
+    <author>Alan Renouf, Raphael Schitz</author>
     <version>1.3</version>
-    <category>vCheck</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vCheck/master/Plugins/Plugins Not up to date or installed.ps1</href>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/02 Snapshot Information.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Map disk region event</name>
+    <description>These may occur due to VCB issues, check &lt;a href='http://kb.vmware.com/kb/1007331' target='_blank'&gt;this article&lt;/a&gt; for more details</description>
+    <author>Alan Renouf</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/04 Map disk region event.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Created or cloned VMs</name>
+    <description>The following VMs have been created over the last {0} Days</description>
+    <author>Alan Renouf</author>
+    <version>1.2</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/09 Created or cloned VMs.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Removed VMs</name>
+    <description>The following VMs have been removed/deleted over the last $($VMsNewRemovedAge) days</description>
+    <author>Alan Renouf</author>
+    <version>1.2</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/10 Removed VMs.ps1</href>
+  </plugin>
+  <plugin>
+    <name>VMs with CPU or Memory Reservations Configured</name>
+    <description>The following VMs have a CPU or Memory Reservation configured which may impact the performance of the VM. Note: -1 indicates no reservation</description>
+    <author>Dan Jellesma</author>
+    <version>1.0</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/100 VMs with CPU or Memory Reservations.ps1</href>
+  </plugin>
+  <plugin>
+    <name>VM Logging</name>
+    <description>The following virtual machines are not configured to rotate logs at $RotateSize bytes and/or to store $KeepOld logs.</description>
+    <author>Bob Cote</author>
+    <version>1.0</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/102 VM Logging.ps1</href>
+  </plugin>
+  <plugin>
+    <name>CPU/Mem HotPlug</name>
+    <description>VMs needs to be shutdown to modify CPU/Mem HotPlug in case this settings is disabled.</description>
+    <author>Eric Lannier</author>
+    <version>1.0</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/103 VMs CPU MEM Add Hot Disabled.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Find Phantom Snapshots</name>
+    <description>The following VM's have Phantom Snapshots</description>
+    <author>Mads Fog Albrechtslund</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/106 Find Phantom Snapshots.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Quantity of snapshots</name>
+    <description>The following VMs have more than $MaxNumberSnapshots snapshot(s)</description>
+    <author>Mads Fog Albrechtslund</author>
+    <version>1.0</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/107 Quantity of Snapshots.ps1</href>
+  </plugin>
+  <plugin>
+    <name>VMs with over $vCPU vCPUs</name>
+    <description>The following VMs have over $vCPU CPU(s) and may impact performance due to CPU scheduling</description>
+    <author>Alan Renouf</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/11 VMs with over CPU Count.ps1</href>
+  </plugin>
+  <plugin>
+    <name>VM Tools Not Up to Date</name>
+    <description>The following VMs are running an older version of Tools than is available on its Host (Max Shown: $VMTMaxReturn Exceptions: $VMTDoNotInclude)</description>
+    <author>Alan Renouf, Shawn Masterson</author>
+    <version>1.0</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/114 VM Tools Not Up to Date.ps1</href>
+  </plugin>
+  <plugin>
+    <name>VMs Ballooning or Swapping</name>
+    <description>Ballooning and swapping may indicate a lack of memory or a limit on a VM, this may be an indication of not enough memory in a host or a limit held on a VM, &lt;a href='http://www.virtualinsanity.com/index.php/2010/02/19/performance-troubleshooting-vmware-vsphere-memory/' target='_blank'&gt;further information is available here&lt;/a&gt;.</description>
+    <author>Alan Renouf, Frederic Martin</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/12 VMs Swapping or Ballooning.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Invalid or inaccessible VM</name>
+    <description>The following VMs are marked as inaccessible or invalid</description>
+    <author>Alan Renouf</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/13 Invalid or inaccessible VMs.ps1</href>
+  </plugin>
+  <plugin>
+    <name>VMs restarted due to Guest OS Error</name>
+    <description>The following VMs have been restarted by HA in the last $HAVMresetold days</description>
+    <author>Alan Renouf</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/14 VMs restarted due to Guest OS Error.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Guests with less than $MBFree MB</name>
+    <description>The following guests have less than $MBFree MB Free, if a guest disk fills up it may cause issues with the guest Operating System</description>
+    <author>Alan Renouf</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/19 Guests with less than X MB free.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Checking VM Hardware Version</name>
+    <description>The following VMs are not at the latest hardware version, you may gain performance enhancements if you convert them to the latest version</description>
+    <author>Alan Renouf</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/22 Checking VM Hardware Version.ps1</href>
+  </plugin>
+  <plugin>
+    <name>VMs in inconsistent folders</name>
+    <description>The following VMs are not stored in folders consistent to their names, this may cause issues when trying to locate them from the datastore manually</description>
+    <author>Alan Renouf</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/25 VMs in inconsistent folders.ps1</href>
+  </plugin>
+  <plugin>
+    <name>No VM Tools</name>
+    <description>The following VMs have No VMTools installed, for optimal configuration and performance these should be installed</description>
+    <author>Alan Renouf</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/26 No VM Tools.ps1</href>
+  </plugin>
+  <plugin>
+    <name>VM Tools Issues</name>
+    <description>The following VMs have issues with VMTools, these should be checked and reinstalled if necessary</description>
+    <author>Alan Renouf</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/27 VM Tools Issues.ps1</href>
+  </plugin>
+  <plugin>
+    <name>CD-ROMs Connected</name>
+    <description>The following VMs have a CD-ROM connected, this may cause issues if this machine needs to be migrated to a different host</description>
+    <author>Alan Renouf, Frederic Martin</author>
+    <version>1.2</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/28 CD-ROMs Connected.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Floppies Connected</name>
+    <description>The following VMs have a floppy drive connected, this may cause issues if this machine needs to be migrated to a different host</description>
+    <author>Alan Renouf, Frederic Martin</author>
+    <version>1.2</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/29 Floppy Drive Connected.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Single Storage VMs</name>
+    <description>The following VMs are located on storage which is only accessible by 1 host, these will not be compatible with vMotion and may be disconnected in the event of host failure</description>
+    <author>Alan Renouf, Frederic Martin</author>
+    <version>1.3</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/30 Single Storage VMs.ps1</href>
+  </plugin>
+  <plugin>
+    <name>VM CPU %RDY</name>
+    <description>The following VMs have high CPU RDY times, this can cause performance issues for more information please read &lt;a href='http://communities.vmware.com/docs/DOC-7390' target='_blank'&gt;This article&lt;/a&gt;</description>
+    <author>Alan Renouf</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/32 VM CPU Percent RDY.ps1</href>
+  </plugin>
+  <plugin>
+    <name>VM CPU Usage</name>
+    <description>The following VMs have high CPU usage and may have rogue guest processes or not enough CPU resource assigned</description>
+    <author>Alan Renouf, Sam McGeown</author>
+    <version>1.3			</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/33 VM CPU Usage.ps1</href>
+  </plugin>
+  <plugin>
+    <name>VM Alarms</name>
+    <description>The following alarms have been registered against VMs in vCenter</description>
+    <author>Alan Renouf</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/37 VM Alarms.ps1</href>
+  </plugin>
+  <plugin>
+    <name>VCB/Veeam/NetBackup Garbage</name>
+    <description>The following snapshots have been left over from using VCB/Veeam or Netbackup, you may wish to investigate if these are still needed</description>
+    <author>Alan Renouf, Frederic Martin</author>
+    <version>1.2</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/40 VCB Garbage.ps1</href>
+  </plugin>
+  <plugin>
+    <name>VMs needing snapshot consolidation</name>
+    <description>The following VMs have snapshots that failed to consolidate. See &lt;a href='http://blogs.vmware.com/vsphere/2011/08/consolidate-snapshots.html' target='_blank'&gt;this article&lt;/a&gt; for more details</description>
+    <author>Luc Dekens, Frederic Martin</author>
+    <version>1.2</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/45 VMs needing snapshot consolidation.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Find VMs with thick or thin provisioned vmdk</name>
+    <description>The following VMs have have $diskformat provisioned vmdk(s)</description>
+    <author>David Chung</author>
+    <version>1.2</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/48 Find VM Disk Format.ps1</href>
+  </plugin>
+  <plugin>
+    <name>VMs with CPU or Memory Limits Configured</name>
+    <description>The following VMs have a CPU or memory limit configured which may impact the performance of the VM. Note: -1 indicates no limit</description>
+    <author>Jonathan Medd</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/50 VMs with CPU or Memory Limits Configured.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Guests with wrong OS</name>
+    <description>The following virtual machines contain operating systems other than the ones selected in the VM configuration.</description>
+    <author>Frederic Martin</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/54 Guests with wrong OS.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Virtual machines with incorrect OS configuration</name>
+    <description>The following virtual machines have an installed OS that is different from the configured OS. This can impact the performance of the virtual machine.</description>
+    <author>Robert van den Nieuwendijk</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/54 Virtual Machines with incorrect OS Configuration.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Virtual machines with less hard disks than partitions</name>
+    <description>Virtual machines with less hard disks than partitions probably have more than one partition on a hard disk.</description>
+    <author>Robert van den Nieuwendijk</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/58 Virtual machines with less hard disks than partitions.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Powered Off VMs</name>
+    <description>May want to consider deleting VMs that have been powered off for more than 30 days</description>
+    <author>Adam Schwartzberg</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/60 Powered Off VMs.ps1</href>
+  </plugin>
+  <plugin>
+    <name>VMs by Operating System</name>
+    <description>The following Operating Systems are in use in this vCenter</description>
+    <author>Raymond</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/61 Guest OS Pivot table.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Unwanted virtual hardware found</name>
+    <description>Certain kinds of hardware are unwanted on virtual machines as they may cause unnecessary vMotion constraints.</description>
+    <author>Frederic Martin</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/62 Unwanted Virtual Hardware.ps1</href>
+  </plugin>
+  <plugin>
+    <name>VM - Display all VMs with CBT not enabled</name>
+    <description>List all VMs with CBT status disabled. It's not a good option for backup !</description>
+    <author>Cyril Epiney</author>
+    <version>1.0</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/620 CBT Status.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Snapshot removed</name>
+    <description>
+    </description>
+    <author>Raphael Schitz, Frederic Martin</author>
+    <version>1.4</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/63 Snapshot Removed.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Snapshots Oversize</name>
+    <description>VMware snapshots which are kept for a long period of time may cause issues, filling up datastores and also may impact performance of the virtual machine.</description>
+    <author>Raphael Schitz,Shawn Masterson</author>
+    <version>1.3</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/64 Snapshots Oversize.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Snapshot created</name>
+    <description>
+    </description>
+    <author>Raphael Schitz, Frederic Martin</author>
+    <version>1.4</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/65 Snapshot Created.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Mis-named virtual machines</name>
+    <description>The following guest names do not match the name inside of the guest.</description>
+    <author>Frederic Martin</author>
+    <version>1.2</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/66 Misnamed VM.ps1</href>
+  </plugin>
+  <plugin>
+    <name>VM - is my network connected?</name>
+    <description>Check if all network cards are connected</description>
+    <author>Cyril Epiney</author>
+    <version>1.0</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/76 VM Network State.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Reset VMs</name>
+    <description>The following VMs have been reset over the last $($VMsResetAge) days</description>
+    <author>James Scholefield</author>
+    <version>1.0</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/78 Reset VMs.ps1</href>
+  </plugin>
+  <plugin>
+    <name>VMs in uncontrolled snapshot mode</name>
+    <description>The following VMs are in snapshot mode, but vCenter isn't aware of it. See http://kb.vmware.com/kb/1002310</description>
+    <author>Rick Glover, Matthias Koehler</author>
+    <version>1.3</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/79 Find VMs in Uncontrolled Snapshot Mode.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Site Recovery Manager - RPO Violation Report</name>
+    <description>This is a customizable report of RPO violations found in the vCenter event log.</description>
+    <author>Joel Gibson, based on work by Alan Renouf</author>
+    <version>0.5</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/108 SRM RPO Violations.ps1</href>
   </plugin>
   <plugin>
     <name>Report on Plugins</name>
     <description>
     </description>
     <author>Phil Randal</author>
-    <version>1.0</version>
+    <version>1.1</version>
     <category>vCheck</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vCheck/master/Plugins/Report on Plugins.ps1</href>
+    <href>https://raw.github.com/alanrenouf/vCheck-vCheck/master/Plugins/119 Report on Plugins.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Disconnecting from vCenter</name>
+    <description>Disconnect plugin</description>
+    <author>Alan Renouf</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/999 VeryLastPlugin Used to Disconnect.ps1</href>
   </plugin>
 </pluginlist>

@@ -38,7 +38,7 @@ if($OpenConnection.IsConnected) {
 	$VIConnection = $OpenConnection
 } else {
 	Write-CustomOut $pLang.connOpen
-	$VIConnection = Connect-VIServer $VIServer
+	$VIConnection = Connect-VIServer -Server $VIServer -Port $Port
 }
 
 if (-not $VIConnection.IsConnected) {

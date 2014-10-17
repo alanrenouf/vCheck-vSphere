@@ -30,7 +30,7 @@
 .NOTES 
    File Name  : vCheck.ps1 
    Author     : Alan Renouf - @alanrenouf
-   Version    : 6.21
+   Version    : 6.22-Alpha-1
    
    Thanks to all who have commented on my blog to help improve this project
    all beta testers and previous contributors to this script.
@@ -61,7 +61,7 @@ param (
    [ValidateScript({Test-Path $_ -PathType 'Leaf'})]
    [string]$job
 )
-$Version = "6.21"
+$Version = "6.22-Alpha-1"
 $Date = Get-Date
 ################################################################################
 #                                  Functions                                   #
@@ -141,6 +141,19 @@ Function Invoke-Settings ($Filename, $GB) {
 		if ($GB) { $out[$SetupLine] = '$SetupWizard = $False' }
 		$out | Out-File $Filename
 	}
+}
+
+<# Replace HTML Entities in string. Used to stop <br /> tags from being mangled in tables #>
+function Format-HTMLEntities {
+	param ([string]$content)
+
+	$replace = @{"&lt;" = "<";
+                     "&gt;" = ">"; }
+	
+	foreach ($r in $replace.Keys.GetEnumerator()) { 
+		$content = $content -replace $r, $replace[$r]
+	}
+	return $content
 }
 
 Function Get-CustomHTML {
@@ -231,7 +244,7 @@ Function Get-HTMLTable {
 				}
 			}
 		}
-		return [string]($XMLTable.OuterXml)
+		return ([string]($XMLTable.OuterXml) | Format-HTMLEntities)
 	}
 	else {
 		$HTMLTable = $Content | ConvertTo-Html -Fragment

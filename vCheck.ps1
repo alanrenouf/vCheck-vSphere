@@ -30,7 +30,7 @@
 .NOTES 
    File Name  : vCheck.ps1 
    Author     : Alan Renouf - @alanrenouf
-   Version    : 6.22-Alpha-1
+   Version    : 6.22-Alpha-2
    
    Thanks to all who have commented on my blog to help improve this project
    all beta testers and previous contributors to this script.
@@ -61,7 +61,7 @@ param (
    [ValidateScript({Test-Path $_ -PathType 'Leaf'})]
    [string]$job
 )
-$Version = "6.22-Alpha-1"
+$Version = "6.22-Alpha-2"
 $Date = Get-Date
 ################################################################################
 #                                  Functions                                   #
@@ -244,16 +244,15 @@ Function Get-HTMLTable {
 				}
 			}
 		}
-		return ([string]($XMLTable.OuterXml) | Format-HTMLEntities)
+		return (Format-HTMLEntities ([string]($XMLTable.OuterXml)))
 	}
 	else {
 		$HTMLTable = $Content | ConvertTo-Html -Fragment
 		$HTMLTable = $HTMLTable -Replace '<TABLE>', $HTMLTableReplace
 		$HTMLTable = $HTMLTable -Replace '<td>', $HTMLTdReplace
 		$HTMLTable = $HTMLTable -Replace '<th>', $HTMLThReplace
-		$HTMLTable = $HTMLTable -replace '&lt;', '<'
-		$HTMLTable = $HTMLTable -replace '&gt;', '>'
-		Return $HTMLTable
+
+		return (Format-HTMLEntities $HTMLTable)
 	}
 }
 
@@ -280,7 +279,7 @@ Function Get-HTMLList {
          $trNode = $XMLTable.SelectSingleNode("/table/tr[$($i+1)]")
          $trNode.ReplaceChild($elem, $node) | Out-Null
       }
-      return [string]($XMLTable.OuterXml)
+      return (Format-HTMLEntities ([string]($XMLTable.OuterXml)))
    }
 }
 

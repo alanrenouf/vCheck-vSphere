@@ -30,7 +30,7 @@
 .NOTES 
    File Name  : vCheck.ps1 
    Author     : Alan Renouf - @alanrenouf
-   Version    : 6.22-Alpha-2
+   Version    : 6.22-Alpha-3
    
    Thanks to all who have commented on my blog to help improve this project
    all beta testers and previous contributors to this script.
@@ -61,7 +61,7 @@ param (
    [ValidateScript({Test-Path $_ -PathType 'Leaf'})]
    [string]$job
 )
-$Version = "6.22-Alpha-2"
+$Version = "6.22-Alpha-3"
 $Date = Get-Date
 ################################################################################
 #                                  Functions                                   #
@@ -197,7 +197,7 @@ Function Get-CustomHTMLClose{
 
 <# Takes an array of content, and optional formatRules and generated HTML table #>
 Function Get-HTMLTable {
-	param([array]$Content, [array]$FormatRules)
+	param($Content, $FormatRules)
 
 	# If format rules are specified
 	if ($FormatRules) {
@@ -208,10 +208,15 @@ Function Get-HTMLTable {
 		# Check each cell to see if there are any format rules
 		for ($RowN = 1; $RowN -lt $XMLTable.table.tr.count; $RowN++) {
 			for ($ColN = 0; $ColN -lt $XMLTable.table.tr[$RowN].td.count; $ColN++) {
-				if ( $Tableformat.keys -contains $XMLTable.table.tr[0].th[$ColN]) {
+				if ( $FormatRules.keys -contains $XMLTable.table.tr[0].th[$ColN]) {
 					# Current cell has a rule, test to see if they are valid
-					foreach ( $rule in $Tableformat[$XMLTable.table.tr[0].th[$ColN]] ) {
-						if ( Invoke-Expression ("[int]`$XMLTable.table.tr[`$RowN].td[`$ColN] {0}" -f [string]$rule.Keys) ) {
+					foreach ( $rule in $FormatRules[$XMLTable.table.tr[0].th[$ColN]] ) {
+						$value = $XMLTable.table.tr[$RowN].td[$ColN]
+                  if ($value -notmatch "^[0-9.]+$") {
+                     $value = """$value"""
+                  }
+                  
+						if ( Invoke-Expression ("{0} {1}" -f $value, [string]$rule.Keys) ) {
 							# Find what to 
 							$RuleScope = ([string]$rule.Values).split(",")[0]
 							$RuleActions = ([string]$rule.Values).split(",")[1].split("|")
@@ -596,7 +601,7 @@ if ($job) {
 }
 else {
 	$ToNatural = { [regex]::Replace($_, '\d+', { $args[0].Value.PadLeft(20) }) }
-	$vCheckPlugins = Get-ChildItem -Path $PluginsFolder -filter "*.ps1" -Recurse | where {$_.Directory -match "initialize"} | Sort $ToNatural
+	$vCheckPlugins = @(Get-ChildItem -Path $PluginsFolder -filter "*.ps1" -Recurse | where {$_.Directory -match "initialize"} | Sort $ToNatural)
 	$PluginsSubFolder = Get-ChildItem -Path $PluginsFolder | where {($_.Name -notmatch "initialize") -and ($_.Name -notmatch "finish")}
 	$vCheckPlugins += $PluginsSubFolder | % {Get-ChildItem -Path $_.FullName -filter "*.ps1" | Sort $ToNatural}
 	$vCheckPlugins += Get-ChildItem -Path $PluginsFolder -filter "*.ps1" -Recurse | where {$_.Directory -match "finish"} | Sort $ToNatural

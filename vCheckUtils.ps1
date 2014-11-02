@@ -1,6 +1,6 @@
 $global:vCheckPath = $MyInvocation.MyCommand.Definition | Split-Path
 $global:pluginXMLURL = "https://raw.github.com/alanrenouf/vCheck-vSphere/master/plugins.xml"
-$global:pluginURL = "https://raw.github.com/alanrenouf/vCheck-{0}/master/Plugins/{1}"
+$global:pluginURL = "https://raw.github.com/alanrenouf/vCheck-{0}/master/Plugins/{1}/{2}"
 
  <#
 .SYNOPSIS
@@ -271,7 +271,7 @@ function Get-vCheckPluginXML
    $root = $xml.CreateElement("pluginlist")
    [void]$xml.AppendChild($root)
 
-   foreach ($localPluginFile in (Get-ChildItem $vCheckPath\Plugins\*.ps1))
+   foreach ($localPluginFile in (Get-ChildItem -Recurse -File $vCheckPath\Plugins\*.ps1))
    {
       $localPluginContent = Get-Content $localPluginFile
       
@@ -322,7 +322,7 @@ function Get-vCheckPluginXML
       [void]$pluginXML.AppendChild($elem)
       
       $elem=$xml.CreateElement("href")
-      $elem.InnerText= ($pluginURL -f $localPluginCategory, $localPluginFile.Name)
+      $elem.InnerText= ($pluginURL -f $localPluginCategory, $localPluginFile.Directory.Name, $localPluginFile.Name)
       [void]$pluginXML.AppendChild($elem)
       
       [void]$root.AppendChild($pluginXML)
@@ -363,7 +363,7 @@ Function Get-PluginSettings {
 			$settings.filename = $filename
 			$settings.question = $Question
 			$settings.var = $CurSet
-			$currentsetting = New-Object –TypeName PSObject –Prop $settings
+			$currentsetting = New-Object â€“TypeName PSObject â€“Prop $settings
 			$psettings += $currentsetting
 			$Line ++ 
 		} Until ( $Line -ge ($EndLine -1) )

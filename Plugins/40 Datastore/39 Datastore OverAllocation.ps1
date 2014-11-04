@@ -18,7 +18,7 @@ foreach ($storage in $storageviews)
 	}
 }
 
-$voverallocation
+$voverallocation | ft -a
 
 $Title = "Datastore OverAllocation"
 $Header = "Datastore OverAllocation Over $OverAllocation%: $(@($voverallocation).Count)"

@@ -1,4 +1,5 @@
 # Start of Settings 
+$DatastoreIgnore = "BED-QA-SSD-001"
 # End of Settings 
 
 $VMFolder = @()
@@ -6,7 +7,7 @@ Foreach ($CHKVM in $FullVM){
 	$Details = "" |Select-Object VM,Path
 	$Folder = ((($CHKVM.Summary.Config.VmPathName).Split(']')[1]).Split('/'))[0].TrimStart(' ')
 	$Path = ($CHKVM.Summary.Config.VmPathName).Split('/')[0]
-	If ($CHKVM.Name-ne $Folder){
+	If (($CHKVM.Name-ne $Folder) -and ($Path -notmatch $DatastoreIgnore)){
 		$Details.VM= $CHKVM.Name
 		$Details.Path= $Path
 		$VMFolder += $Details}

@@ -1,6 +1,6 @@
 # Start of Settings 
 # VMs with CD drives not to report on
-$CDFloppyConnectedOK ="APP*"
+$CDFloppyConnectedOK = "APP*|ETC*"
 # End of Settings
 
 $Result = @($FullVM | ?{$_.runtime.powerState -eq "PoweredOn" -And $_.Name -notmatch $CDFloppyConnectedOK} | ?{$_.config.hardware.device | ?{$_ -is [VMware.Vim.VirtualCdrom] -And $_.connectable.connected}} | Select Name)

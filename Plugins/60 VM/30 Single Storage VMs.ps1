@@ -1,6 +1,6 @@
 # Start of Settings 
 # Local Stored VMs, do not report on any VMs who are defined here
-$LVMDoNotInclude =" Template_*|VDI*"
+$LVMDoNotInclude = "Template_*|VDI*"
 # End of Settings
 
 $unSharedDatastore = $storageviews | ?{-Not $_.summary.multiplehostaccess} | Select -Expand Name

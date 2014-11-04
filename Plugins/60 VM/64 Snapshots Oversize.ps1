@@ -40,6 +40,6 @@ $Title = "Snapshots Oversize"
 $Header = "Snapshots Oversize"
 $Comments = "VMware snapshots which are kept for a long period of time may cause issues, filling up datastores and also may impact performance of the virtual machine."
 $Display = "Table"
-$Author = "Raphael Schitz,Shawn Masterson"
+$Author = "Raphael Schitz, Shawn Masterson"
 $PluginVersion = 1.3
 $PluginCategory = "vSphere"

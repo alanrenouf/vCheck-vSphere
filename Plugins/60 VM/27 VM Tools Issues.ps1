@@ -1,6 +1,6 @@
 # Start of Settings 
 # VM Tools Issues, do not report on any VMs who are defined here
-$VMTDoNotInclude =" VM1_*|VM2_*"
+$VMTDoNotInclude = "VM1_*|VM2_*"
 # End of Settings
 
 $Result = $FullVM | Where {$_.Name -notmatch $VMTDoNotInclude} | Where {$_.Guest.GuestState -eq "Running" -And ($_.Guest.GuestFullName -eq $NULL -or $_.Guest.IPAddress -eq $NULL -or $_.Guest.HostName -eq $NULL -or $_.Guest.Disk -eq $NULL -or $_.Guest.Net -eq $NULL)} | select Name, @{N="IPAddress";E={$_.Guest.IPAddress[0]}},@{n="OSFullName";E={$_.Guest.GuestFullName}},@{n="HostName";e={$_.guest.hostname}},@{N="NetworkLabel";E={$_.guest.Net[0].Network}} -ErrorAction SilentlyContinue |sort Name

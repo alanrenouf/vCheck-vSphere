@@ -8,7 +8,7 @@ $VMsCBTStatus
 
 $Title = "VM - Display all VMs with CBT not enabled"
 $Header = "VM with CBT disabled : $(@($VMsCBTStatus).Count)"
-$Comments = "List all VMs with CBT status disabled. It's not a good option for backup !"
+$Comments = "List all VMs with CBT status disabled. It's not a good option for backup!"
 $Display = "Table"
 $Author = "Cyril Epiney"
 $PluginVersion = 1.0

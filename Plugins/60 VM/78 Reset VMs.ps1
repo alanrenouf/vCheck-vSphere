@@ -3,7 +3,7 @@
 $VMsResetAge = 1
 # End of Settings
 
- @(Get-VIEventPlus -Start ((get-date).adddays(-$VMsResetAge)) -EventType "VmResettingEvent" | Select createdTime, UserName, fullFormattedMessage)
+@(Get-VIEventPlus -Start ((get-date).adddays(-$VMsResetAge)) -EventType "VmResettingEvent" | Select createdTime, UserName, fullFormattedMessage)
 
 $Title = "Reset VMs"
 $Header = "VMs Reset (Last $VMsResetAge Day(s)) : [count]"

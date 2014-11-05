@@ -1,4 +1,5 @@
 # Start of Settings
+# Specify which Datastore(s) to filter from report
 $DatastoreIgnore = "local"
 # End of Settings 
 

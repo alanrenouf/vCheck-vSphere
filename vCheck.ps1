@@ -30,7 +30,7 @@
 .NOTES 
    File Name  : vCheck.ps1 
    Author     : Alan Renouf - @alanrenouf
-   Version    : 6.22-Alpha-4
+   Version    : 6.22-Alpha-5
    
    Thanks to all who have commented on my blog to help improve this project
    all beta testers and previous contributors to this script.
@@ -61,7 +61,7 @@ param (
    [ValidateScript({Test-Path $_ -PathType 'Leaf'})]
    [string]$job
 )
-$vCheckVersion = "6.22-Alpha-4"
+$vCheckVersion = "6.22-Alpha-5"
 $Date = Get-Date
 ################################################################################
 #                                  Functions                                   #
@@ -569,6 +569,7 @@ if ($job) {
    foreach ($PluginPath in ($jobConfig.vCheck.plugins.path -split ";")) {
       if (Test-Path $PluginPath) {
          $PluginPaths += (Get-Item $PluginPath).Fullname
+         $PluginPaths += Get-Childitem $PluginPath -Directory -recurse | Select -expandproperty FullName
       }
       else {      
          $PluginPaths += $ScriptPath + "\Plugins"

@@ -2,7 +2,7 @@
 # End of Settings 
 
 $ESXiTechMode = @()
-$ESXiTechMode += $VMH | Where { ($_.Version -lt 4.1) -and ($_.ConnectionState -eq "Connected" -or $_.ConnectionState -eq "Maintenance") -and ($_.ExtensionData.Summary.Config.Product.Name -match "i")} | Select Name, @{N="TechSuportModeEnabled";E={($_ | Get-VMHostAdvancedConfiguration -Name VMkernel.Boot.techSupportMode).Values}}
+$ESXiTechMode += $VMH | Where { ($_.Version -lt 4.1) -and ($_.ConnectionState -eq "Connected" -or $_.ConnectionState -eq "Maintenance") -and ($_.ExtensionData.Summary.Config.Product.Name -match "i")} | Select Name, @{N="TechSuportModeEnabled";E={($_ | Get-AdvancedSetting -Name VMkernel.Boot.techSupportMode).value}}
 $ESXiTechMode += $VMH | Where { $_.Version -ge "4.1.0" } | Where {$_.ConnectionState -eq "Connected" -or $_.ConnectionState -eq "Maintenance"} | Select Name, @{N="TechSuportModeEnabled";E={($_ | Get-VMHostService | Where {$_.key -eq "TSM"}).Running}}
 $Result = @($ESXiTechMode | Where { $_.TechSuportModeEnabled -eq "True" })
 $Result

@@ -3,10 +3,14 @@
 $Units ="GB"
 # End of Settings
 
-
 # Setup plugin-specific language table
-Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable pLang
-
+$pLang = DATA {
+   ConvertFrom-StringData @' 
+      pluginActivity = Checking overcommit state for hosts
+'@
+}
+# Override the defaults (en) if language file exists in lang driectory
+Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable pLang -ErrorAction SilentlyContinue
 
 $OverCommit = @()
 $i = 0

@@ -30,7 +30,7 @@
 .NOTES 
    File Name  : vCheck.ps1 
    Author     : Alan Renouf - @alanrenouf
-   Version    : 6.22-Alpha-5
+   Version    : 6.22-Alpha-6
    
    Thanks to all who have commented on my blog to help improve this project
    all beta testers and previous contributors to this script.
@@ -61,8 +61,45 @@ param (
    [ValidateScript({Test-Path $_ -PathType 'Leaf'})]
    [string]$job
 )
-$vCheckVersion = "6.22-Alpha-5"
+$vCheckVersion = "6.22-Alpha-6"
 $Date = Get-Date
+
+################################################################################
+#                             Internationalization                             #
+################################################################################
+$lang = DATA {
+   ConvertFrom-StringData @' 
+      setupMsg01  = 
+      setupMsg02  = Welcome to vCheck by Virtu-Al http://virtu-al.net
+      setupMsg03  = =================================================
+      setupMsg04  = This is the first time you have run this script or you have re-enabled the setup wizard.
+      setupMsg05  =
+      setupMsg06  = To re-run this wizard in the future please use vCheck.ps1 -Config
+      setupMsg07  = To get usage information, please use Get-Help vCheck.ps1
+      setupMsg08  =
+      setupMsg09  = Please complete the following questions or hit Enter to accept the current setting
+      setupMsg10  = After completing this wizard the vCheck report will be displayed on the screen.
+      setupMsg11  =
+      resFileWarn = Image File not found for {0}!
+      pluginInvalid = Plugin does not exist: {0}
+      pluginpathInvalid = Plugin path "{0}" is invalid, defaulting to {1}
+      gvInvalid   = Global Variables path invalid in job specification, defaulting to {0}
+      varUndefined = Variable `${0} is not defined in GlobalVariables.ps1
+      pluginActivity = Evaluating plugins
+      pluginStatus = [{0} of {1}] {2}
+      Complete = Complete
+      pluginStart  = ..start calculating {0} by {1} v{2} [{3} of {4}]
+      pluginEnd    = ..finished calculating {0} by {1} v{2} [{3} of {4}]
+      repTime     = This report took {0} minutes to run all checks, completing on {1} at {2}
+      slowPlugins = The following plugins took longer than {0} seconds to run, there may be a way to optimize these or remove them if not needed
+      emailSend   = ..Sending Email
+      emailAtch   = vCheck attached to this email
+      HTMLdisp    = ..Displaying HTML results
+'@
+}
+
+Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable lang -ErrorAction SilentlyContinue
+
 ################################################################################
 #                                  Functions                                   #
 ################################################################################
@@ -547,9 +584,6 @@ function Get-ReportResource {
 # Setup all paths required for script to run
 $ScriptPath = (Split-Path ((Get-Variable MyInvocation).Value).MyCommand.Path)
 $PluginsFolder = $ScriptPath + "\Plugins\"
-
-# Setup language hashtable
-Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable lang
 
 # if we have the job parameter set, get the paths from the config file.
 if ($job) {

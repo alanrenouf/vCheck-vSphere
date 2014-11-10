@@ -241,7 +241,8 @@ Function Get-HTMLTable {
 		# Use an XML object for ease of use
 		$XMLTable = [xml]($content | ConvertTo-Html -Fragment)
 		$XMLTable.table.RemoveChild($XMLTable.table.colgroup) | out-null
-
+      $XMLTable.table.SetAttribute("width","100%")
+      
 		# Check each cell to see if there are any format rules
 		for ($RowN = 1; $RowN -lt $XMLTable.table.tr.count; $RowN++) {
 			for ($ColN = 0; $ColN -lt $XMLTable.table.tr[$RowN].td.count; $ColN++) {
@@ -259,7 +260,11 @@ Function Get-HTMLTable {
 							$RuleActions = ([string]$rule.Values).split(",")[1].split("|")
 							
 							switch ($RuleScope) {
-								"Row"  { $XMLTable.table.tr[$RowN].SetAttribute($RuleActions[0], $RuleActions[1]) }
+								"Row"  { 
+                           for ($TRColN = 0; $TRColN -lt $XMLTable.table.tr[$RowN].td.count; $TRColN++) {
+                              $XMLTable.table.tr[$RowN].selectSingleNode("td[$($TRColN+1)]").SetAttribute($RuleActions[0], $RuleActions[1]) 
+                           }
+                        }
 								"Cell" {
                            if ($RuleActions[0] -eq "cid") {
                               # Do Image - create new XML node for img and clear #text
@@ -308,6 +313,7 @@ Function Get-HTMLList {
 		  [xml]$XMLTable = $content | ConvertTo-HTML -Fragment
 		  $XMLTable.table.RemoveChild($XMLTable.table.colgroup) | out-null
 		  $XMLTable.table.RemoveChild($XMLTable.table.tr[0]) | out-null
+        $XMLTable.table.SetAttribute("width","100%")
       }
       else {
 		[xml]$XMLTable = $content | ConvertTo-HTML -Fragment -As List
@@ -816,6 +822,7 @@ if ($SendEmail) {
    if ($EmailSSL -eq $true) {
       $smtpClient.EnableSsl = $true
    }
+   $smtpClient.UseDefaultCredentials = $true;
    $smtpClient.Send($msg)
    If ($SendAttachment) { $attachment.Dispose() }
    $msg.Dispose()

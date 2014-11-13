@@ -11,6 +11,9 @@ $ChartSize = "200x200"
 Add-ReportResource "Header-vCheck" ($StylePath + "\Header.jpg") -Used $true
 Add-ReportResource "Header-VMware" ($StylePath + "\Header-vmware.png") -Used $true
 
+# Hashtable containing the match (key) and replace (value)
+$StyleReplace = @{"_HEADER_"= "`$Server vCheck"; }
+
 $HTMLHeader = @"
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -49,6 +52,7 @@ $HTMLHeader = @"
       </style>
 	</head>
 	<body style="padding: 0 10px; margin: 0px; font-family:Arial, Helvetica, sans-serif; ">
+      <a name="top" />
         <table width='100%' style='background-color: #0A77BA; border-collapse: collapse; border: 0px; margin: 0; padding: 0;'>
          <tr>
             <td>
@@ -84,7 +88,7 @@ $CustomHeaderEnd = @"
 	
 $CustomHeaderClose = @"
 	<!-- CustomHeaderClose -->
-		</td></tr></table>
+		</td></tr><tr><td style="text-align: right; background: #FFFFFF"><a href="#top" style="color: black">Back To Top</a></table>
 "@
 
 $CustomHeader0Close = @"

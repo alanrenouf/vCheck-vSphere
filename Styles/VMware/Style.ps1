@@ -1,9 +1,4 @@
-# Use the following area to define the title color
-$Colour1 ="0A77BA"
-# Use the following area to define the Heading color
-$Colour2 ="1D6325"
-# Use the following area to define the Title text color
-$TitleTxtColour ="FFFFFF"
+$StyleVersion = 1.0
 
 # Define Chart Colours
 $ChartColours = @("377C2B", "0A77BA", "1D6325", "89CBE1")
@@ -17,32 +12,28 @@ Add-ReportResource "Header-vCheck" ($StylePath + "\Header.jpg") -Used $true
 Add-ReportResource "Header-VMware" ($StylePath + "\Header-vmware.png") -Used $true
 
 $HTMLHeader = @"
-<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Frameset//EN' 'http://www.w3.org/TR/html4/frameset.dtd'>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
    <head>
       <title>_HEADER_</title>
-		<meta http-equiv=Content-Type content='text/html; charset=windows-1252'>
+		<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
 		<style type='text/css'>
-         body {
-                  margin-left: 4pt;
-                  margin-right: 4pt; 
-                  margin-top: 6pt;
-               }
          table	{
-                  width: 100%;
-               }
-         *	{
-               margin:0;
-               font-family: Tahoma, sans-serif
-            }
+            width: 100%;
+            margin: 0px;
+            padding: 0px;
+         }
+
          tr:nth-child(even) { 
                background-color: #e5e5e5; 
-            }
+         }
+            
          td {
                vertical-align: top; 
                font-family: Tahoma, sans-serif;
                font-size: 8pt;
-            }
+               padding: 0px;
+         }
                   
          th {
                vertical-align: top;  
@@ -50,133 +41,64 @@ $HTMLHeader = @"
                text-align: left;
                font-family: Tahoma, sans-serif;
                font-size: 8pt;
-            }
-         #header { 
-               font-family:Arial, Helvetica, sans-serif; 
-               font-size:20px; 
-               font-weight:bolder; 
-               background-color:#$($Colour1);
-            }
-         #vcheck {
-               font-family:Arial, Helvetica, sans-serif; 
-               font-size:14px; 
-               font-weight:bold;
-               text-align: center;
-               margin-bottom: 10px;
-            }
-         .customHeader0 {
-               margin: 0px auto;
-            }
-            
-         .customHeader0 h1 {
-            background-color: #$($Colour1);
+         }
+         .pluginContent td { padding: 5px; }
 
-            line-height: 2.25em;
-            vertical-align: middle; 
-            width: 95%;
-            margin: 0px auto;
-            
-            text-indent: 10px;           
-            font-family: Tahoma, sans-serif;
-            font-weight: bold;
-            font-size: 8pt;
-            color: #$($TitleTxtColour);
-         }
-         
-         h2.dspheader1 {
-            background-color: #$($Colour2);
-            border: 1px solid #$($Colour2);
-            
-            text-indent: 10px;
-            font-family: Tahoma, sans-serif;
-            font-weight: bold;
-            font-size: 8pt;
-            color: #$($TitleTxtColour);
-            
-            line-height: 2.25em;
-            vertical-align: middle; 
-            width: 95%;
-            margin: 10px auto 0px auto;
-           
-         }
-         
-         .dspcomments {
-            line-height: 2.25em;
-            width: 95%;
-            margin: 0px auto;
-            text-indent: 10px;
-            
-            background-color: #FFFFE1;
-            color: #000000;
-            font-style: italic;
-            font-size: 8pt;
-            
-            border-right: 1px solid #bbbbbb;
-            border-left: 1px solid #bbbbbb;
-         }
-         .dspcont {
-         	border: #bbbbbb 1px solid;          
-            width: 95%;
-            color: #000000;
-            font-size: 8pt;
-            margin: 0px auto;            
-            background-color: #f9f9f9
-         }
          .warning { background: #FFFBAA !important }
 			.critical { background: #FFDDDD !important }
-		</style>
+      </style>
 	</head>
-	<body>
-      <div id='header'>
-         <!--[if gte mso 9]>
-            <H1 style='text-align: center; color: white'>vCheck</Font></H1>
-         <![endif]-->
-         <!--[if !mso]><!-->
-            <img src='cid:Header-vCheck' ALT='vCheck' /><div style='float:right'><img src='cid:Header-VMware' alt='VMware' /></div>
-         <!--<![endif]-->
-      </div>
-	   <div id='vcheck'>vCheck v$($version) by Alan Renouf (<a href='http://virtu-al.net' target='_blank'>http://virtu-al.net</a>) generated on $($ENV:Computername) on $($Date.ToLongDateString()) at $($Date.ToLongTimeString())</div>
+	<body style="padding: 0 10px; margin: 0px; font-family:Arial, Helvetica, sans-serif; ">
+        <table width='100%' style='background-color: #0A77BA; border-collapse: collapse; border: 0px; margin: 0; padding: 0;'>
+         <tr>
+            <td>
+               <img src='cid:Header-vCheck' alt='vCheck' />
+            </td>
+            <td style='width: 171px'>
+               <img src='cid:Header-VMware' alt='VMware' />
+            </td>
+         </tr>
+      </table>
+      <div style='height: 10px; font-size: 10px;'>&nbsp;</div>
 "@
 
 $CustomHeader0 = @"
-	<!-- CustomHeader0 -->
-		<div class='customHeader0'>		
-         <h1>_TITLE_</h1>
+      <table width='100%'><tr><td style='background-color: #0A77BA; border: 1px solid #0A77BA; vertical-align: middle; height: 30px; text-indent: 10px; font-family: Tahoma, sans-serif; font-weight: bold; font-size: 8pt; color: #FFFFFF;'>_TITLE_</td></tr></table>
 "@
 
 $CustomHeaderStart = @"
 	<!-- CustomHeaderStart -->
-	   <h2 class='dspheader1'>_TITLE_</h2>
+      <div style='height: 10px; font-size: 10px;'>&nbsp;</div>
+	   <table width='100%' style='padding: 0px; border-collapse: collapse;'><tr><td style='background-color: #1D6325; border: 1px solid #1D6325; font-family: Tahoma, sans-serif; font-weight: bold; font-size: 8pt; color: #FFFFFF; text-indent: 10px; height: 30px; vertical-align: middle;'>_TITLE_</td></tr>
 "@
 
 $CustomHeaderComments = @"
 	<!-- CustomHeaderComments -->
-		<div class='dspcomments'>_COMMENTS_</div>
+		<tr><td style='margin: 0px; background-color: #f4f7fc; color: #000000; font-style: italic; font-size: 8pt; text-indent: 10px; vertical-align: middle; border-right: 1px solid #bbbbbb; border-left: 1px solid #bbbbbb;'>_COMMENTS_</td></tr>
 "@
 
 $CustomHeaderEnd = @"
 	<!-- CustomHeaderEnd -->
-			<div class='dspcont'>
+			<tr><td style='margin: 0px; padding: 0px; background-color: #f9f9f9; color: #000000; font-size: 8pt; border: #bbbbbb 1px solid;'>
 "@
 	
 $CustomHeaderClose = @"
 	<!-- CustomHeaderClose -->
-		</div>
+		</td></tr></table>
 "@
 
 $CustomHeader0Close = @"
-	<!-- CustomHeader0Close -->
-</div>
 "@
 
 $CustomHTMLClose = @"
-	<!-- CustomHTMLClose -->
-</div>
-</body>
+   <!-- CustomHTMLClose -->
+   <div style='height: 10px; font-size: 10px;'>&nbsp;</div>
+   <table width='100%'><tr><td style='font-size:14px; font-weight:bold; height: 25px; text-align: center; vertical-align: middle; background-color:#0A77BA; color: white;'>vCheck v$($vCheckVersion) by <a href='http://virtu-al.net' sytle='color: white;'>Alan Renouf</a> generated on $($ENV:Computername) on $($Date.ToLongDateString()) at $($Date.ToLongTimeString())</td></tr></table>
+   </body>
 </html>
 "@
 
-$HTMLTableReplace = '<table>' 
+$HTMLTableReplace = "<table width='100%'>"
 $HTMLTdReplace = '<td>'
 $HTMLThReplace = '<th>'
 $HTMLLtReplace = "<"

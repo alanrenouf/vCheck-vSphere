@@ -30,20 +30,21 @@
 
 # Start of Settings
 # Orphaned Delta File: Exclude datatores by DS name? (regex)
-$excludeDatastoreRegex =""
+$excludeDatastoreRegex = '^$'
 # Orphaned Delta File: Exclude VMs by VM path (regex)
-$excludeVMPathRegex =""
+$excludeVMPathRegex = '^$'
 # End of Settings
 
 # Changelog
 ## 0.1 : Initial version.
+## 0.2 : Modified the $excludeDatastoreRegex and $excludeVMPathRegex variable values from "" into '^$'
 
 # Begin code block obtained from: http://virtuallyjason.blogspot.ca/2013/08/orphaned-vmdk-files.html
 
 # PowerShell script to discover VMDK files that are not referenced in any VM's VMX file.
 # Also detects VMDKs from machines that need snapshot consolidation (from differentials that exist but are not part of the tree).
 # Author: HJA van Bokhoven
-# Modifications: LucD, and Joel Gibson
+# Modifications: LucD, Joel Gibson, and Robert van den Nieuwendijk
 
 $report = @()
 $arrUsedDisks = $FullVM | % {$_.Layout} | % {$_.Disk} | % {$_.DiskFile}
@@ -121,5 +122,5 @@ $Header = "Orphaned VMDK Files: $(@($Results).count)"
 $Comments = "This plugin can be used to generate a custom report of orphaned VMDK files. Note: This plugin can take quite a while to run, depending on the environment."
 $Display = "Table"
 $Author = "Joel Gibson et al."
-$PluginVersion = 0.1
+$PluginVersion = 0.2
 $PluginCategory = "vSphere"

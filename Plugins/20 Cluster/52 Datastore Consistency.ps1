@@ -12,10 +12,13 @@ if ($Clusters -ne $null) {
                 $VMHosts = $VMH | ?{ $Cluster.ExtensionData.host -contains $_.id }
 
                 $CluDatastores = $VMHosts | Get-Datastore
+                
+                if ($CluDatastores) # Check to prevent an error on Compare-Object for clusters without datastores
+                {
+                                $problemDatastoresObject = $VMHosts | ForEach {Compare-Object $CluDatastores ($_ | Get-Datastore)} | ForEach {$_.InputObject} | Sort Name | Select @{N="Datastore";E={$_.Name}},@{N="Cluster";E={$Cluster.Name}} -Unique
 
-                $problemDatastoresObject = $VMHosts | ForEach {Compare-Object $CluDatastores ($_ | Get-Datastore)} | ForEach {$_.InputObject} | Sort Name | Select @{N="Datastore";E={$_.Name}},@{N="Cluster";E={$Cluster.Name}} -Unique
-
-                $problemDatastores += $problemDatastoresObject
+                                $problemDatastores += $problemDatastoresObject
+                }
 
   }
 }
@@ -27,5 +30,5 @@ $Header = "Datastores not connected to every host in cluster"
 $Comments = "Virtual Machines residing on these datastores will not be able to run on all hosts in the cluster"
 $Display = "Table"
 $Author = "Robert Sexstone"
-$PluginVersion = 1.4
+$PluginVersion = 1.5
 $PluginCategory = "vSphere"

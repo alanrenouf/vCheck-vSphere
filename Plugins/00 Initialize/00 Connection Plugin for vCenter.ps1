@@ -48,9 +48,6 @@ else
 # Path to credentials file which is automatically created if needed
 $Credfile = $ScriptPath + "\Windowscreds.xml"
 
-# Setup plugin-specific language table
-Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable pLang
-
 # Adding PowerCLI core snapin
 if (!(get-pssnapin -name VMware.VimAutomation.Core -erroraction silentlycontinue)) {
 	add-pssnapin VMware.VimAutomation.Core

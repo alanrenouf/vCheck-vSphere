@@ -1,5 +1,5 @@
 # Changes:
-# v 6.22(Pending release) - Fixes to VMware style. Consolidating plugins. 
+# v 6.22 (Pending release) - Fixes to VMware style. Consolidating plugins. Updates to style handling.
 # v 6.21 - Added support for charts. New plugins. Support non-standard vCenter Ports. Bugfixes
 # v 6.20 - First tagged release. Bugfixes. Email resource support added.
 # v 6.19 - Bugfixes.

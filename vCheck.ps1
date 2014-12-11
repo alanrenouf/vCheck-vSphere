@@ -30,7 +30,7 @@
 .NOTES 
    File Name  : vCheck.ps1 
    Author     : Alan Renouf - @alanrenouf
-   Version    : 6.22-Alpha-6
+   Version    : 6.22-Alpha-7
    
    Thanks to all who have commented on my blog to help improve this project
    all beta testers and previous contributors to this script.
@@ -54,6 +54,7 @@
 .PARAMETER job
    This parameter lets you specify an xml config file for this invokation
 #>
+[CmdletBinding()]
 param (
    [Switch]$config,
    [ValidateScript({Test-Path $_ -PathType 'Container'})]
@@ -61,7 +62,7 @@ param (
    [ValidateScript({Test-Path $_ -PathType 'Leaf'})]
    [string]$job
 )
-$vCheckVersion = "6.22-Alpha-6"
+$vCheckVersion = "6.22-Alpha-7"
 $Date = Get-Date
 
 ################################################################################
@@ -105,15 +106,15 @@ Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable lan
 ################################################################################
 <# Write timestamped output to screen #>
 function Write-CustomOut ($Details){
-	$LogDate = Get-Date -Format T
-	Write-Host "$($LogDate) $Details"
+	$LogDate = Get-Date -Format "HH:mm:ss"
+	Write-Host "[$($LogDate)] $Details"
 }
 
 <# Search $file_content for name/value pair with ID_Name and return value #>
 Function Get-ID-String ($file_content,$ID_name) {
    if ($file_content | Select-String -Pattern "\$+$ID_name\s*=") {	
       $value = (($file_content | Select-String -pattern "\$+${ID_name}\s*=").toString().split("=")[1]).Trim(' "')
-      return ( $value ) 
+      return ( $value )
    }
 }
 
@@ -193,79 +194,40 @@ function Format-HTMLEntities {
 	return $content
 }
 
-Function Get-CustomHTML {
-   param (
-      $Header, 
-      $HeaderImg
-   )
-	$Report = $HTMLHeader -replace "_HEADER_", $Header
-   $Report = $Report -replace "_HEADERIMG_", $HeaderImg
-	Return $Report
-}
-
-Function Get-CustomHeader0 ($Title){
-	$Report = $CustomHeader0 -replace "_TITLE_", $Title
-	Return $Report
-}
-
-Function Get-CustomHeader ($Title, $Comments){
-	$Report = $CustomHeaderStart -replace "_TITLE_", $Title
-	If ($Comments) {
-		$Report += $CustomheaderComments -replace "_COMMENTS_", $Comments
-	}
-	$Report += $CustomHeaderEnd
-	Return $Report
-}
-
-Function Get-CustomHeaderClose{
-	$Report = $CustomHeaderClose
-	Return $Report
-}
-
-Function Get-CustomHeader0Close{
-	$Report = $CustomHeader0Close
-	Return $Report
-}
-
-Function Get-CustomHTMLClose{
-	$Report = $CustomHTMLClose
-	Return $Report
-}
-
 <# Takes an array of content, and optional formatRules and generated HTML table #>
 Function Get-HTMLTable {
 	param($Content, $FormatRules)
 
-	# If format rules are specified
+   # Use an XML object for ease of use
+   $XMLTable = [xml]($content | ConvertTo-Html -Fragment)
+   $XMLTable.table.RemoveChild($XMLTable.table.colgroup) | out-null
+   $XMLTable.table.SetAttribute("width","100%")
+   
+   # If format rules are specified
 	if ($FormatRules) {
-		# Use an XML object for ease of use
-		$XMLTable = [xml]($content | ConvertTo-Html -Fragment)
-		$XMLTable.table.RemoveChild($XMLTable.table.colgroup) | out-null
-      $XMLTable.table.SetAttribute("width","100%")
-      
-		# Check each cell to see if there are any format rules
-		for ($RowN = 1; $RowN -lt $XMLTable.table.tr.count; $RowN++) {
-			for ($ColN = 0; $ColN -lt $XMLTable.table.tr[$RowN].td.count; $ColN++) {
-				if ( $FormatRules.keys -contains $XMLTable.table.tr[0].th[$ColN]) {
-					# Current cell has a rule, test to see if they are valid
-					foreach ( $rule in $FormatRules[$XMLTable.table.tr[0].th[$ColN]] ) {
-						$value = $XMLTable.table.tr[$RowN].td[$ColN]
+      # Check each cell to see if there are any format rules
+      for ($RowN = 1; $RowN -lt $XMLTable.table.tr.count; $RowN++) {
+         for ($ColN = 0; $ColN -lt $XMLTable.table.tr[$RowN].td.count; $ColN++) {
+            if ( $FormatRules.keys -contains $XMLTable.table.tr[0].th[$ColN]) {
+               # Current cell has a rule, test to see if they are valid
+               foreach ( $rule in $FormatRules[$XMLTable.table.tr[0].th[$ColN]] ) {
+                  $value = $XMLTable.table.tr[$RowN].td[$ColN]
                   if ($value -notmatch "^[0-9.]+$") {
                      $value = """$value"""
                   }
                   
-						if ( Invoke-Expression ("{0} {1}" -f $value, [string]$rule.Keys) ) {
-							# Find what to 
-							$RuleScope = ([string]$rule.Values).split(",")[0]
-							$RuleActions = ([string]$rule.Values).split(",")[1].split("|")
-							
-							switch ($RuleScope) {
-								"Row"  { 
+                  if ( Invoke-Expression ("{0} {1}" -f $value, [string]$rule.Keys) ) {
+                     # Find what to 
+                     $RuleScope = ([string]$rule.Values).split(",")[0]
+                     $RuleActions = ([string]$rule.Values).split(",")[1].split("|")
+                     
+                     switch ($RuleScope) {
+                        "Row"  { 
                            for ($TRColN = 0; $TRColN -lt $XMLTable.table.tr[$RowN].td.count; $TRColN++) {
                               $XMLTable.table.tr[$RowN].selectSingleNode("td[$($TRColN+1)]").SetAttribute($RuleActions[0], $RuleActions[1]) 
                            }
                         }
-								"Cell" {
+                        "Cell" {
                            if ($RuleActions[0] -eq "cid") {
                               # Do Image - create new XML node for img and clear #text
                               $XMLTable.table.tr[$RowN].selectSingleNode("td[$($ColN+1)]")."#text" = ""
@@ -285,22 +247,14 @@ Function Get-HTMLTable {
                               $XMLTable.table.tr[$RowN].selectSingleNode("td[$($ColN+1)]").SetAttribute($RuleActions[0], $RuleActions[1]) 
                            }
                         }
-							}
-						}
-					}
-				}
-			}
+                     }
+                  }
+               }
+            }
+         }
 		}
-		return (Format-HTMLEntities ([string]($XMLTable.OuterXml)))
-	}
-	else {
-		$HTMLTable = $Content | ConvertTo-Html -Fragment
-		$HTMLTable = $HTMLTable -Replace '<TABLE>', $HTMLTableReplace
-		$HTMLTable = $HTMLTable -Replace '<td>', $HTMLTdReplace
-		$HTMLTable = $HTMLTable -Replace '<th>', $HTMLThReplace
-
-		return (Format-HTMLEntities $HTMLTable)
-	}
+   }
+	return (Format-HTMLEntities ([string]($XMLTable.OuterXml)))
 }
 
 <# Takes an array of content, and returns HTML table with header column #>
@@ -727,39 +681,40 @@ $vCheckPlugins | Foreach {
 }
 Write-Progress -ID 1 -Activity $lang.pluginActivity -Status $lang.Complete -Completed
 
-################################################################################
-#                                    Output                                    #
-################################################################################
-# Wrap the HTML content with header and footer from style
-$MyReport = Get-CustomHTML -Header "$Server vCheck"
-$MyReport += Get-CustomHeader0 ($Server)
-
-$p=1
-Foreach ( $pr in $PluginResult) {
-	If ($pr.Details) {
-		$MyReport += Get-CustomHeader $pr.Header $pr.Comments
-
-		switch ($pr.Display) {
-			"List"  { $MyReport += Get-HTMLList $pr.Details }
-			"Table" { $MyReport += Get-HTMLTable $pr.Details $pr.TableFormat }
-			"Chart" { $MyReport += Get-HTMLChart "plugin$($p)" $pr.Details }
-		}
-		$MyReport += Get-CustomHeaderClose
-		$p++
-	}
-}
-
 # Add Time to Run detail for plugins - if specified in GlobalVariables.ps1
 if ($TimeToRun) {
    $Finished = Get-Date
-   $MyReport += Get-CustomHeader ($lang.repTime -f [math]::round(($Finished - $Date).TotalMinutes,2), ($Finished.ToLongDateString()), ($Finished.ToLongTimeString())) ($lang.slowPlugins -f $PluginSeconds)
-   $TTRReport = $PluginResult | Where { $_.TimeToRun -gt $PluginSeconds } | Select Title, TimeToRun | Sort-Object TimeToRun -Descending
-   $MyReport += Get-HTMLList $TTRReport 
-   $MyReport += Get-CustomHeaderClose
+   $PluginResult += New-Object PSObject -Property @{"Title" = "Time to Run";
+                                                    "Author" = "vCheck";
+                                                    "Version" = $vCheckVersion;
+                                                    "Details" = ($PluginResult | Where { $_.TimeToRun -gt $PluginSeconds } | Select Title, TimeToRun | Sort-Object TimeToRun -Descending);
+                                                    "Display" = "List";
+                                                    "TableFormat" = $null;
+                                                    "Header" = ($lang.repTime -f [math]::round(($Finished - $Date).TotalMinutes,2), ($Finished.ToLongDateString()), ($Finished.ToLongTimeString()));
+                                                    "Comments" = ($lang.slowPlugins -f $PluginSeconds);
+                                                    "TimeToRun" = 0; 
+                                                   }
 }
 
-$MyReport += Get-CustomHeader0Close
-$MyReport += Get-CustomHTMLClose
+################################################################################
+#                                    Output                                    #
+################################################################################
+# Loop over plugin results and generate HTML from style
+$p=1
+Foreach ( $pr in $PluginResult) {
+	If ($pr.Details) {
+		switch ($pr.Display) {
+			"List"  { $pr.Details = Get-HTMLList $pr.Details }
+			"Table" { $pr.Details = Get-HTMLTable $pr.Details $pr.TableFormat }
+			"Chart" { $pr.Details = Get-HTMLChart "plugin$($p)" $pr.Details }
+		}
+      $pr | Add-Member -Type NoteProperty -Name pluginID -Value "plugin-$p"
+      $p++
+	}
+}
+
+# Run Style replacement
+$MyReport = Get-ReportHTML
 
 # Set the output filename - if one is specified use it, otherwise just use temp
 if ($Outputpath) {

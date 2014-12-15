@@ -234,7 +234,7 @@ function Get-VIEventPlus {
 			Select -ExpandProperty MoRef
 		}
 		if(!$Entity){
-			$Entity = @(Get-Folder -Name Datacenters)
+			$Entity = @(Get-Folder -NoRecursion)
 		}
 		$entity | %{
 			$eventFilter.entity.entity = $_.ExtensionData.MoRef

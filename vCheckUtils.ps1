@@ -7,7 +7,7 @@ $global:pluginURL = "https://raw.github.com/alanrenouf/vCheck-{0}/master/Plugins
    Retrieves installed vCheck plugins and available plugins from the Virtu-Al.net repository.
 
 .DESCRIPTION
-   Get-VCheckPlugin parses your vCheck plugins folder, as well as searches the online plugin respository in Virtu-Al.net.
+   Get-vCheckPlugin parses your vCheck plugins folder, as well as searches the online plugin respository in Virtu-Al.net.
    After finding the plugin you are looking for, you can download and install it with Add-vCheckPlugin. Get-vCheckPlugins
    also supports finding a plugin by name. Future version will support categories (e.g. Datastore, Security, vCloud)
      
@@ -19,22 +19,22 @@ $global:pluginURL = "https://raw.github.com/alanrenouf/vCheck-{0}/master/Plugins
 
 .EXAMPLE
    Get list of all vCheck Plugins
-   Get-VCheckPlugin
+   Get-vCheckPlugin
 
 .EXAMPLE
    Get plugin by name
-   Get-VCheckPlugin PluginName
+   Get-vCheckPlugin PluginName
 
 .EXAMPLE
    Get plugin by name using proxy
-   Get-VCheckPlugin PluginName -proxy "http://127.0.0.1:3128"
+   Get-vCheckPlugin PluginName -proxy "http://127.0.0.1:3128"
 
 
 .EXAMPLE
    Get plugin information
-   Get-VCheckPlugins PluginName
+   Get-vCheckPlugins PluginName
  #>
-function Get-VCheckPlugin
+function Get-vCheckPlugin
 {
     [CmdletBinding()]
     Param
@@ -49,7 +49,7 @@ function Get-VCheckPlugin
     {
         $pluginObjectList = @()
 
-        foreach ($localPluginFile in (Get-ChildItem -Path $vCheckPath\Plugins\* -Include *.ps1, *.ps1.disabled))
+        foreach ($localPluginFile in (Get-ChildItem -Path $vCheckPath\Plugins\* -Include *.ps1, *.ps1.disabled -Recurse))
         {
             $localPluginContent = Get-Content $localPluginFile
             
@@ -77,7 +77,7 @@ function Get-VCheckPlugin
             {
                 $localPluginCategory = @($localPluginContent | Select-String -pattern "PluginCategory")[0].toString().split("`"")[1]
             }
-
+          
             $pluginObject = New-Object PSObject
             $pluginObject | Add-Member -MemberType NoteProperty -Name name -value $localPluginName
             $pluginObject | Add-Member -MemberType NoteProperty -Name description -value $localPluginDesc
@@ -85,7 +85,7 @@ function Get-VCheckPlugin
             $pluginObject | Add-Member -MemberType NoteProperty -Name version -value $localPluginVersion
 			$pluginObject | Add-Member -MemberType NoteProperty -Name category -Value $localPluginCategory
             $pluginObject | Add-Member -MemberType NoteProperty -Name status -value "Installed"
-            $pluginObject | Add-Member -MemberType NoteProperty -Name location -Value $LocalpluginFile.name
+            $pluginObject | Add-Member -MemberType NoteProperty -Name location -Value $LocalpluginFile.FullName
             $pluginObjectList += $pluginObject
         }
 
@@ -155,7 +155,7 @@ function Get-VCheckPlugin
    Installs a vCheck plugin from the Virtu-Al.net repository.
 
 .DESCRIPTION
-   Add-VCheckPlugin downloads and installs a vCheck Plugin (currently by name) from the Virtu-Al.net repository. 
+   Add-vCheckPlugin downloads and installs a vCheck Plugin (currently by name) from the Virtu-Al.net repository. 
 
    The downloaded file is saved in your vCheck plugins folder, which automatically adds it to your vCheck report. vCheck plugins may require
    configuration prior to use, so be sure to open the ps1 file of the plugin prior to running your next report. 
@@ -164,14 +164,14 @@ function Get-VCheckPlugin
    Name of the plugin.
 
 .EXAMPLE
-   Install via pipeline from Get-VCheckPlugins
-   Get-VCheckPlugin "Plugin name" | Add-VCheckPlugin
+   Install via pipeline from Get-vCheckPlugins
+   Get-vCheckPlugin "Plugin name" | Add-vCheckPlugin
 
 .EXAMPLE
    Install Plugin by name
-   Add-VCheckPlugin "Plugin name"
+   Add-vCheckPlugin "Plugin name"
 #>
-function Add-VCheckPlugin
+function Add-vCheckPlugin
 {
     [CmdletBinding(DefaultParametersetName="name")]
     Param
@@ -183,12 +183,12 @@ function Add-VCheckPlugin
     {
         if($name)
         {
-            Get-VCheckPlugin $name | Add-VCheckPlugin
+            Get-vCheckPlugin $name | Add-vCheckPlugin
         }
         elseif ($pluginObject)
         {
             Add-Type -AssemblyName System.Web
-            $filename = $pluginObject.location.split("/")[-1]
+            $filename = $pluginObject.location.split("/")[-2,-1] -join "/"
             $filename = [System.Web.HttpUtility]::UrlDecode($filename)
             try
             {
@@ -213,7 +213,7 @@ function Add-VCheckPlugin
    Removes a vCheck plugin.
 
 .DESCRIPTION
-   Remove-VCheckPlugin Uninstalls a vCheck Plugin.
+   Remove-vCheckPlugin Uninstalls a vCheck Plugin.
 
    Basically, just looks for the plugin name and deletes the file. Sure, you could just delete the ps1 file from the plugins folder, but what fun is that?
 
@@ -222,13 +222,13 @@ function Add-VCheckPlugin
 
 .EXAMPLE
    Remove via pipeline
-   Get-VCheckPlugin "Plugin name" | Remove-VCheckPlugin
+   Get-vCheckPlugin "Plugin name" | Remove-vCheckPlugin
 
 .EXAMPLE
    Remove Plugin by name
-   Remove-VCheckPlugin "Plugin name"
+   Remove-vCheckPlugin "Plugin name"
 #>
-function Remove-VCheckPlugin
+function Remove-vCheckPlugin
 {
     [CmdletBinding(DefaultParametersetName="name",SupportsShouldProcess=$true,ConfirmImpact="High")]
     Param
@@ -240,11 +240,11 @@ function Remove-VCheckPlugin
     {
         if($name)
         {
-            Get-VCheckPlugin $name | Remove-VCheckPlugin
+            Get-vCheckPlugin $name | Remove-vCheckPlugin
         }
         elseif ($pluginObject)
         {
-           Remove-Item -path ("$vCheckPath\plugins\$($pluginobject.location)") -confirm:$false
+           Remove-Item -path $pluginObject.location -confirm:$false
         }
     }
 }

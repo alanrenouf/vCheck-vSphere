@@ -30,7 +30,7 @@
 .NOTES 
    File Name  : vCheck.ps1 
    Author     : Alan Renouf - @alanrenouf
-   Version    : 6.22-Alpha-7
+   Version    : 6.22-Alpha-8
    
    Thanks to all who have commented on my blog to help improve this project
    all beta testers and previous contributors to this script.
@@ -62,7 +62,7 @@ param (
    [ValidateScript({Test-Path $_ -PathType 'Leaf'})]
    [string]$job
 )
-$vCheckVersion = "6.22-Alpha-7"
+$vCheckVersion = "6.22-Alpha-8"
 $Date = Get-Date
 
 ################################################################################
@@ -560,35 +560,36 @@ if ($job) {
    
    # Get Plugin paths
    $PluginPaths = @()
-   foreach ($PluginPath in ($jobConfig.vCheck.plugins.path -split ";")) {
-      if (Test-Path $PluginPath) {
-         $PluginPaths += (Get-Item $PluginPath).Fullname
-         $PluginPaths += Get-Childitem $PluginPath -Directory -recurse | Select -expandproperty FullName
-      }
-      else {      
-         $PluginPaths += $ScriptPath + "\Plugins"
-         Write-Warning ($lang.pluginpathInvalid -f $PluginPath, ($ScriptPath + "\Plugins"))
-      }
-   }
-   $PluginPaths = $PluginPaths | Sort-Object -unique
-   
-   # Get all plugins and test they are correct
-   $vCheckPlugins = @()
-   foreach ($plugin in $jobConfig.vCheck.plugins.plugin) {
-      $testedPaths = 0
-      foreach ($PluginPath in $PluginPaths) {        
-         $testedPaths++
-         if (Test-Path ("{0}\{1}" -f $PluginPath, $plugin)) {
-            $vCheckPlugins += Get-Item ("{0}\{1}" -f $PluginPath, $plugin)
-            break;
+   if ($jobConfig.vCheck.plugins.path) {
+      foreach ($PluginPath in ($jobConfig.vCheck.plugins.path -split ";")) {
+         if (Test-Path $PluginPath) {
+            $PluginPaths += (Get-Item $PluginPath).Fullname
+            $PluginPaths += Get-Childitem $PluginPath -Directory -recurse | Select -expandproperty FullName
          }
-         # Plugin not found in any search path
-         elseif ($testedPaths -eq $PluginPaths.Count) {
-            Write-Warning ($lang.pluginInvalid -f $plugin)
+         else {      
+            $PluginPaths += $ScriptPath + "\Plugins"
+            Write-Warning ($lang.pluginpathInvalid -f $PluginPath, ($ScriptPath + "\Plugins"))
          }
       }
+      $PluginPaths = $PluginPaths | Sort-Object -unique
+      
+      # Get all plugins and test they are correct
+      $vCheckPlugins = @()
+      foreach ($plugin in $jobConfig.vCheck.plugins.plugin) {
+         $testedPaths = 0
+         foreach ($PluginPath in $PluginPaths) {        
+            $testedPaths++
+            if (Test-Path ("{0}\{1}" -f $PluginPath, $plugin)) {
+               $vCheckPlugins += Get-Item ("{0}\{1}" -f $PluginPath, $plugin)
+               break;
+            }
+            # Plugin not found in any search path
+            elseif ($testedPaths -eq $PluginPaths.Count) {
+               Write-Warning ($lang.pluginInvalid -f $plugin)
+            }
+         }
+      }
    }
-   
    # if no valid plugins specified, fall back to default
    if (!$vCheckPlugins) {
       $vCheckPlugins = Get-ChildItem -Path $PluginsFolder -filter "*.ps1" -Recurse | Sort FullName

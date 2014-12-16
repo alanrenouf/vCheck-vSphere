@@ -804,14 +804,6 @@
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/60 VM/85 Snapshot Activity.ps1</href>
   </plugin>
   <plugin>
-    <name>Removable Media Connected</name>
-    <description>The following VMs have removable media connected (i.e. CD/Floppy), this may cause issues if this machine needs to be migrated to a different host</description>
-    <author>John Sneddon</author>
-    <version>1.0</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/60 VM/xx Media Connected.ps1</href>
-  </plugin>
-  <plugin>
     <name>Site Recovery Manager - RPO Violation Report</name>
     <description>This is a customizable report of RPO violations found in the vCenter event log.</description>
     <author>Joel Gibson, based on work by Alan Renouf</author>

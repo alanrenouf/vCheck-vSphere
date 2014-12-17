@@ -53,29 +53,29 @@ function Get-vCheckPlugin
         {
             $localPluginContent = Get-Content $localPluginFile
             
-            if ($localPluginContent | Select-String -pattern "title")
+            if ($localPluginContent | Select-String -SimpleMatch "title")
             {
-                $localPluginName = ($localPluginContent | Select-String -pattern "Title").toString().split("`"")[1]
+                $localPluginName = ($localPluginContent | Select-String -SimpleMatch "Title").toString().split("`"")[1]
             }
-            if($localPluginContent | Select-String -pattern "description")
+            if($localPluginContent | Select-String -SimpleMatch "description")
             {
-                $localPluginDesc = ($localPluginContent | Select-String -pattern "description").toString().split("`"")[1]
+                $localPluginDesc = ($localPluginContent | Select-String -SimpleMatch "description").toString().split("`"")[1]
             }
-            elseif ($localPluginContent | Select-String -pattern "comments")
+            elseif ($localPluginContent | Select-String -SimpleMatch "comments")
             {
-                $localPluginDesc = ($localPluginContent | Select-String -pattern "comments").toString().split("`"")[1]
+                $localPluginDesc = ($localPluginContent | Select-String -SimpleMatch "comments").toString().split("`"")[1]
             }
-            if ($localPluginContent | Select-String -pattern "author")
+            if ($localPluginContent | Select-String -SimpleMatch "author")
             {
-                $localPluginAuthor = ($localPluginContent | Select-String -pattern "author").toString().split("`"")[1]
+                $localPluginAuthor = ($localPluginContent | Select-String -SimpleMatch "author").toString().split("`"")[1]
             }
-            if ($localPluginContent | Select-String -pattern "PluginVersion")
+            if ($localPluginContent | Select-String -SimpleMatch "PluginVersion")
             {
-                $localPluginVersion = @($localPluginContent | Select-String -pattern "PluginVersion")[0].toString().split(" ")[-1]
+                $localPluginVersion = @($localPluginContent | Select-String -SimpleMatch "PluginVersion")[0].toString().split(" ")[-1]
             }
-			 if ($localPluginContent | Select-String -pattern "PluginCategory")
+			 if ($localPluginContent | Select-String -SimpleMatch "PluginCategory")
             {
-                $localPluginCategory = @($localPluginContent | Select-String -pattern "PluginCategory")[0].toString().split("`"")[1]
+                $localPluginCategory = @($localPluginContent | Select-String -SimpleMatch "PluginCategory")[0].toString().split("`"")[1]
             }
           
             $pluginObject = New-Object PSObject
@@ -271,62 +271,62 @@ function Get-vCheckPluginXML
    $root = $xml.CreateElement("pluginlist")
    [void]$xml.AppendChild($root)
 
-   foreach ($localPluginFile in (Get-ChildItem -Recurse -File $vCheckPath\Plugins\*.ps1))
-   {
-      $localPluginContent = Get-Content $localPluginFile
-      
-      if ($localPluginContent | Select-String -pattern "title")
-      {
-          $localPluginName = ($localPluginContent | Select-String -pattern "Title").toString().split("`"")[1]
-      }
-      if($localPluginContent | Select-String -pattern "description")
-      {
-          $localPluginDesc = ($localPluginContent | Select-String -pattern "description").toString().split("`"")[1]
-      }
-      elseif ($localPluginContent | Select-String -pattern "comments")
-      {
-          $localPluginDesc = ($localPluginContent | Select-String -pattern "comments").toString().split("`"")[1]
-      }
-      if ($localPluginContent | Select-String -pattern "author")
-      {
-          $localPluginAuthor = ($localPluginContent | Select-String -pattern "author").toString().split("`"")[1]
-      }
-      if ($localPluginContent | Select-String -pattern "PluginVersion")
-      {
-          $localPluginVersion = @($localPluginContent | Select-String -pattern "PluginVersion")[0].toString().split(" ")[-1]
-      }
-      if ($localPluginContent | Select-String -pattern "PluginCategory")
-      {
-          $localPluginCategory = @($localPluginContent | Select-String -pattern "PluginCategory")[0].toString().split("`"")[1]
-      }
+	   foreach ($localPluginFile in (Get-ChildItem -Path $vCheckPath\Plugins\* -Include *.ps1 -Recurse))
+	   {
+		  $localPluginContent = Get-Content $localPluginFile
+		  
+		  if ($localPluginContent | Select-String -SimpleMatch "title")
+		  {
+			  $localPluginName = ($localPluginContent | Select-String -SimpleMatch "Title").toString().split("`"")[1]
+		  }
+		  if($localPluginContent | Select-String -SimpleMatch "description")
+		  {
+			  $localPluginDesc = ($localPluginContent | Select-String -SimpleMatch "description").toString().split("`"")[1]
+		  }
+		  elseif ($localPluginContent | Select-String -SimpleMatch "comments")
+		  {
+			  $localPluginDesc = ($localPluginContent | Select-String -SimpleMatch "comments").toString().split("`"")[1]
+		  }
+		  if ($localPluginContent | Select-String -SimpleMatch "author")
+		  {
+			  $localPluginAuthor = ($localPluginContent | Select-String -SimpleMatch "author").toString().split("`"")[1]
+		  }
+		  if ($localPluginContent | Select-String -SimpleMatch "PluginVersion")
+		  {
+			  $localPluginVersion = @($localPluginContent | Select-String -SimpleMatch "PluginVersion")[0].toString().split(" ")[-1]
+		  }
+		  if ($localPluginContent | Select-String -SimpleMatch "PluginCategory")
+		  {
+			  $localPluginCategory = @($localPluginContent | Select-String -SimpleMatch "PluginCategory")[0].toString().split("`"")[1]
+		  }
 
-      $pluginXML = $xml.CreateElement("plugin")
-      $elem=$xml.CreateElement("name")
-      $elem.InnerText=$localPluginName
-      [void]$pluginXML.AppendChild($elem)
-      
-      $elem=$xml.CreateElement("description")
-      $elem.InnerText=$localPluginDesc
-      [void]$pluginXML.AppendChild($elem)
-      
-      $elem=$xml.CreateElement("author")
-      $elem.InnerText=$localPluginAuthor
-      [void]$pluginXML.AppendChild($elem)
-      
-      $elem=$xml.CreateElement("version")
-      $elem.InnerText=$localPluginVersion
-      [void]$pluginXML.AppendChild($elem)
-      
-      $elem=$xml.CreateElement("category")
-      $elem.InnerText=$localPluginCategory
-      [void]$pluginXML.AppendChild($elem)
-      
-      $elem=$xml.CreateElement("href")
-      $elem.InnerText= ($pluginURL -f $localPluginCategory, $localPluginFile.Directory.Name, $localPluginFile.Name)
-      [void]$pluginXML.AppendChild($elem)
-      
-      [void]$root.AppendChild($pluginXML)
-   }
+		  $pluginXML = $xml.CreateElement("plugin")
+		  $elem=$xml.CreateElement("name")
+		  $elem.InnerText=$localPluginName
+		  [void]$pluginXML.AppendChild($elem)
+		  
+		  $elem=$xml.CreateElement("description")
+		  $elem.InnerText=$localPluginDesc
+		  [void]$pluginXML.AppendChild($elem)
+		  
+		  $elem=$xml.CreateElement("author")
+		  $elem.InnerText=$localPluginAuthor
+		  [void]$pluginXML.AppendChild($elem)
+		  
+		  $elem=$xml.CreateElement("version")
+		  $elem.InnerText=$localPluginVersion
+		  [void]$pluginXML.AppendChild($elem)
+		  
+		  $elem=$xml.CreateElement("category")
+		  $elem.InnerText=$localPluginCategory
+		  [void]$pluginXML.AppendChild($elem)
+		  
+		  $elem=$xml.CreateElement("href")
+		  $elem.InnerText= ($pluginURL -f $localPluginCategory, $localPluginFile.Directory.Name, $localPluginFile.Name)
+		  [void]$pluginXML.AppendChild($elem)
+		  
+		  [void]$root.AppendChild($pluginXML)
+	   }
    
    $xml.save($outputFile)
 }
@@ -349,8 +349,8 @@ Function Get-PluginSettings {
     )
 	$psettings = @()
 	$file = Get-Content $filename
-	$OriginalLine = ($file | Select-String -Pattern "# Start of Settings").LineNumber
-	$EndLine = ($file | Select-String -Pattern "# End of Settings").LineNumber
+	$OriginalLine = ($file | Select-String -SimpleMatch "# Start of Settings").LineNumber
+	$EndLine = ($file | Select-String -SimpleMatch "# End of Settings").LineNumber
 	if (!(($OriginalLine +1) -eq $EndLine)) {		
 		$Line = $OriginalLine		
 		do {
@@ -396,8 +396,8 @@ Function Set-PluginSettings {
 		[Parameter(mandatory=$false)] [Switch]$GB
     )
 	$file = Get-Content $filename
-	$OriginalLine = ($file | Select-String -Pattern "# Start of Settings").LineNumber
-	$EndLine = ($file | Select-String -Pattern "# End of Settings").LineNumber
+	$OriginalLine = ($file | Select-String -SimpleMatch "# Start of Settings").LineNumber
+	$EndLine = ($file | Select-String -SimpleMatch "# End of Settings").LineNumber
 	$PluginName = ($filename.split("\")[-1]).split(".")[0]
 	Write-Host "`nProcessing - $PluginName" -foreground $host.PrivateData.WarningForegroundColor -background $host.PrivateData.WarningBackgroundColor
 	if (!(($OriginalLine +1) -eq $EndLine)) {
@@ -442,7 +442,7 @@ Function Set-PluginSettings {
 		$out += $Array
 		$out += $File[$Endline..($file.count -1)]
 		If ($GB) {
-			$Setup = ($file | Select-String -Pattern '# Set the following to true to enable the setup wizard for first time run').LineNumber
+			$Setup = ($file | Select-String -SimpleMatch '# Set the following to true to enable the setup wizard for first time run').LineNumber
 			$SetupLine = $Setup ++
 			$out[$SetupLine] = '$SetupWizard = $False'
 		}

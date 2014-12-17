@@ -1,4 +1,9 @@
-$StyleVersion = 1.1
+# Start of Settings 
+# Show table of centents in report?
+$ShowTOC = $true
+# End of Settings
+
+$StyleVersion = 1.2
 
 # Define Chart Colours
 $ChartColours = @("377C2B", "0A77BA", "1D6325", "89CBE1")
@@ -45,7 +50,7 @@ function Get-ReportContentHTML {
 function Get-PluginHTML {
    param ($PluginResult)
 
-   $FinalHTML = $PluginHTML -replace "_TITLE_", $PluginResult.Title
+   $FinalHTML = $PluginHTML -replace "_TITLE_", $PluginResult.Header
    $FinalHTML = $FinalHTML -replace "_COMMENTS_", $PluginResult.Comments
    $FinalHTML = $FinalHTML -replace "_PLUGINCONTENT_", $PluginResult.Details
    $FinalHTML = $FinalHTML -replace "_PLUGINID_", $PluginResult.PluginID
@@ -58,15 +63,17 @@ function Get-PluginHTML {
    Generate table of contents
 #>
 function Get-ReportTOC {
-   $TOCHTML = "<ul>"
-   foreach ($pr in $PluginResult) {
-      if ($pr.Details) {
-         $TOCHTML += ("<li><a href='#{0}'>{1}</a></li>" -f $pr.PluginID, $pr.Title)
+   if ($ShowTOC) {
+      $TOCHTML = "<ul>"
+      foreach ($pr in $PluginResult) {
+         if ($pr.Details) {
+            $TOCHTML += ("<li><a href='#{0}'>{1}</a></li>" -f $pr.PluginID, $pr.Title)
+         }
       }
-   }
-   $TOCHTML += "</ul>"
+      $TOCHTML += "</ul>"
    
-   return $TOCHTML
+      return $TOCHTML
+   }
 }
 #endregion
 

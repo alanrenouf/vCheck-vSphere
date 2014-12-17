@@ -30,7 +30,7 @@
 .NOTES 
    File Name  : vCheck.ps1 
    Author     : Alan Renouf - @alanrenouf
-   Version    : 6.22-Alpha-9
+   Version    : 6.22-Alpha-9a
    
    Thanks to all who have commented on my blog to help improve this project
    all beta testers and previous contributors to this script.
@@ -62,7 +62,7 @@ param (
    [ValidateScript({Test-Path $_ -PathType 'Leaf'})]
    [string]$job
 )
-$vCheckVersion = "6.22-Alpha-9"
+$vCheckVersion = "6.22-Alpha-9a"
 $Date = Get-Date
 
 ################################################################################
@@ -743,7 +743,7 @@ if ($DisplayToScreen) {
 }
 
 # Generate email
-if ($SendEmail -and ($EmailReportEvenIfEmpty -or (!$EmailReportEvenIfEmpty -and (@($PluginResult | Where {$_.Detail}).count -gt 0)))) {
+if ($SendEmail) {
 	Write-CustomOut $lang.emailSend
    $msg = New-Object System.Net.Mail.MailMessage ($EmailFrom,$EmailTo)
    # If CC address specified, add

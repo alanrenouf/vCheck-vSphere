@@ -7,7 +7,7 @@ $global:pluginURL = "https://raw.github.com/alanrenouf/vCheck-{0}/master/Plugins
    Retrieves installed vCheck plugins and available plugins from the Virtu-Al.net repository.
 
 .DESCRIPTION
-   Get-vCheckPlugin parses your vCheck plugins folder, as well as searches the online plugin respository in Virtu-Al.net.
+   Get-VCheckPlugin parses your vCheck plugins folder, as well as searches the online plugin respository in Virtu-Al.net.
    After finding the plugin you are looking for, you can download and install it with Add-vCheckPlugin. Get-vCheckPlugins
    also supports finding a plugin by name. Future version will support categories (e.g. Datastore, Security, vCloud)
      
@@ -19,22 +19,22 @@ $global:pluginURL = "https://raw.github.com/alanrenouf/vCheck-{0}/master/Plugins
 
 .EXAMPLE
    Get list of all vCheck Plugins
-   Get-vCheckPlugin
+   Get-VCheckPlugin
 
 .EXAMPLE
    Get plugin by name
-   Get-vCheckPlugin PluginName
+   Get-VCheckPlugin PluginName
 
 .EXAMPLE
    Get plugin by name using proxy
-   Get-vCheckPlugin PluginName -proxy "http://127.0.0.1:3128"
+   Get-VCheckPlugin PluginName -proxy "http://127.0.0.1:3128"
 
 
 .EXAMPLE
    Get plugin information
-   Get-vCheckPlugins PluginName
+   Get-VCheckPlugins PluginName
  #>
-function Get-vCheckPlugin
+function Get-VCheckPlugin
 {
     [CmdletBinding()]
     Param
@@ -49,45 +49,48 @@ function Get-vCheckPlugin
     {
         $pluginObjectList = @()
 
-        foreach ($localPluginFile in (Get-ChildItem -Path $vCheckPath\Plugins\* -Include *.ps1, *.ps1.disabled -Recurse))
-        {
-            $localPluginContent = Get-Content $localPluginFile
-            
-            if ($localPluginContent | Select-String -pattern "title")
-            {
-                $localPluginName = ($localPluginContent | Select-String -pattern "Title").toString().split("`"")[1]
-            }
-            if($localPluginContent | Select-String -pattern "description")
-            {
-                $localPluginDesc = ($localPluginContent | Select-String -pattern "description").toString().split("`"")[1]
-            }
-            elseif ($localPluginContent | Select-String -pattern "comments")
-            {
-                $localPluginDesc = ($localPluginContent | Select-String -pattern "comments").toString().split("`"")[1]
-            }
-            if ($localPluginContent | Select-String -pattern "author")
-            {
-                $localPluginAuthor = ($localPluginContent | Select-String -pattern "author").toString().split("`"")[1]
-            }
-            if ($localPluginContent | Select-String -pattern "PluginVersion")
-            {
-                $localPluginVersion = @($localPluginContent | Select-String -pattern "PluginVersion")[0].toString().split(" ")[-1]
-            }
-			 if ($localPluginContent | Select-String -pattern "PluginCategory")
-            {
-                $localPluginCategory = @($localPluginContent | Select-String -pattern "PluginCategory")[0].toString().split("`"")[1]
-            }
-          
-            $pluginObject = New-Object PSObject
-            $pluginObject | Add-Member -MemberType NoteProperty -Name name -value $localPluginName
-            $pluginObject | Add-Member -MemberType NoteProperty -Name description -value $localPluginDesc
-            $pluginObject | Add-Member -MemberType NoteProperty -Name author -value $localPluginAuthor
-            $pluginObject | Add-Member -MemberType NoteProperty -Name version -value $localPluginVersion
-			$pluginObject | Add-Member -MemberType NoteProperty -Name category -Value $localPluginCategory
-            $pluginObject | Add-Member -MemberType NoteProperty -Name status -value "Installed"
-            $pluginObject | Add-Member -MemberType NoteProperty -Name location -Value $LocalpluginFile.FullName
-            $pluginObjectList += $pluginObject
-        }
+		foreach ($currentPluginPath in (Get-ChildItem -Recurse -path $vCheckPath\Plugins\ | ?{$_.PSIsContainer}))
+		{
+			foreach ($localPluginFile in (Get-ChildItem -Path Plugins\$currentPluginPath\ -Include *.ps1, *.ps1.disabled))
+			{
+				$localPluginContent = Get-Content $localPluginFile
+				
+				if ($localPluginContent | Select-String -SimpleMatch "title")
+				{
+					$localPluginName = ($localPluginContent | Select-String -SimpleMatch "Title").toString().split("`"")[1]
+				}
+				if($localPluginContent | Select-String -SimpleMatch "description")
+				{
+					$localPluginDesc = ($localPluginContent | Select-String -SimpleMatch "description").toString().split("`"")[1]
+				}
+				elseif ($localPluginContent | Select-String -SimpleMatch "comments")
+				{
+					$localPluginDesc = ($localPluginContent | Select-String -SimpleMatch "comments").toString().split("`"")[1]
+				}
+				if ($localPluginContent | Select-String -SimpleMatch "author")
+				{
+					$localPluginAuthor = ($localPluginContent | Select-String -SimpleMatch "author").toString().split("`"")[1]
+				}
+				if ($localPluginContent | Select-String -SimpleMatch "PluginVersion")
+				{
+					$localPluginVersion = @($localPluginContent | Select-String -SimpleMatch "PluginVersion")[0].toString().split(" ")[-1]
+				}
+				 if ($localPluginContent | Select-String -SimpleMatch "PluginCategory")
+				{
+					$localPluginCategory = @($localPluginContent | Select-String -SimpleMatch "PluginCategory")[0].toString().split("`"")[1]
+				}
+
+				$pluginObject = New-Object PSObject
+				$pluginObject | Add-Member -MemberType NoteProperty -Name name -value $localPluginName
+				$pluginObject | Add-Member -MemberType NoteProperty -Name description -value $localPluginDesc
+				$pluginObject | Add-Member -MemberType NoteProperty -Name author -value $localPluginAuthor
+				$pluginObject | Add-Member -MemberType NoteProperty -Name version -value $localPluginVersion
+				$pluginObject | Add-Member -MemberType NoteProperty -Name category -Value $localPluginCategory
+				$pluginObject | Add-Member -MemberType NoteProperty -Name status -value "Installed"
+				$pluginObject | Add-Member -MemberType NoteProperty -Name location -Value $LocalpluginFile.name
+				$pluginObjectList += $pluginObject
+			}
+		}
 
         if (!$installed)
         {
@@ -155,7 +158,7 @@ function Get-vCheckPlugin
    Installs a vCheck plugin from the Virtu-Al.net repository.
 
 .DESCRIPTION
-   Add-vCheckPlugin downloads and installs a vCheck Plugin (currently by name) from the Virtu-Al.net repository. 
+   Add-VCheckPlugin downloads and installs a vCheck Plugin (currently by name) from the Virtu-Al.net repository. 
 
    The downloaded file is saved in your vCheck plugins folder, which automatically adds it to your vCheck report. vCheck plugins may require
    configuration prior to use, so be sure to open the ps1 file of the plugin prior to running your next report. 
@@ -164,14 +167,14 @@ function Get-vCheckPlugin
    Name of the plugin.
 
 .EXAMPLE
-   Install via pipeline from Get-vCheckPlugins
-   Get-vCheckPlugin "Plugin name" | Add-vCheckPlugin
+   Install via pipeline from Get-VCheckPlugins
+   Get-VCheckPlugin "Plugin name" | Add-VCheckPlugin
 
 .EXAMPLE
    Install Plugin by name
-   Add-vCheckPlugin "Plugin name"
+   Add-VCheckPlugin "Plugin name"
 #>
-function Add-vCheckPlugin
+function Add-VCheckPlugin
 {
     [CmdletBinding(DefaultParametersetName="name")]
     Param
@@ -183,12 +186,12 @@ function Add-vCheckPlugin
     {
         if($name)
         {
-            Get-vCheckPlugin $name | Add-vCheckPlugin
+            Get-VCheckPlugin $name | Add-VCheckPlugin
         }
         elseif ($pluginObject)
         {
             Add-Type -AssemblyName System.Web
-            $filename = $pluginObject.location.split("/")[-2,-1] -join "/"
+            $filename = $pluginObject.location.split("/")[-1]
             $filename = [System.Web.HttpUtility]::UrlDecode($filename)
             try
             {
@@ -213,7 +216,7 @@ function Add-vCheckPlugin
    Removes a vCheck plugin.
 
 .DESCRIPTION
-   Remove-vCheckPlugin Uninstalls a vCheck Plugin.
+   Remove-VCheckPlugin Uninstalls a vCheck Plugin.
 
    Basically, just looks for the plugin name and deletes the file. Sure, you could just delete the ps1 file from the plugins folder, but what fun is that?
 
@@ -222,13 +225,13 @@ function Add-vCheckPlugin
 
 .EXAMPLE
    Remove via pipeline
-   Get-vCheckPlugin "Plugin name" | Remove-vCheckPlugin
+   Get-VCheckPlugin "Plugin name" | Remove-VCheckPlugin
 
 .EXAMPLE
    Remove Plugin by name
-   Remove-vCheckPlugin "Plugin name"
+   Remove-VCheckPlugin "Plugin name"
 #>
-function Remove-vCheckPlugin
+function Remove-VCheckPlugin
 {
     [CmdletBinding(DefaultParametersetName="name",SupportsShouldProcess=$true,ConfirmImpact="High")]
     Param
@@ -240,11 +243,11 @@ function Remove-vCheckPlugin
     {
         if($name)
         {
-            Get-vCheckPlugin $name | Remove-vCheckPlugin
+            Get-VCheckPlugin $name | Remove-VCheckPlugin
         }
         elseif ($pluginObject)
         {
-           Remove-Item -path $pluginObject.location -confirm:$false
+           Remove-Item -path ("$vCheckPath\plugins\$($pluginobject.location)") -confirm:$false
         }
     }
 }
@@ -271,61 +274,65 @@ function Get-vCheckPluginXML
    $root = $xml.CreateElement("pluginlist")
    [void]$xml.AppendChild($root)
 
-   foreach ($localPluginFile in (Get-ChildItem -Recurse -File $vCheckPath\Plugins\*.ps1))
-   {
-      $localPluginContent = Get-Content $localPluginFile
-      
-      if ($localPluginContent | Select-String -pattern "title")
-      {
-          $localPluginName = ($localPluginContent | Select-String -pattern "Title").toString().split("`"")[1]
-      }
-      if($localPluginContent | Select-String -pattern "description")
-      {
-          $localPluginDesc = ($localPluginContent | Select-String -pattern "description").toString().split("`"")[1]
-      }
-      elseif ($localPluginContent | Select-String -pattern "comments")
-      {
-          $localPluginDesc = ($localPluginContent | Select-String -pattern "comments").toString().split("`"")[1]
-      }
-      if ($localPluginContent | Select-String -pattern "author")
-      {
-          $localPluginAuthor = ($localPluginContent | Select-String -pattern "author").toString().split("`"")[1]
-      }
-      if ($localPluginContent | Select-String -pattern "PluginVersion")
-      {
-          $localPluginVersion = @($localPluginContent | Select-String -pattern "PluginVersion")[0].toString().split(" ")[-1]
-      }
-      if ($localPluginContent | Select-String -pattern "PluginCategory")
-      {
-          $localPluginCategory = @($localPluginContent | Select-String -pattern "PluginCategory")[0].toString().split("`"")[1]
-      }
+	foreach ($currentPluginPath in (Get-ChildItem -Recurse -path "$vCheckPath\Plugins\" | ?{$_.PSIsContainer}))
+	{
+	   foreach ($localPluginFile in (Get-ChildItem -path  Plugins\$currentPluginPath\*.ps1))
+	   #foreach ($localPluginFile in (Get-ChildItem -Recurse -path $vCheckPath\Plugins\ -filter "*.ps1"))
+	   {
+		  $localPluginContent = Get-Content $localPluginFile
+		  
+		  if ($localPluginContent | Select-String -SimpleMatch "title")
+		  {
+			  $localPluginName = ($localPluginContent | Select-String -SimpleMatch "Title").toString().split("`"")[1]
+		  }
+		  if($localPluginContent | Select-String -SimpleMatch "description")
+		  {
+			  $localPluginDesc = ($localPluginContent | Select-String -SimpleMatch "description").toString().split("`"")[1]
+		  }
+		  elseif ($localPluginContent | Select-String -SimpleMatch "comments")
+		  {
+			  $localPluginDesc = ($localPluginContent | Select-String -SimpleMatch "comments").toString().split("`"")[1]
+		  }
+		  if ($localPluginContent | Select-String -SimpleMatch "author")
+		  {
+			  $localPluginAuthor = ($localPluginContent | Select-String -SimpleMatch "author").toString().split("`"")[1]
+		  }
+		  if ($localPluginContent | Select-String -SimpleMatch "PluginVersion")
+		  {
+			  $localPluginVersion = @($localPluginContent | Select-String -SimpleMatch "PluginVersion")[0].toString().split(" ")[-1]
+		  }
+		  if ($localPluginContent | Select-String -SimpleMatch "PluginCategory")
+		  {
+			  $localPluginCategory = @($localPluginContent | Select-String -SimpleMatch "PluginCategory")[0].toString().split("`"")[1]
+		  }
 
-      $pluginXML = $xml.CreateElement("plugin")
-      $elem=$xml.CreateElement("name")
-      $elem.InnerText=$localPluginName
-      [void]$pluginXML.AppendChild($elem)
-      
-      $elem=$xml.CreateElement("description")
-      $elem.InnerText=$localPluginDesc
-      [void]$pluginXML.AppendChild($elem)
-      
-      $elem=$xml.CreateElement("author")
-      $elem.InnerText=$localPluginAuthor
-      [void]$pluginXML.AppendChild($elem)
-      
-      $elem=$xml.CreateElement("version")
-      $elem.InnerText=$localPluginVersion
-      [void]$pluginXML.AppendChild($elem)
-      
-      $elem=$xml.CreateElement("category")
-      $elem.InnerText=$localPluginCategory
-      [void]$pluginXML.AppendChild($elem)
-      
-      $elem=$xml.CreateElement("href")
-      $elem.InnerText= ($pluginURL -f $localPluginCategory, $localPluginFile.Directory.Name, $localPluginFile.Name)
-      [void]$pluginXML.AppendChild($elem)
-      
-      [void]$root.AppendChild($pluginXML)
+		  $pluginXML = $xml.CreateElement("plugin")
+		  $elem=$xml.CreateElement("name")
+		  $elem.InnerText=$localPluginName
+		  [void]$pluginXML.AppendChild($elem)
+		  
+		  $elem=$xml.CreateElement("description")
+		  $elem.InnerText=$localPluginDesc
+		  [void]$pluginXML.AppendChild($elem)
+		  
+		  $elem=$xml.CreateElement("author")
+		  $elem.InnerText=$localPluginAuthor
+		  [void]$pluginXML.AppendChild($elem)
+		  
+		  $elem=$xml.CreateElement("version")
+		  $elem.InnerText=$localPluginVersion
+		  [void]$pluginXML.AppendChild($elem)
+		  
+		  $elem=$xml.CreateElement("category")
+		  $elem.InnerText=$localPluginCategory
+		  [void]$pluginXML.AppendChild($elem)
+		  
+		  $elem=$xml.CreateElement("href")
+		  $elem.InnerText= ($pluginURL -f $localPluginCategory, $localPluginFile.Directory.Name, $localPluginFile.Name)
+		  [void]$pluginXML.AppendChild($elem)
+		  
+		  [void]$root.AppendChild($pluginXML)
+	   }
    }
    
    $xml.save($outputFile)

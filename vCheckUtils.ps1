@@ -43,12 +43,13 @@ function Get-vCheckPlugin
         [Parameter(mandatory=$false)] [String]$proxy,
         [Parameter(mandatory=$false)] [Switch]$installed,
         [Parameter(mandatory=$false)] [Switch]$notinstalled,
+		[Parameter(mandatory=$false)] [Switch]$pendingupdate,
         [Parameter(mandatory=$false)] [String]$category
     )
     Process
     {
         $pluginObjectList = @()
-
+		
         foreach ($localPluginFile in (Get-ChildItem -Path $vCheckPath\Plugins\* -Include *.ps1, *.ps1.disabled -Recurse))
         {
             $localPluginContent = Get-Content $localPluginFile
@@ -106,10 +107,9 @@ function Get-vCheckPlugin
 
                 foreach ($plugin in $plugins.pluginlist.plugin)
                 {
-                    $current = $pluginObjectList | where {$_.name -eq $plugin.name}					
-					If ($current -and [double]$current.version -lt [double]$plugin.version) {
-						$index = $pluginObjectList.Indexof($current)
-						$pluginObjectList[$index].status = "New Version Available - " + $plugin.version						
+                    $pluginObjectList | where {$_.name -eq $plugin.name -and [double]$_.version -lt [double]$plugin.version}|	
+					foreach{
+						$_.status = "New Version Available - " + $plugin.version						
 					}
 					if (!($pluginObjectList | where {$_.name -eq $plugin.name}))
                     {
@@ -141,7 +141,10 @@ function Get-vCheckPlugin
 			} Else {
 	            if($notinstalled){
 	                $pluginObjectList | where {$_.status -eq "Not Installed"}
-	            } else {
+	            } elseif($pendingupdate) {
+					$pluginObjectList | where {$_.status -like "New Version Available*"}
+				}
+				Else {
 	                $pluginObjectList
 	            }
 	        }
@@ -363,7 +366,7 @@ Function Get-PluginSettings {
 			$settings.filename = $filename
 			$settings.question = $Question
 			$settings.var = $CurSet
-			$currentsetting = New-Object –TypeName PSObject –Prop $settings
+			$currentsetting = New-Object â€“TypeName PSObject â€“Prop $settings
 			$psettings += $currentsetting
 			$Line ++ 
 		} Until ( $Line -ge ($EndLine -1) )

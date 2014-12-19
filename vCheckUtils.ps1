@@ -366,7 +366,7 @@ Function Get-PluginSettings {
 			$settings.filename = $filename
 			$settings.question = $Question
 			$settings.var = $CurSet
-			$currentsetting = New-Object â€“TypeName PSObject â€“Prop $settings
+			$currentsetting = New-Object -TypeName PSObject -Prop $settings
 			$psettings += $currentsetting
 			$Line ++ 
 		} Until ( $Line -ge ($EndLine -1) )

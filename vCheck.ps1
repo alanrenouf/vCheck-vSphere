@@ -564,7 +564,7 @@ if ($job) {
       foreach ($PluginPath in ($jobConfig.vCheck.plugins.path -split ";")) {
          if (Test-Path $PluginPath) {
             $PluginPaths += (Get-Item $PluginPath).Fullname
-            $PluginPaths += Get-Childitem $PluginPath -Directory -recurse | Select -expandproperty FullName
+            $PluginPaths += Get-Childitem $PluginPath -recurse | ?{ $_.PSIsContainer } | Select -expandproperty FullName
          }
          else {      
             $PluginPaths += $ScriptPath + "\Plugins"

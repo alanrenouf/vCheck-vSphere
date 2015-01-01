@@ -30,7 +30,7 @@
 .NOTES 
    File Name  : vCheck.ps1 
    Author     : Alan Renouf - @alanrenouf
-   Version    : 6.22-Alpha-9a
+   Version    : 6.22
    
    Thanks to all who have commented on my blog to help improve this project
    all beta testers and previous contributors to this script.
@@ -62,7 +62,7 @@ param (
    [ValidateScript({Test-Path $_ -PathType 'Leaf'})]
    [string]$job
 )
-$vCheckVersion = "6.22-Alpha-9a"
+$vCheckVersion = "6.22"
 $Date = Get-Date
 
 ################################################################################

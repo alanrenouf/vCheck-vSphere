@@ -1,4 +1,5 @@
 # Start of Settings
+# Clusters with DRS Disabled, do not report on any Clusters that are defined here
 $ClustersDoNotInclude = "VM1_*|VM2_*"
 # End of Settings
  

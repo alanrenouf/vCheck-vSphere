@@ -1,4 +1,5 @@
 # Start of Settings
+# HA Configuration Issues, do not report on any Clusters that are defined here
 $ClustersDoNotInclude = "Example_Cluster_*|Test_Cluster_*"
 # End of Settings
 

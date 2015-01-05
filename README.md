@@ -80,7 +80,7 @@ For an example vSphere output (doesnt contain all info) click here http://virtu-
 
 Changelog
 =========
-* 6.22 (Pending release) - Fixes to VMware style. Consolidating plugins. Updates to style handling.
+* 6.22 - Fixes to VMware style. Consolidating plugins. Updates to style handling.
 * 6.21 - Added support for charts. New plugins. Support non-standard vCenter Ports. Bugfixes
 * 6.20 - First tagged release. Bugfixes. Email resource support added.
 * 6.19 - Bugfixes.

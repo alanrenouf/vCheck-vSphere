@@ -15,6 +15,8 @@ $DisplaytoScreen = $true
 $SendEmail = $false
 # Please Specify the SMTP server address
 $SMTPSRV = "mysmtpserver.mydomain.local"
+# Please Specify the SMTP server port
+$SMTPPORT = 25
 # Would you like to use SSL to send email?
 $EmailSSL = $false
 # Please specify the email address who will send the vCheck report

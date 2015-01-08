@@ -13,7 +13,7 @@ $Server = "192.168.0.9"
 $DisplaytoScreen = $true
 # Use the following item to define if an email report should be sent once completed
 $SendEmail = $false
-# Please Specify the SMTP server address
+# Please Specify the SMTP server address (and optional port) [servername(:port)]
 $SMTPSRV = "mysmtpserver.mydomain.local"
 # Would you like to use SSL to send email?
 $EmailSSL = $false

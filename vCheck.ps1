@@ -30,7 +30,7 @@
 .NOTES 
    File Name  : vCheck.ps1 
    Author     : Alan Renouf - @alanrenouf
-   Version    : 6.22
+   Version    : 6.23-alpha-1
    
    Thanks to all who have commented on my blog to help improve this project
    all beta testers and previous contributors to this script.
@@ -62,7 +62,7 @@ param (
    [ValidateScript({Test-Path $_ -PathType 'Leaf'})]
    [string]$job
 )
-$vCheckVersion = "6.22"
+$vCheckVersion = "6.23-alpha-1"
 $Date = Get-Date
 
 ################################################################################
@@ -774,7 +774,13 @@ if ($SendEmail) {
    }
    # Send the email
    $smtpClient = New-Object System.Net.Mail.SmtpClient
-   $smtpClient.Host = $SMTPSRV
+   
+   # Find the VI Server and port from the global settings file
+   $smtpClient.Host = ($SMTPSRV -Split ":")[0]
+   if (($server -split ":")[1]) {
+      $smtpClient.Port = ($server -split ":")[1]
+   }
+   
    if ($EmailSSL -eq $true) {
       $smtpClient.EnableSsl = $true
    }
@@ -786,5 +792,5 @@ if ($SendEmail) {
 
 # Run EndScript once everything else is complete
 if (Test-Path ($ScriptPath + "\EndScript.ps1")) {
-	. ($ScriptPath + "\EndScript.ps1")
+   . ($ScriptPath + "\EndScript.ps1")
 }

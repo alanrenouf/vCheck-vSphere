@@ -775,6 +775,7 @@ if ($SendEmail) {
    # Send the email
    $smtpClient = New-Object System.Net.Mail.SmtpClient
    $smtpClient.Host = $SMTPSRV
+   $smtpClient.Port = $SMTPPORT
    if ($EmailSSL -eq $true) {
       $smtpClient.EnableSsl = $true
    }

@@ -365,7 +365,7 @@ Function Get-PluginSettings {
 			$settings = @{}
 			$settings.filename = $filename
 			$settings.question = $Question
-			$settings.var = $CurSet
+			$settings.var = $CurSet.Trim()
 			$currentsetting = New-Object -TypeName PSObject -Prop $settings
 			$psettings += $currentsetting
 			$Line ++ 
@@ -449,7 +449,7 @@ Function Set-PluginSettings {
 			$SetupLine = $Setup ++
 			$out[$SetupLine] = '$SetupWizard = $False'
 		}
-		$out | Out-File $filename
+		$out | Out-File -Encoding ASCII $filename
 	}
 }
 

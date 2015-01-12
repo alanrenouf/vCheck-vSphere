@@ -1,4 +1,4 @@
-﻿# Start of Settings
+# Start of Settings
 # Set the number of days to show Snapshots for
 $VMsNewRemovedAge = 5
 # User exception for Snapshot removed

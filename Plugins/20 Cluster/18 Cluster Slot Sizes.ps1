@@ -1,6 +1,6 @@
 # Start of Settings 
 # Number of slots available in a cluster
-$numslots =10
+$numslots = 10
 # End of Settings
 		
 If ($vSphere){

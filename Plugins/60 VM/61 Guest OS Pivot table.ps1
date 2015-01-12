@@ -1,7 +1,7 @@
-﻿# Start of Settings 
+# Start of Settings
 # End of Settings
 
-# —- VM Guest OS Pivot Table —-
+# - VM Guest OS Pivot Table -
 
 $VMOSversions = @{ }
 $FullVM | % {
@@ -12,11 +12,11 @@ $FullVM | % {
   if (!($VMOSversion)) {
     # No 'version' so checking for tools
     if (!($_.Guest.ToolsStatus.Value__ )) {
-      $VMOSversion = "Unknown – no VMTools"
+      $VMOSversion = "Unknown - no VMTools"
     } else {
       # Still no 'version', must be old tools
       $toolsversion = $_.Config.Tools.ToolsVersion
-      $VMOSversion = "Unknown – tools version $toolsversion"
+      $VMOSversion = "Unknown - tools version $toolsversion"
     }
   }
   $VMOSversions.$VMOSversion++

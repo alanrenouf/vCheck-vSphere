@@ -1,6 +1,6 @@
 # Start of Settings 
 # Datastore OverAllocation %
-$OverAllocation =50
+$OverAllocation = 50
 # End of Settings
 
 $voverallocation = @()

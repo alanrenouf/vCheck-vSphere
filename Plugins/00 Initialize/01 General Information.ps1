@@ -1,8 +1,8 @@
 # Start of Settings 
 # Set the number of days of DRS Migrations to report and count on
-$DRSMigrateAge =1
+$DRSMigrateAge = 1
 # Set the number of days of Storage DRS Migrations to report and count on
-$SDRSMigrateAge =1
+$SDRSMigrateAge = 1
 # End of Settings
 
 # Changelog

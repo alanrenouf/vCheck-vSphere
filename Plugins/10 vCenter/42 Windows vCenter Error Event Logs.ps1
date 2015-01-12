@@ -1,8 +1,8 @@
 # Start of Settings 
 # Set the number of days of VC Events to check for errors
-$VCEventAge =1
+$VCEventAge = 1
 # Set the number of days of VC Event Logs to check for warnings and errors
-$VCEvntlgAge =1
+$VCEvntlgAge = 1
 # End of Settings
 
 if (! $VCSA){

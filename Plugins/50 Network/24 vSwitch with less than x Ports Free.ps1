@@ -1,6 +1,6 @@
 # Start of Settings 
 # vSwitch Port Left
-$vSwitchLeft =5
+$vSwitchLeft = 5
 # End of Settings
 
 $Result = $VMH | Get-VirtualSwitch -Standard | Sort NumPortsAvailable | Where {$_.NumPortsAvailable -lt $($vSwitchLeft)} | Select VMHost, Name, NumPortsAvailable

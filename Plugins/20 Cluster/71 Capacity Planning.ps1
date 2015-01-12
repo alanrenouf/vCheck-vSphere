@@ -1,8 +1,8 @@
 # Start of Settings 
 # Max CPU usage for non HA cluster
-$limitResourceCPUClusNonHA = 0.6 
+$limitResourceCPUClusNonHA = 0.6
 # Max MEM usage for non HA cluster
-$limitResourceMEMClusNonHA = 0.6 
+$limitResourceMEMClusNonHA = 0.6
 # End of Settings
 
 $capacityinfo = @()

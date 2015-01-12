@@ -1,6 +1,6 @@
 # Start of Settings
 # Return results in GB or MB?
-$Units ="GB"
+$Units = "GB"
 # End of Settings
 
 # Setup plugin-specific language table

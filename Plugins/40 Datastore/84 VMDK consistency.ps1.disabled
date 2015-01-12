@@ -19,7 +19,7 @@ $Datastores = Get-Datastore -Name "$DatastoreName"
 
 foreach ( $Datastore in $Datastores )
 {
-    New-PSDrive -Location (Get-Datastore "$Datastore") -Name "$($Datastore.Name)" -PSProvider VimDatastore -Root “” -EA 0 -Confirm:$false | Out-Null
+    New-PSDrive -Location (Get-Datastore "$Datastore") -Name "$($Datastore.Name)" -PSProvider VimDatastore -Root "" -EA 0 -Confirm:$false | Out-Null
     Set-location "$($Datastore.Name):" -EA 0 | Out-Null
     If (!($?)) {
         Write-Host "There was an error mounting the datastore as PSDrive, please investigate first, this plugin will now Exit" -ForegroundColor Red -BackgroundColor black

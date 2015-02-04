@@ -7,7 +7,7 @@ $VMsNetworkNotConnected = @()
 # Check only on powered on VMs
 foreach ($myVM in $FullVM | ?{$_.runtime.powerState -eq "PoweredOn"}) {
     foreach ($myCard in $myVM.config.hardware.device | ?{$_ -is [VMware.Vim.VirtualEthernetCard]} | ?{-Not $_.connectable.connected}) {
-		if ($ShowOnlyStartupNICS -and $myCard.connectable.connected) {      
+		if ($ShowOnlyStartupNICS -and $myCard.connectable.StartConnected) {      
          # The network card is not connected. Warn user      
          $vmNetworkNotConnected = "" | Select-Object VM, vmNetworkAdapter, State
          $vmNetworkNotConnected.VM = $myVM.Name
@@ -25,5 +25,5 @@ $Header = "VM - is my network connected?"
 $Comments = "Check if all network cards are connected"
 $Display = "Table"
 $Author = "Cyril Epiney"
-$PluginVersion = 1.1
+$PluginVersion = 1.2
 $PluginCategory = "vSphere"

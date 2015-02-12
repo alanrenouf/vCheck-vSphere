@@ -701,9 +701,11 @@ if ($TimeToRun) {
 #                                    Output                                    #
 ################################################################################
 # Loop over plugin results and generate HTML from style
+$emptyReport = $true
 $p=1
 Foreach ( $pr in $PluginResult) {
 	If ($pr.Details) {
+		$emptyReport = $false
 		switch ($pr.Display) {
 			"List"  { $pr.Details = Get-HTMLList $pr.Details }
 			"Table" { $pr.Details = Get-HTMLTable $pr.Details $pr.TableFormat }
@@ -737,13 +739,13 @@ Foreach ($cid in $global:ReportResources.Keys) {
 $embedReport | Out-File -encoding ASCII -filepath $Filename
 
 # Display to screen
-if ($DisplayToScreen) {
+if ($DisplayToScreen -and (!($emptyReport -and !$DisplayReportEvenIfEmpty))) {
 	Write-CustomOut $lang.HTMLdisp  
 	Invoke-Item $Filename
 }
 
 # Generate email
-if ($SendEmail) {
+if ($SendEmail -and (!($emptyReport -and !$EmailReportEvenIfEmpty))) {
 	Write-CustomOut $lang.emailSend
    $msg = New-Object System.Net.Mail.MailMessage ($EmailFrom,$EmailTo)
    # If CC address specified, add

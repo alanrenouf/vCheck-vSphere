@@ -11,6 +11,8 @@ $SetupWizard = $true
 $Server = "192.168.0.9"
 # Would you like the report displayed in the local browser once completed ?
 $DisplaytoScreen = $true
+# Display the report even if it is empty?
+$DisplayReportEvenIfEmpty = $true
 # Use the following item to define if an email report should be sent once completed
 $SendEmail = $false
 # Please Specify the SMTP server address (and optional port) [servername(:port)]

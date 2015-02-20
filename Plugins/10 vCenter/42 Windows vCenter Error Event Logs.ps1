@@ -1,8 +1,8 @@
 # Start of Settings 
 # Set the number of days of VC Events to check for errors
-$VCEventAge =1
+$VCEventAge = 1
 # Set the number of days of VC Event Logs to check for warnings and errors
-$VCEvntlgAge =1
+$VCEvntlgAge = 1
 # End of Settings
 
 if (! $VCSA){
@@ -31,9 +31,9 @@ if (! $VCSA){
 }	
 
 $Title = "Windows vCenter Error Event Logs"
-$Header = "$VIServer Event Logs ($VCEvntlgAge day(s)): $(@($WMI).Count)"
+$Header = "$VIServer Event Logs - Errors ($VCEvntlgAge day(s)): $(@($WMI).Count)"
 $Comments = "The following errors were found in the vCenter Event Logs, you may wish to check these further"
 $Display = "Table"
 $Author = "Alan Renouf"
-$PluginVersion = 1.1
+$PluginVersion = 1.2
 $PluginCategory = "vSphere"

@@ -1,6 +1,6 @@
 # Start of Settings 
 # Define the maximum amount of vCPUs your VMs are allowed
-$vCPU=2
+$vCPU = 2
 # End of Settings
 
 $OverCPU = @($VM | Where {$_.NumCPU -gt $vCPU} | Select Name, PowerState, NumCPU)

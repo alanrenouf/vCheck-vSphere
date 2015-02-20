@@ -1,7 +1,9 @@
-# Start of Settings 
-# End of Settings 
+# Start of Settings
+# Do not report on any VMs who are defined here (regex)
+$VMTDoNotInclude = "VM1_*|VM2_*"
+# End of Settings
 
-$Result = @($FullVM | Where {$_.Runtime.Powerstate -eq "poweredOn" -And ($_.Guest.toolsStatus -eq "toolsNotInstalled" -Or $_.Guest.ToolsStatus -eq "toolsNotRunning")} | Select Name, @{N="Status";E={$_.Guest.ToolsStatus}})
+$Result = @($FullVM | Where {$_.Name -notmatch $VMTDoNotInclude} | Where {$_.Runtime.Powerstate -eq "poweredOn" -And ($_.Guest.toolsStatus -eq "toolsNotInstalled" -Or $_.Guest.ToolsStatus -eq "toolsNotRunning")} | Select Name, @{N="Status";E={$_.Guest.ToolsStatus}})
 $Result
 
 $Title = "No VM Tools"

@@ -30,7 +30,7 @@
 .NOTES 
    File Name  : vCheck.ps1 
    Author     : Alan Renouf - @alanrenouf
-   Version    : 6.21-alpha-2
+   Version    : 6.23-alpha-1
    
    Thanks to all who have commented on my blog to help improve this project
    all beta testers and previous contributors to this script.
@@ -54,6 +54,7 @@
 .PARAMETER job
    This parameter lets you specify an xml config file for this invokation
 #>
+[CmdletBinding()]
 param (
    [Switch]$config,
    [ValidateScript({Test-Path $_ -PathType 'Container'})]
@@ -61,22 +62,59 @@ param (
    [ValidateScript({Test-Path $_ -PathType 'Leaf'})]
    [string]$job
 )
-$Version = "6.20-alpha-1"
+$vCheckVersion = "6.23-alpha-1"
 $Date = Get-Date
+
+################################################################################
+#                             Internationalization                             #
+################################################################################
+$lang = DATA {
+   ConvertFrom-StringData @' 
+      setupMsg01  = 
+      setupMsg02  = Welcome to vCheck by Virtu-Al http://virtu-al.net
+      setupMsg03  = =================================================
+      setupMsg04  = This is the first time you have run this script or you have re-enabled the setup wizard.
+      setupMsg05  =
+      setupMsg06  = To re-run this wizard in the future please use vCheck.ps1 -Config
+      setupMsg07  = To get usage information, please use Get-Help vCheck.ps1
+      setupMsg08  =
+      setupMsg09  = Please complete the following questions or hit Enter to accept the current setting
+      setupMsg10  = After completing this wizard the vCheck report will be displayed on the screen.
+      setupMsg11  =
+      resFileWarn = Image File not found for {0}!
+      pluginInvalid = Plugin does not exist: {0}
+      pluginpathInvalid = Plugin path "{0}" is invalid, defaulting to {1}
+      gvInvalid   = Global Variables path invalid in job specification, defaulting to {0}
+      varUndefined = Variable `${0} is not defined in GlobalVariables.ps1
+      pluginActivity = Evaluating plugins
+      pluginStatus = [{0} of {1}] {2}
+      Complete = Complete
+      pluginStart  = ..start calculating {0} by {1} v{2} [{3} of {4}]
+      pluginEnd    = ..finished calculating {0} by {1} v{2} [{3} of {4}]
+      repTime     = This report took {0} minutes to run all checks, completing on {1} at {2}
+      slowPlugins = The following plugins took longer than {0} seconds to run, there may be a way to optimize these or remove them if not needed
+      emailSend   = ..Sending Email
+      emailAtch   = vCheck attached to this email
+      HTMLdisp    = ..Displaying HTML results
+'@
+}
+
+Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable lang -ErrorAction SilentlyContinue
+
 ################################################################################
 #                                  Functions                                   #
 ################################################################################
 <# Write timestamped output to screen #>
 function Write-CustomOut ($Details){
-	$LogDate = Get-Date -Format T
-	Write-Host "$($LogDate) $Details"
+	$LogDate = Get-Date -Format "HH:mm:ss"
+	Write-Host "[$($LogDate)] $Details"
 }
 
 <# Search $file_content for name/value pair with ID_Name and return value #>
 Function Get-ID-String ($file_content,$ID_name) {
    if ($file_content | Select-String -Pattern "\$+$ID_name\s*=") {	
       $value = (($file_content | Select-String -pattern "\$+${ID_name}\s*=").toString().split("=")[1]).Trim(' "')
-      return ( $value ) 
+      return ( $value )
    }
 }
 
@@ -143,69 +181,53 @@ Function Invoke-Settings ($Filename, $GB) {
 	}
 }
 
-Function Get-CustomHTML {
-   param (
-      $Header, 
-      $HeaderImg
-   )
-	$Report = $HTMLHeader -replace "_HEADER_", $Header
-   $Report = $Report -replace "_HEADERIMG_", $HeaderImg
-	Return $Report
-}
+<# Replace HTML Entities in string. Used to stop <br /> tags from being mangled in tables #>
+function Format-HTMLEntities {
+	param ([string]$content)
 
-Function Get-CustomHeader0 ($Title){
-	$Report = $CustomHeader0 -replace "_TITLE_", $Title
-	Return $Report
-}
-
-Function Get-CustomHeader ($Title, $Comments){
-	$Report = $CustomHeaderStart -replace "_TITLE_", $Title
-	If ($Comments) {
-		$Report += $CustomheaderComments -replace "_COMMENTS_", $Comments
+	$replace = @{"&lt;" = "<";
+                     "&gt;" = ">"; }
+	
+	foreach ($r in $replace.Keys.GetEnumerator()) { 
+		$content = $content -replace $r, $replace[$r]
 	}
-	$Report += $CustomHeaderEnd
-	Return $Report
-}
-
-Function Get-CustomHeaderClose{
-	$Report = $CustomHeaderClose
-	Return $Report
-}
-
-Function Get-CustomHeader0Close{
-	$Report = $CustomHeader0Close
-	Return $Report
-}
-
-Function Get-CustomHTMLClose{
-	$Report = $CustomHTMLClose
-	Return $Report
+	return $content
 }
 
 <# Takes an array of content, and optional formatRules and generated HTML table #>
 Function Get-HTMLTable {
-	param([array]$Content, [array]$FormatRules)
+	param($Content, $FormatRules)
 
-	# If format rules are specified
+   # Use an XML object for ease of use
+   $XMLTable = [xml]($content | ConvertTo-Html -Fragment)
+   $XMLTable.table.RemoveChild($XMLTable.table.colgroup) | out-null
+   $XMLTable.table.SetAttribute("width","100%")
+   
+   # If format rules are specified
 	if ($FormatRules) {
-		# Use an XML object for ease of use
-		$XMLTable = [xml]($content | ConvertTo-Html -Fragment)
-		$XMLTable.table.RemoveChild($XMLTable.table.colgroup) | out-null
-
-		# Check each cell to see if there are any format rules
-		for ($RowN = 1; $RowN -lt $XMLTable.table.tr.count; $RowN++) {
-			for ($ColN = 0; $ColN -lt $XMLTable.table.tr[$RowN].td.count; $ColN++) {
-				if ( $Tableformat.keys -contains $XMLTable.table.tr[0].th[$ColN]) {
-					# Current cell has a rule, test to see if they are valid
-					foreach ( $rule in $Tableformat[$XMLTable.table.tr[0].th[$ColN]] ) {
-						if ( Invoke-Expression ("[int]`$XMLTable.table.tr[`$RowN].td[`$ColN] {0}" -f [string]$rule.Keys) ) {
-							# Find what to 
-							$RuleScope = ([string]$rule.Values).split(",")[0]
-							$RuleActions = ([string]$rule.Values).split(",")[1].split("|")
-							
-							switch ($RuleScope) {
-								"Row"  { $XMLTable.table.tr[$RowN].SetAttribute($RuleActions[0], $RuleActions[1]) }
-								"Cell" {
+      # Check each cell to see if there are any format rules
+      for ($RowN = 1; $RowN -lt $XMLTable.table.tr.count; $RowN++) {
+         for ($ColN = 0; $ColN -lt $XMLTable.table.tr[$RowN].td.count; $ColN++) {
+            if ( $FormatRules.keys -contains $XMLTable.table.tr[0].th[$ColN]) {
+               # Current cell has a rule, test to see if they are valid
+               foreach ( $rule in $FormatRules[$XMLTable.table.tr[0].th[$ColN]] ) {
+                  $value = $XMLTable.table.tr[$RowN].td[$ColN]
+                  if ($value -notmatch "^[0-9.]+$") {
+                     $value = """$value"""
+                  }
+                  
+                  if ( Invoke-Expression ("{0} {1}" -f $value, [string]$rule.Keys) ) {
+                     # Find what to 
+                     $RuleScope = ([string]$rule.Values).split(",")[0]
+                     $RuleActions = ([string]$rule.Values).split(",")[1].split("|")
+                     
+                     switch ($RuleScope) {
+                        "Row"  { 
+                           for ($TRColN = 0; $TRColN -lt $XMLTable.table.tr[$RowN].td.count; $TRColN++) {
+                              $XMLTable.table.tr[$RowN].selectSingleNode("td[$($TRColN+1)]").SetAttribute($RuleActions[0], $RuleActions[1]) 
+                           }
+                        }
+                        "Cell" {
                            if ($RuleActions[0] -eq "cid") {
                               # Do Image - create new XML node for img and clear #text
                               $XMLTable.table.tr[$RowN].selectSingleNode("td[$($ColN+1)]")."#text" = ""
@@ -225,23 +247,14 @@ Function Get-HTMLTable {
                               $XMLTable.table.tr[$RowN].selectSingleNode("td[$($ColN+1)]").SetAttribute($RuleActions[0], $RuleActions[1]) 
                            }
                         }
-							}
-						}
-					}
-				}
-			}
+                     }
+                  }
+               }
+            }
+         }
 		}
-		return [string]($XMLTable.OuterXml)
-	}
-	else {
-		$HTMLTable = $Content | ConvertTo-Html -Fragment
-		$HTMLTable = $HTMLTable -Replace '<TABLE>', $HTMLTableReplace
-		$HTMLTable = $HTMLTable -Replace '<td>', $HTMLTdReplace
-		$HTMLTable = $HTMLTable -Replace '<th>', $HTMLThReplace
-		$HTMLTable = $HTMLTable -replace '&lt;', '<'
-		$HTMLTable = $HTMLTable -replace '&gt;', '>'
-		Return $HTMLTable
-	}
+   }
+	return (Format-HTMLEntities ([string]($XMLTable.OuterXml)))
 }
 
 <# Takes an array of content, and returns HTML table with header column #>
@@ -254,6 +267,7 @@ Function Get-HTMLList {
 		  [xml]$XMLTable = $content | ConvertTo-HTML -Fragment
 		  $XMLTable.table.RemoveChild($XMLTable.table.colgroup) | out-null
 		  $XMLTable.table.RemoveChild($XMLTable.table.tr[0]) | out-null
+        $XMLTable.table.SetAttribute("width","100%")
       }
       else {
 		[xml]$XMLTable = $content | ConvertTo-HTML -Fragment -As List
@@ -267,7 +281,7 @@ Function Get-HTMLList {
          $trNode = $XMLTable.SelectSingleNode("/table/tr[$($i+1)]")
          $trNode.ReplaceChild($elem, $node) | Out-Null
       }
-      return [string]($XMLTable.OuterXml)
+      return (Format-HTMLEntities ([string]($XMLTable.OuterXml)))
    }
 }
 
@@ -531,9 +545,6 @@ function Get-ReportResource {
 $ScriptPath = (Split-Path ((Get-Variable MyInvocation).Value).MyCommand.Path)
 $PluginsFolder = $ScriptPath + "\Plugins\"
 
-# Setup language hashtable
-Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable lang
-
 # if we have the job parameter set, get the paths from the config file.
 if ($job) {
    [xml]$jobConfig = Get-Content $job
@@ -549,34 +560,36 @@ if ($job) {
    
    # Get Plugin paths
    $PluginPaths = @()
-   foreach ($PluginPath in ($jobConfig.vCheck.plugins.path -split ";")) {
-      if (Test-Path $PluginPath) {
-         $PluginPaths += (Get-Item $PluginPath).Fullname
-      }
-      else {      
-         $PluginPaths += $ScriptPath + "\Plugins"
-         Write-Warning ($lang.pluginpathInvalid -f $PluginPath, ($ScriptPath + "\Plugins"))
-      }
-   }
-   $PluginPaths = $PluginPaths | Sort-Object -unique
-   
-   # Get all plugins and test they are correct
-   $vCheckPlugins = @()
-   foreach ($plugin in $jobConfig.vCheck.plugins.plugin) {
-      $testedPaths = 0
-      foreach ($PluginPath in $PluginPaths) {        
-         $testedPaths++
-         if (Test-Path ("{0}\{1}" -f $PluginPath, $plugin)) {
-            $vCheckPlugins += Get-Item ("{0}\{1}" -f $PluginPath, $plugin)
-            break;
+   if ($jobConfig.vCheck.plugins.path) {
+      foreach ($PluginPath in ($jobConfig.vCheck.plugins.path -split ";")) {
+         if (Test-Path $PluginPath) {
+            $PluginPaths += (Get-Item $PluginPath).Fullname
+            $PluginPaths += Get-Childitem $PluginPath -recurse | ?{ $_.PSIsContainer } | Select -expandproperty FullName
          }
-         # Plugin not found in any search path
-         elseif ($testedPaths -eq $PluginPaths.Count) {
-            Write-Warning ($lang.pluginInvalid -f $plugin)
+         else {      
+            $PluginPaths += $ScriptPath + "\Plugins"
+            Write-Warning ($lang.pluginpathInvalid -f $PluginPath, ($ScriptPath + "\Plugins"))
          }
       }
+      $PluginPaths = $PluginPaths | Sort-Object -unique
+      
+      # Get all plugins and test they are correct
+      $vCheckPlugins = @()
+      foreach ($plugin in $jobConfig.vCheck.plugins.plugin) {
+         $testedPaths = 0
+         foreach ($PluginPath in $PluginPaths) {        
+            $testedPaths++
+            if (Test-Path ("{0}\{1}" -f $PluginPath, $plugin)) {
+               $vCheckPlugins += Get-Item ("{0}\{1}" -f $PluginPath, $plugin)
+               break;
+            }
+            # Plugin not found in any search path
+            elseif ($testedPaths -eq $PluginPaths.Count) {
+               Write-Warning ($lang.pluginInvalid -f $plugin)
+            }
+         }
+      }
    }
-   
    # if no valid plugins specified, fall back to default
    if (!$vCheckPlugins) {
       $vCheckPlugins = Get-ChildItem -Path $PluginsFolder -filter "*.ps1" -Recurse | Sort FullName
@@ -584,8 +597,8 @@ if ($job) {
 }
 else {
 	$ToNatural = { [regex]::Replace($_, '\d+', { $args[0].Value.PadLeft(20) }) }
-	$vCheckPlugins = Get-ChildItem -Path $PluginsFolder -filter "*.ps1" -Recurse | where {$_.Directory -match "initialize"} | Sort $ToNatural
-	$PluginsSubFolder = Get-ChildItem -Path $PluginsFolder | where {($_.Name -notmatch "initialize") -and ($_.Name -notmatch "finish")}
+	$vCheckPlugins = @(Get-ChildItem -Path $PluginsFolder -filter "*.ps1" -Recurse | where {$_.Directory -match "initialize"} | Sort $ToNatural)
+	$PluginsSubFolder = Get-ChildItem -Path $PluginsFolder | where {($_.PSIsContainer) -and ($_.Name -notmatch "initialize") -and ($_.Name -notmatch "finish")}
 	$vCheckPlugins += $PluginsSubFolder | % {Get-ChildItem -Path $_.FullName -filter "*.ps1" | Sort $ToNatural}
 	$vCheckPlugins += Get-ChildItem -Path $PluginsFolder -filter "*.ps1" -Recurse | where {$_.Directory -match "finish"} | Sort $ToNatural
 	$GlobalVariables = $ScriptPath + "\GlobalVariables.ps1"
@@ -669,39 +682,42 @@ $vCheckPlugins | Foreach {
 }
 Write-Progress -ID 1 -Activity $lang.pluginActivity -Status $lang.Complete -Completed
 
-################################################################################
-#                                    Output                                    #
-################################################################################
-# Wrap the HTML content with header and footer from style
-$MyReport = Get-CustomHTML -Header "$Server vCheck"
-$MyReport += Get-CustomHeader0 ($Server)
-
-$p=1
-Foreach ( $pr in $PluginResult) {
-	If ($pr.Details) {
-		$MyReport += Get-CustomHeader $pr.Header $pr.Comments
-
-		switch ($pr.Display) {
-			"List"  { $MyReport += Get-HTMLList $pr.Details }
-			"Table" { $MyReport += Get-HTMLTable $pr.Details $pr.TableFormat }
-			"Chart" { $MyReport += Get-HTMLChart "plugin$($p)" $pr.Details }
-		}
-		$MyReport += Get-CustomHeaderClose
-		$p++
-	}
-}
-
 # Add Time to Run detail for plugins - if specified in GlobalVariables.ps1
 if ($TimeToRun) {
    $Finished = Get-Date
-   $MyReport += Get-CustomHeader ($lang.repTime -f [math]::round(($Finished - $Date).TotalMinutes,2), ($Finished.ToLongDateString()), ($Finished.ToLongTimeString())) ($lang.slowPlugins -f $PluginSeconds)
-   $TTRReport = $PluginResult | Where { $_.TimeToRun -gt $PluginSeconds } | Select Title, TimeToRun | Sort-Object TimeToRun -Descending
-   $MyReport += Get-HTMLList $TTRReport 
-   $MyReport += Get-CustomHeaderClose
+   $PluginResult += New-Object PSObject -Property @{"Title" = "Time to Run";
+                                                    "Author" = "vCheck";
+                                                    "Version" = $vCheckVersion;
+                                                    "Details" = ($PluginResult | Where { $_.TimeToRun -gt $PluginSeconds } | Select Title, TimeToRun | Sort-Object TimeToRun -Descending);
+                                                    "Display" = "List";
+                                                    "TableFormat" = $null;
+                                                    "Header" = ($lang.repTime -f [math]::round(($Finished - $Date).TotalMinutes,2), ($Finished.ToLongDateString()), ($Finished.ToLongTimeString()));
+                                                    "Comments" = ($lang.slowPlugins -f $PluginSeconds);
+                                                    "TimeToRun" = 0; 
+                                                   }
 }
 
-$MyReport += Get-CustomHeader0Close
-$MyReport += Get-CustomHTMLClose
+################################################################################
+#                                    Output                                    #
+################################################################################
+# Loop over plugin results and generate HTML from style
+$emptyReport = $true
+$p=1
+Foreach ( $pr in $PluginResult) {
+	If ($pr.Details) {
+		$emptyReport = $false
+		switch ($pr.Display) {
+			"List"  { $pr.Details = Get-HTMLList $pr.Details }
+			"Table" { $pr.Details = Get-HTMLTable $pr.Details $pr.TableFormat }
+			"Chart" { $pr.Details = Get-HTMLChart "plugin$($p)" $pr.Details }
+		}
+      $pr | Add-Member -Type NoteProperty -Name pluginID -Value "plugin-$p"
+      $p++
+	}
+}
+
+# Run Style replacement
+$MyReport = Get-ReportHTML
 
 # Set the output filename - if one is specified use it, otherwise just use temp
 if ($Outputpath) {
@@ -723,13 +739,13 @@ Foreach ($cid in $global:ReportResources.Keys) {
 $embedReport | Out-File -encoding ASCII -filepath $Filename
 
 # Display to screen
-if ($DisplayToScreen) {
+if ($DisplayToScreen -and (!($emptyReport -and !$DisplayReportEvenIfEmpty))) {
 	Write-CustomOut $lang.HTMLdisp  
 	Invoke-Item $Filename
 }
 
 # Generate email
-if ($SendEmail) {
+if ($SendEmail -and (!($emptyReport -and !$EmailReportEvenIfEmpty))) {
 	Write-CustomOut $lang.emailSend
    $msg = New-Object System.Net.Mail.MailMessage ($EmailFrom,$EmailTo)
    # If CC address specified, add
@@ -760,10 +776,17 @@ if ($SendEmail) {
    }
    # Send the email
    $smtpClient = New-Object System.Net.Mail.SmtpClient
-   $smtpClient.Host = $SMTPSRV
+   
+   # Find the VI Server and port from the global settings file
+   $smtpClient.Host = ($SMTPSRV -Split ":")[0]
+   if (($server -split ":")[1]) {
+      $smtpClient.Port = ($server -split ":")[1]
+   }
+   
    if ($EmailSSL -eq $true) {
       $smtpClient.EnableSsl = $true
    }
+   $smtpClient.UseDefaultCredentials = $true;
    $smtpClient.Send($msg)
    If ($SendAttachment) { $attachment.Dispose() }
    $msg.Dispose()
@@ -771,5 +794,5 @@ if ($SendEmail) {
 
 # Run EndScript once everything else is complete
 if (Test-Path ($ScriptPath + "\EndScript.ps1")) {
-	. ($ScriptPath + "\EndScript.ps1")
+   . ($ScriptPath + "\EndScript.ps1")
 }

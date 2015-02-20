@@ -1,6 +1,6 @@
 $Title = "Connection settings for vCenter"
 $Author = "Alan Renouf"
-$PluginVersion = 1.4
+$PluginVersion = 1.5
 $Header = "Connection Settings"
 $Comments = "Connection Plugin for connecting to vSphere"
 $Display = "List"
@@ -11,13 +11,42 @@ $PluginCategory = "vSphere"
 $MaxSampleVIEvent = 100000
 # End of Settings
 
-# Find the VI Server from the global settings file
-$VIServer = $Server
+# Setup plugin-specific language table
+$pLang = DATA {
+   ConvertFrom-StringData @' 
+      connReuse = Re-using connection to VI Server
+      connOpen  = Connecting to VI Server
+      connError = Unable to connect to vCenter, please ensure you have altered the vCenter server address correctly. To specify a username and password edit the connection string in the file $GlobalVariables
+      custAttr  = Adding Custom properties
+      collectVM = Collecting VM Objects
+      collectHost = Collecting VM Host Objects
+      collectCluster = Collecting Cluster Objects
+      collectDatastore = Collecting Datastore Objects
+      collectDVM = Collecting Detailed VM Objects
+      collectTemplate = Collecting Template Objects
+      collectDVIO = Collecting Detailed VI Objects
+      collectAlarm = Collecting Detailed Alarm Objects
+      collectDHost = Collecting Detailed VMHost Objects
+      collectDCluster = Collecting Detailed Cluster Objects
+      collectDDatastore = Collecting Detailed Datastore Objects
+      collectDDatastoreCluster = Collecting Detailed Datastore Cluster Objects
+'@
+}
+# Override the default (en) if it exists in lang directory
+Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable pLang -ErrorAction SilentlyContinue
+
+# Find the VI Server and port from the global settings file
+$VIServer = ($Server -Split ":")[0]
+if (($server -split ":")[1]) {
+   $port = ($server -split ":")[1]
+}
+else
+{
+   $port = 443
+}
+
 # Path to credentials file which is automatically created if needed
 $Credfile = $ScriptPath + "\Windowscreds.xml"
-
-# Setup plugin-specific language table
-Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable pLang
 
 # Adding PowerCLI core snapin
 if (!(get-pssnapin -name VMware.VimAutomation.Core -erroraction silentlycontinue)) {
@@ -30,7 +59,7 @@ if($OpenConnection.IsConnected) {
 	$VIConnection = $OpenConnection
 } else {
 	Write-CustomOut $pLang.connOpen
-	$VIConnection = Connect-VIServer $VIServer
+	$VIConnection = Connect-VIServer -Server $VIServer -Port $Port
 }
 
 if (-not $VIConnection.IsConnected) {
@@ -205,7 +234,7 @@ function Get-VIEventPlus {
 			Select -ExpandProperty MoRef
 		}
 		if(!$Entity){
-			$Entity = @(Get-Folder -Name Datacenters)
+			$Entity = @(Get-Folder -NoRecursion)
 		}
 		$entity | %{
 			$eventFilter.entity.entity = $_.ExtensionData.MoRef

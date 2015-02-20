@@ -1,11 +1,7 @@
-<<<<<<< HEAD
-# Start of Settings 
-$DatastoreIgnore = "BED-QA-SSD-001"
-=======
 # Start of Settings
+# Specify which Datastore(s) to filter from report
 $DatastoreIgnore = "local"
->>>>>>> 16438312dd5a2961d90c052893683cabeb8d8c71
-# End of Settings 
+# End of Settings
 
 $VMFolder = @()
 Foreach ($CHKVM in $FullVM){

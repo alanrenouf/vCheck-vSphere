@@ -1,6 +1,6 @@
 # Start of Settings 
 # The NTP server which should be set on your hosts
-$ntpserver ="pool.ntp.org|pool2.ntp.org"
+$ntpserver = "pool.ntp.org|pool2.ntp.org"
 # End of Settings
 
 $Result = @($VMH | Where {$_.Connectionstate -ne "Disconnected"} | Select Name, @{N="NTPServer";E={$_ | Get-VMHostNtpServer}}, @{N="ServiceRunning";E={(Get-VmHostService -VMHost $_ | Where-Object {$_.key -eq "ntpd"}).Running}} | Where {$_.ServiceRunning -eq $false -or $_.NTPServer -notmatch $ntpserver})

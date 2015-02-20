@@ -1,6 +1,6 @@
 # Start of Settings 
 # HA VM reset day(s) number due to Guest OS error
-$HAVMresetold =5
+$HAVMresetold = 5
 # End of Settings
 
 $EventFilterSpec = New-Object VMware.Vim.EventFilterSpec

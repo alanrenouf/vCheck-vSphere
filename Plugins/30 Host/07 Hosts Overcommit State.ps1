@@ -1,17 +1,22 @@
 # Start of Settings
 # Return results in GB or MB?
-$Units ="GB"
+$Units = "GB"
 # End of Settings
 
-
 # Setup plugin-specific language table
-Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable pLang
-
+$pLang = DATA {
+   ConvertFrom-StringData @' 
+      pluginActivity = Checking overcommit state for hosts
+'@
+}
+# Override the defaults (en) if language file exists in lang driectory
+Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable pLang -ErrorAction SilentlyContinue
 
 $OverCommit = @()
 $i = 0
+$VMHCount = $VMH | Measure
 Foreach ($VMHost in $VMH) {
-	Write-Progress -ID 2 -Parent 1 -Activity $plang.pluginActivity -Status $VMHost.Name -PercentComplete ((100*$i)/$VMH.Count)
+	Write-Progress -ID 2 -Parent 1 -Activity $plang.pluginActivity -Status $VMHost.Name -PercentComplete ((100*$i)/$VMHCount.Count)
 	if ($VMMem) { Clear-Variable VMMem }
 	$VM | ?{$_.VMHost.Name -eq $VMHost.Name} | Foreach {
 		[INT]$VMMem += $_.MemoryMB

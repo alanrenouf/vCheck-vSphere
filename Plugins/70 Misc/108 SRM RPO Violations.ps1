@@ -23,7 +23,7 @@
 # SRM RPO Violations: Set the number of minutes an RPO has exceeded to report on
 $RPOviolationMins = 240
 # SRM RPO Violations: Only look for RPO events on VMs with these names: (regex)
-$VMNameRegex =""
+$VMNameRegex = ""
 # SRM RPO Violations: Report on unresolved RPO violations only?
 $ActiveViolationsOnly = $true
 # End of Settings

@@ -3,30 +3,27 @@
 $DvSwitchLeft = 10
 # End of Settings
 
-if (Get-PSSnapin VMware.VimAutomation.Vds -ErrorAction SilentlyContinue){
-
-        if ($vdspg = Get-VDSwitch | sort Name | Get-VDPortgroup){
+if (Get-PSSnapin VMware.VimAutomation.Vds -ErrorAction SilentlyContinue)
+{
+    if ($vdspg = Get-VDSwitch | Sort-Object -Property Name | Get-VDPortgroup)
+    {
         $ImpactedDVS = @() 
 
-        Foreach ($i in $vdspg | where {$_.IsUplink -ne 'True' -and $_.PortBinding -ne 'Ephemeral'} ) {
+        Foreach ($PG in $vdspg | Where-Object {-not $_.IsUplink -and $_.PortBinding -ne 'Ephemeral' -and -not ($_.PortBinding -eq 'Static' -and $_.ExtensionData.Config.AutoExpand)} )
+        {
+            $NumPorts = $PG.NumPorts
+            $NumVMs = ($PG.ExtensionData.VM).Count
+            $OpenPorts = $NumPorts - $NumVMs
 
-        $PG = Get-VDPortgroup $i
-        $NumPorts = $PG.NumPorts
-        $NumVMs = ($PG.ExtensionData.VM).Count
-        $OpenPorts = $NumPorts - $NumVMs
+            If ($OpenPorts -lt $DvSwitchLeft)
+            {
+                $myObj = "" | select vDSwitch,Name,OpenPorts
+                $myObj.vDSwitch = $PG.VDSwitch
+                $myObj.Name = $PG.Name
+                $myObj.OpenPorts = $OpenPorts
 
-        If ($OpenPorts -lt $DvSwitchLeft) {
-
-
-        $myObj = "" | select vDSwitch,Name,OpenPorts
-        $myObj.vDSwitch = $i.VDSwitch
-        $myObj.Name = $i.Name
-        $myObj.OpenPorts = $OpenPorts
-
-        $ImpactedDVS += $myObj
-
-        }
-
+                $ImpactedDVS += $myObj
+            }
         }
 
         $ImpactedDVS
@@ -38,5 +35,5 @@ $Header = "Distributed vSwitch Port Groups with less than $vSwitchLeft Port(s) F
 $Comments = "The following Distributed vSwitch Port Groups have less than $vSwitchLeft left"
 $Display = "Table"
 $Author = "Kyle Ruddy"
-$PluginVersion = 1.1
+$PluginVersion = 1.2
 $PluginCategory = "vSphere"

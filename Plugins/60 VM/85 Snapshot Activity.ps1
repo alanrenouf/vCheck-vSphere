@@ -1,4 +1,4 @@
-﻿# Start of Settings
+# Start of Settings
 # Set the number of days to show Snapshots for
 $VMsNewRemovedAge = 5
 # User exception for Snapshot removed
@@ -15,5 +15,5 @@ $Author = "Chris Monahan, but is a minor mod of two plugins by Raphael Schitz an
 $PluginVersion = 1.0
 $PluginCategory = "vSphere"
 
-# This is a consolidation of "65 Snapshot Created.ps1" and "63 Snapshot Removed.ps1", both both Raphael Schitz and Frederic Martin.
+# This is a consolidation of "65 Snapshot Created.ps1" and "63 Snapshot Removed.ps1", by both Raphael Schitz and Frederic Martin.
 # Shows snapshot activity by listing any task with the word "snapshot" in it, sorting by VM name then time of task creation.

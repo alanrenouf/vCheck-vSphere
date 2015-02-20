@@ -7,13 +7,15 @@ $SetupWizard = $true
 
 
 # Start of Settings
-# Please Specify the IP address or Hostname of the server to connect to
+# Please Specify the address (and optional port) of the server to connect to [servername(:port)]
 $Server = "192.168.0.9"
 # Would you like the report displayed in the local browser once completed ?
 $DisplaytoScreen = $true
+# Display the report even if it is empty?
+$DisplayReportEvenIfEmpty = $true
 # Use the following item to define if an email report should be sent once completed
 $SendEmail = $false
-# Please Specify the SMTP server address
+# Please Specify the SMTP server address (and optional port) [servername(:port)]
 $SMTPSRV = "mysmtpserver.mydomain.local"
 # Would you like to use SSL to send email?
 $EmailSSL = $false

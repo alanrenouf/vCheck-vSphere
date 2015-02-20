@@ -1,6 +1,6 @@
 # Start of Settings 
 # Set the warning threshold for Datastore % Free Space
-$DatastoreSpace =25
+$DatastoreSpace = 25
 # Do not report on any Datastores that are defined here (Datastore Free Space Plugin)
 $DatastoreIgnore = "local"
 # End of Settings

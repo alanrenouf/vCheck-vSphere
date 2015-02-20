@@ -1,6 +1,6 @@
 # Start of Settings 
 # Set the number of days to show VMs removed for
-$VMsNewRemovedAge =5
+$VMsNewRemovedAge = 5
 # End of Settings
 
 @(Get-VIEventPlus -Start ((get-date).adddays(-$VMsNewRemovedAge)) -EventType "VmRemovedEvent" | Select CreatedTime, UserName, fullFormattedMessage)

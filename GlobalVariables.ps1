@@ -35,7 +35,7 @@ $SendAttachment = $false
 $Style = "VMware"
 # Set the following setting to $true to see how long each Plugin takes to run as part of the report
 $TimeToRun = $true
-# Report an plugins that take longer than the following amount of seconds
+# Report on plugins that take longer than the following amount of seconds
 $PluginSeconds = 30
 # End of Settings
 

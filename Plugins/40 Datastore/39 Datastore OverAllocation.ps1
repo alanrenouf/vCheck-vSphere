@@ -28,6 +28,6 @@ $Header = "Datastore OverAllocation Over $OverAllocation%: $(@($voverallocation)
 $Comments = "The following datastores may be overcommitted, it is strongly suggested you check these"
 $Display = "Table"
 $Author = "Alan Renouf"
-$PluginVersion = 1.2
+$PluginVersion = 1.3
 $PluginCategory = "vSphere"
 # 20150223 monahancj - Added datastore filtering

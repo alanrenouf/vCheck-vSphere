@@ -1,10 +1,13 @@
 # Start of Settings 
 # Datastore OverAllocation %
 $OverAllocation = 50
+# Exclude these datastores from report
+$ExcludedDatastores = "ExcludeMe"
 # End of Settings
 
+$filteredstorageviews = $storageviews | Where-Object { $_.Name -notmatch $ExcludedDatastores }
 $voverallocation = @()
-foreach ($storage in $storageviews)
+foreach ($storage in $$filteredstorageviews)
 {
 	if ($storage.Summary.Uncommitted -gt "0")
 	{
@@ -27,3 +30,4 @@ $Display = "Table"
 $Author = "Alan Renouf"
 $PluginVersion = 1.2
 $PluginCategory = "vSphere"
+# 20150223 monahancj - Added datastore filtering

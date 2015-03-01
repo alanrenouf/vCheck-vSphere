@@ -30,7 +30,7 @@
 .NOTES 
    File Name  : vCheck.ps1 
    Author     : Alan Renouf - @alanrenouf
-   Version    : 6.23-alpha-1
+   Version    : 6.23-alpha-2
    
    Thanks to all who have commented on my blog to help improve this project
    all beta testers and previous contributors to this script.
@@ -62,7 +62,7 @@ param (
    [ValidateScript({Test-Path $_ -PathType 'Leaf'})]
    [string]$job
 )
-$vCheckVersion = "6.23-alpha-1"
+$vCheckVersion = "6.23-alpha-2"
 $Date = Get-Date
 
 ################################################################################
@@ -670,7 +670,7 @@ $vCheckPlugins | Foreach {
 	# Do a replacement for {count} for number of items returned in $header
 	$Header = $Header -replace "\[count\]", $Details.count
 	
-	$PluginResult += New-Object PSObject -Property @{"Title" = $PluginInfo["Title"];
+	$PluginResult += New-Object PSObject -Property @{"Title" = $Title;
 																	 "Author" = $PluginInfo["Author"];
 																	 "Version" = $PluginInfo["Version"];
 																	 "Details" = $Details;

@@ -11,7 +11,9 @@ $excludeCreator = "ExcludeMe"
 
 # Changelog
 ## 1.3 : Cleanup - Fixed Creator - Changed Size to GB
+## 1.4 : Decode URL-encoded snapshot name (i.e. the %xx caharacters)
 
+Add-Type -AssemblyName System.Web
 
 function Get-SnapshotSummary {
 	param(
@@ -32,7 +34,7 @@ function Get-SnapshotSummary {
 				$mySnaps += $SnapshotInfo
 			}
 
-			$mySnaps | Select VM, @{N="SnapName";E={$_.Name}}, @{N="DaysOld";E={((Get-Date) - $_.Created).Days}}, Creator, @{N="SizeGB";E={$_.SizeGB -as [int]}}, Created, Description -ErrorAction SilentlyContinue | Sort DaysOld
+			$mySnaps | Select VM, @{N="SnapName";E={[System.Web.HttpUtility]::UrlDecode($_.Name)}}, @{N="DaysOld";E={((Get-Date) - $_.Created).Days}}, Creator, @{N="SizeGB";E={$_.SizeGB -as [int]}}, Created, Description -ErrorAction SilentlyContinue | Sort DaysOld
 
 		} else {
 			throw 'ParameterBinderStrings\InputObjectNotBound'
@@ -115,5 +117,5 @@ $Header =  "Snapshots (Over $SnapshotAge Days Old) : $(@($snapshots).count)"
 $Comments = "VMware snapshots which are kept for a long period of time may cause issues, filling up datastores and also may impact performance of the virtual machine."
 $Display = "Table"
 $Author = "Alan Renouf, Raphael Schitz"
-$PluginVersion = 1.3
+$PluginVersion = 1.4
 $PluginCategory = "vSphere"

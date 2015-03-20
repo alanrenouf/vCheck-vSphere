@@ -6,7 +6,7 @@
 
 # Multi-writer parameter
 
-$Result = @(ForEach ($vm in (Get-View -ViewType VirtualMachine -Property Name,Config.ExtraConfig -Filter @{"Config.Template"="False"})){
+$Result = @(ForEach ($vm in $FullVM){
     $vm.Config.ExtraConfig | Where {$_.Key -like "scsi*sharing"} |
     Select @{N="VM";E={$vm.Name}},Key,Value
 })

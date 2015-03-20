@@ -5,7 +5,7 @@
 ## 1.0 : Initial Version
 
 # BusSharingMode - Physical and Virtual
-$Result = @(ForEach ($vm in (Get-View -ViewType VirtualMachine -Property Name,Config.Hardware.Device -Filter @{"Config.Template"="False"})){
+$Result = @(ForEach ($vm in $FullVM){
     $scsi = $vm.Config.Hardware.Device | where {$_ -is [VMware.Vim.VirtualSCSIController] -and ($_.SharedBus -eq "physicalSharing" -or $_.SharedBus -eq "virtualSharing")}
     if ($scsi){
         $scsi | Select @{N="VM";E={$vm.Name}},

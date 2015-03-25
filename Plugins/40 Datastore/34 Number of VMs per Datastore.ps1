@@ -1,12 +1,14 @@
 # Start of Settings 
 # Max number of VMs per Datastore
 $NumVMsPerDatastore = 5
+# Exclude these datastores from report
+$ExcludedDatastores = "ExcludeMe"
 # End of Settings
 
 # Changelog
 ## 1.1 : Using managed objects collections in order to avoid using Get-VM cmdlet for performance matter
 
-$Result = @($StorageViews | Select Name, @{N="NumVM";E={($_.vm).Count}} | Where { $_.NumVM -gt $NumVMsPerDatastore} | Sort NumVM -Descending)
+$Result = @($StorageViews | Where-Object { $_.Name -notmatch $ExcludedDatastores } | Select Name, @{N="NumVM";E={($_.vm).Count}} | Where { $_.NumVM -gt $NumVMsPerDatastore} | Sort NumVM -Descending)
 $Result
 
 $Title = "Number of VMs per Datastore"

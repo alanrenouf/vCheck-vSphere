@@ -22,9 +22,9 @@ foreach ($Profile in $HostProfiles) {
          $Failures = $Profile | Test-VMHostProfileCompliance -UseCache 
 
          # Find all Hosts with HP Applied and status
-         $VMHosts = $VMH | Where {(($Profile.ExtensionData.entity | Where {$_.type -eq "HostSystem" } | Select @{n="Id";e={"HostSystem-{0}" -f $_.Value}}) | Select -expandProperty Id) -contains $_.Id} 
+         $VMHosts = @($VMH | Where {(($Profile.ExtensionData.entity | Where {$_.type -eq "HostSystem" } | Select @{n="Id";e={"HostSystem-{0}" -f $_.Value}}) | Select -expandProperty Id) -contains $_.Id}) 
          # Filter out those with failures and select required columns
-         $VMHosts = $VMHosts | where {($failures | Select -expandproperty VMHostID) -notcontains $_.id} | Select @{Name="VMHostProfile";Expression={$Profile.Name}}, @{Name="Host";Expression={$_.Name}}, @{Name="Compliant";Expression={$true}}, @{Name="Failures";Expression={"None"}} 
+         $VMHosts = @($VMHosts | where {($failures | Select -expandproperty VMHostID) -notcontains $_.id} | Select @{Name="VMHostProfile";Expression={$Profile.Name}}, @{Name="Host";Expression={$_.Name}}, @{Name="Compliant";Expression={$true}}, @{Name="Failures";Expression={"None"}}) 
          # Add in the failures
          $VMHosts += ($Failures | Select VMHostProfile, @{Name='Host';Expression={$_.vmhost.name}}, @{Name='Compliant';Expression={$false}}, @{Name="Failures";Expression={($_.IncomplianceElementList | Select -expandproperty Description) -join "<br />"}})
          

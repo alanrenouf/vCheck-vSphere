@@ -30,7 +30,7 @@
 .NOTES 
    File Name  : vCheck.ps1 
    Author     : Alan Renouf - @alanrenouf
-   Version    : 6.23-alpha-1
+   Version    : 6.23-alpha-2
    
    Thanks to all who have commented on my blog to help improve this project
    all beta testers and previous contributors to this script.
@@ -62,7 +62,7 @@ param (
    [ValidateScript({Test-Path $_ -PathType 'Leaf'})]
    [string]$job
 )
-$vCheckVersion = "6.23-alpha-1"
+$vCheckVersion = "6.23-alpha-2"
 $Date = Get-Date
 
 ################################################################################
@@ -598,7 +598,7 @@ if ($job) {
 else {
 	$ToNatural = { [regex]::Replace($_, '\d+', { $args[0].Value.PadLeft(20) }) }
 	$vCheckPlugins = @(Get-ChildItem -Path $PluginsFolder -filter "*.ps1" -Recurse | where {$_.Directory -match "initialize"} | Sort $ToNatural)
-	$PluginsSubFolder = Get-ChildItem -Path $PluginsFolder | where {($_.Name -notmatch "initialize") -and ($_.Name -notmatch "finish")}
+	$PluginsSubFolder = Get-ChildItem -Path $PluginsFolder | where {($_.PSIsContainer) -and ($_.Name -notmatch "initialize") -and ($_.Name -notmatch "finish")}
 	$vCheckPlugins += $PluginsSubFolder | % {Get-ChildItem -Path $_.FullName -filter "*.ps1" | Sort $ToNatural}
 	$vCheckPlugins += Get-ChildItem -Path $PluginsFolder -filter "*.ps1" -Recurse | where {$_.Directory -match "finish"} | Sort $ToNatural
 	$GlobalVariables = $ScriptPath + "\GlobalVariables.ps1"
@@ -670,7 +670,7 @@ $vCheckPlugins | Foreach {
 	# Do a replacement for {count} for number of items returned in $header
 	$Header = $Header -replace "\[count\]", $Details.count
 	
-	$PluginResult += New-Object PSObject -Property @{"Title" = $PluginInfo["Title"];
+	$PluginResult += New-Object PSObject -Property @{"Title" = $Title;
 																	 "Author" = $PluginInfo["Author"];
 																	 "Version" = $PluginInfo["Version"];
 																	 "Details" = $Details;
@@ -701,9 +701,11 @@ if ($TimeToRun) {
 #                                    Output                                    #
 ################################################################################
 # Loop over plugin results and generate HTML from style
+$emptyReport = $true
 $p=1
 Foreach ( $pr in $PluginResult) {
 	If ($pr.Details) {
+		$emptyReport = $false
 		switch ($pr.Display) {
 			"List"  { $pr.Details = Get-HTMLList $pr.Details }
 			"Table" { $pr.Details = Get-HTMLTable $pr.Details $pr.TableFormat }
@@ -737,13 +739,13 @@ Foreach ($cid in $global:ReportResources.Keys) {
 $embedReport | Out-File -encoding ASCII -filepath $Filename
 
 # Display to screen
-if ($DisplayToScreen) {
+if ($DisplayToScreen -and (!($emptyReport -and !$DisplayReportEvenIfEmpty))) {
 	Write-CustomOut $lang.HTMLdisp  
 	Invoke-Item $Filename
 }
 
 # Generate email
-if ($SendEmail) {
+if ($SendEmail -and (!($emptyReport -and !$EmailReportEvenIfEmpty))) {
 	Write-CustomOut $lang.emailSend
    $msg = New-Object System.Net.Mail.MailMessage ($EmailFrom,$EmailTo)
    # If CC address specified, add

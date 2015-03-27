@@ -50,6 +50,14 @@
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/10 vCenter/43 Windows vCenter Warning Event Logs.ps1</href>
   </plugin>
   <plugin>
+    <name>vCenter Sessions Age</name>
+    <description>The following displays vCenter sessions that exceed the maximum session age ($MaxvCenterSessionAge Hour(s)).</description>
+    <author>Rudolf Kleijwegt</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/10 vCenter/47 vCenter Session Age.ps1</href>
+  </plugin>
+  <plugin>
     <name>vCenter License Report</name>
     <description>The following displays licenses registered with this server and usage.</description>
     <author>Justin Mercier</author>
@@ -85,7 +93,7 @@
     <name>DRS &amp; SDRS Migrations</name>
     <description>Multiple DRS Migrations may be an indication of overloaded hosts, check resource levels of the cluster</description>
     <author>Alan Renouf, Jonathan Medd</author>
-    <version>1.2</version>
+    <version>1.3</version>
     <category>vSphere</category>
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/20 Cluster/17 DRS Migrations.ps1</href>
   </plugin>
@@ -299,6 +307,14 @@
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/30 Host/67 Host OS Pivot Table.ps1</href>
   </plugin>
   <plugin>
+    <name>Disk Max Total Latency</name>
+    <description>Check VM per LUN dispatch and esxtop for very high values over $diskmaxtotallatency</description>
+    <author>Raphael Schitz, Frederic Martin</author>
+    <version>1.1</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/30 Host/68 Disk Max Total Latency.ps1</href>
+  </plugin>
+  <plugin>
     <name>Network redundancy lost</name>
     <description>The following Hosts have lost network redundancy</description>
     <author>Olivier TABUT</author>
@@ -374,7 +390,7 @@
     <name>Datastore OverAllocation</name>
     <description>The following datastores may be overcommitted, it is strongly suggested you check these</description>
     <author>Alan Renouf</author>
-    <version>1.2</version>
+    <version>1.3</version>
     <category>vSphere</category>
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/40 Datastore/39 Datastore OverAllocation.ps1</href>
   </plugin>
@@ -470,7 +486,7 @@
     <name>Checking Distributed vSwitch Port Groups for Ports Free</name>
     <description>The following Distributed vSwitch Port Groups have less than $vSwitchLeft left</description>
     <author>Kyle Ruddy</author>
-    <version>1.1</version>
+    <version>1.2</version>
     <category>vSphere</category>
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/50 Network/80 DvPG with less than x Ports Free.ps1</href>
   </plugin>
@@ -487,7 +503,7 @@
     <description>
     </description>
     <author>Alan Renouf, Raphael Schitz</author>
-    <version>1.3</version>
+    <version>1.4</version>
     <category>vSphere</category>
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/60 VM/02 Snapshot Information.ps1</href>
   </plugin>
@@ -548,14 +564,6 @@
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/60 VM/106 Find Phantom Snapshots.ps1</href>
   </plugin>
   <plugin>
-    <name>Quantity of snapshots</name>
-    <description>The following VMs have more than $MaxNumberSnapshots snapshot(s)</description>
-    <author>Mads Fog Albrechtslund</author>
-    <version>1.0</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/60 VM/107 Quantity of Snapshots.ps1</href>
-  </plugin>
-  <plugin>
     <name>VMs with over $vCPU vCPUs</name>
     <description>The following VMs have over $vCPU CPU(s) and may impact performance due to CPU scheduling</description>
     <author>Alan Renouf</author>
@@ -578,6 +586,22 @@
     <version>1.1</version>
     <category>vSphere</category>
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/60 VM/12 VMs Swapping or Ballooning.ps1</href>
+  </plugin>
+  <plugin>
+    <name>Multi-writer</name>
+    <description>The following VMs have multi-writer parameter. A problem will occur in case of svMotion without reconfiguration of the applications which are using these virtual disks and also change of the VM configuration concerned. More information &lt;a href='http://kb.vmware.com/selfservice/microsites/search.do?language=en_US&amp;cmd=displayKC&amp;externalId=1034165'&gt;here&lt;/a&gt;.</description>
+    <author>Petar Enchev, Luc Dekens</author>
+    <version>1.0</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/60 VM/120 Multi-writer.ps1</href>
+  </plugin>
+  <plugin>
+    <name>BusSharingMode - Physical and Virtual</name>
+    <description>The following VMs have physical and/or virtual bus sharing. A problem will occur in case of svMotion without reconfiguration of the applications which are using these virtual disks and also change of the VM configuration concerned.</description>
+    <author>Petar Enchev, Luc Dekens</author>
+    <version>1.0</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/60 VM/121 BusSharingMode - Physical and Virtual.ps1</href>
   </plugin>
   <plugin>
     <name>Invalid or inaccessible VM</name>
@@ -636,20 +660,12 @@
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/60 VM/27 VM Tools Issues.ps1</href>
   </plugin>
   <plugin>
-    <name>CD-ROMs Connected</name>
-    <description>The following VMs have a CD-ROM connected, this may cause issues if this machine needs to be migrated to a different host</description>
-    <author>Alan Renouf, Frederic Martin</author>
-    <version>1.2</version>
+    <name>Removable Media Connected</name>
+    <description>The following VMs have removable media connected (i.e. CD/Floppy), this may cause issues if this machine needs to be migrated to a different host</description>
+    <author>John Sneddon</author>
+    <version>1.0</version>
     <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/60 VM/28 CD-ROMs Connected.ps1</href>
-  </plugin>
-  <plugin>
-    <name>Floppies Connected</name>
-    <description>The following VMs have a floppy drive connected, this may cause issues if this machine needs to be migrated to a different host</description>
-    <author>Alan Renouf, Frederic Martin</author>
-    <version>1.2</version>
-    <category>vSphere</category>
-    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/60 VM/29 Floppy Drive Connected.ps1</href>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/60 VM/28 Removable Media Connected.ps1</href>
   </plugin>
   <plugin>
     <name>Single Storage VMs</name>
@@ -666,6 +682,14 @@
     <version>1.1</version>
     <category>vSphere</category>
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/60 VM/32 VM CPU Percent RDY.ps1</href>
+  </plugin>
+  <plugin>
+    <name>VM CPU Usage</name>
+    <description>The following VMs have high CPU usage and may have rogue guest processes or not enough CPU resource assigned</description>
+    <author>Alan Renouf, Sam McGeown</author>
+    <version>1.3			</version>
+    <category>vSphere</category>
+    <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/60 VM/33 VM CPU Usage.ps1</href>
   </plugin>
   <plugin>
     <name>VM Alarms</name>
@@ -719,7 +743,7 @@
     <name>Virtual machines with less hard disks than partitions</name>
     <description>Virtual machines with less hard disks than partitions. Probably they have more than one partition on a hard disk.</description>
     <author>Robert van den Nieuwendijk</author>
-    <version>1.1</version>
+    <version>1.2</version>
     <category>vSphere</category>
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/60 VM/58 Virtual machines with less hard disks than partitions.ps1</href>
   </plugin>
@@ -727,7 +751,7 @@
     <name>Powered Off VMs</name>
     <description>May want to consider deleting VMs that have been powered off for more than 30 days</description>
     <author>Adam Schwartzberg</author>
-    <version>1.1</version>
+    <version>1.2</version>
     <category>vSphere</category>
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/60 VM/60 Powered Off VMs.ps1</href>
   </plugin>
@@ -735,7 +759,7 @@
     <name>VMs by Operating System</name>
     <description>The following Operating Systems are in use in this vCenter</description>
     <author>Raymond</author>
-    <version>1.1</version>
+    <version>1.2</version>
     <category>vSphere</category>
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/60 VM/61 Guest OS Pivot table.ps1</href>
   </plugin>
@@ -775,7 +799,7 @@
     <name>VM - is my network connected?</name>
     <description>Check if all network cards are connected</description>
     <author>Cyril Epiney</author>
-    <version>1.1</version>
+    <version>1.2</version>
     <category>vSphere</category>
     <href>https://raw.github.com/alanrenouf/vCheck-vSphere/master/Plugins/60 VM/76 VM Network State.ps1</href>
   </plugin>

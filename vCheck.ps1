@@ -89,6 +89,7 @@ $lang = DATA {
       pluginActivity = Evaluating plugins
       pluginStatus = [{0} of {1}] {2}
       Complete = Complete
+      pluginBegin = \nBegin Plugin Processing
       pluginStart  = ..start calculating {0} by {1} v{2} [{3} of {4}]
       pluginEnd    = ..finished calculating {0} by {1} v{2} [{3} of {4}]
       repTime     = This report took {0} minutes to run all checks, completing on {1} at {2}
@@ -616,10 +617,10 @@ if ($SetupSetting -or $config) {
       Write-Host -foreground $host.PrivateData.WarningForegroundColor -background $host.PrivateData.WarningBackgroundColor $_.value
    }
 	
-	Invoke-Settings -Filename $GlobalVariables -GB $true
-	Foreach ($plugin in $vCheckPlugins) { 
-		Invoke-Settings -Filename $plugin.Fullname
-	}
+   Invoke-Settings -Filename $GlobalVariables -GB $true
+   Foreach ($plugin in $vCheckPlugins) { 
+      Invoke-Settings -Filename $plugin.Fullname
+   }
 }
 
 ## Include GlobalVariables and validate settings (at the moment just check they exist)
@@ -627,9 +628,9 @@ if ($SetupSetting -or $config) {
 
 $vcvars = @("SetupWizard" , "Server" , "SMTPSRV" , "EmailFrom" , "EmailTo" , "EmailSubject", "DisplaytoScreen" , "SendEmail" , "SendAttachment", "TimeToRun" , "PluginSeconds" , "Style" , "Date")
 foreach($vcvar in $vcvars) {
-	if (!($(Get-Variable -Name "$vcvar" -Erroraction 'SilentlyContinue'))) {
-		Write-Error ($lang.varUndefined -f $vcvar)
-	} 
+   if (!($(Get-Variable -Name "$vcvar" -Erroraction 'SilentlyContinue'))) {
+      Write-Error ($lang.varUndefined -f $vcvar)
+   } 
 }
 
 # Create empty array of resources (i.e. Images)
@@ -654,7 +655,7 @@ if(!(Test-Path ($StylePath))) {
 # Start generating the report
 $PluginResult = @()
 
-Write-Host "`nBegin Plugin Processing" -foreground $host.PrivateData.WarningForegroundColor -background $host.PrivateData.WarningBackgroundColor
+Write-Host $lang.pluginBegin -foreground $host.PrivateData.WarningForegroundColor -background $host.PrivateData.WarningBackgroundColor
 # Loop over all enabled plugins
 $p = 0 
 $vCheckPlugins | Foreach {
@@ -671,14 +672,14 @@ $vCheckPlugins | Foreach {
 	$Header = $Header -replace "\[count\]", $Details.count
 	
 	$PluginResult += New-Object PSObject -Property @{"Title" = $Title;
-																	 "Author" = $PluginInfo["Author"];
-																	 "Version" = $PluginInfo["Version"];
-																	 "Details" = $Details;
-																	 "Display" = $Display;
-																	 "TableFormat" = $TableFormat;
-																	 "Header" = $Header;
-																	 "Comments" = $Comments;
-																	 "TimeToRun" = $TTR; }
+                                                         "Author" = $PluginInfo["Author"];
+                                                         "Version" = $PluginInfo["Version"];
+                                                         "Details" = $Details;
+                                                         "Display" = $Display;
+                                                         "TableFormat" = $TableFormat;
+                                                         "Header" = $Header;
+                                                         "Comments" = $Comments;
+                                                         "TimeToRun" = $TTR; }
 }
 Write-Progress -ID 1 -Activity $lang.pluginActivity -Status $lang.Complete -Completed
 

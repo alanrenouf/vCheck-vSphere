@@ -596,12 +596,12 @@ if ($job) {
    }
 }
 else {
-	$ToNatural = { [regex]::Replace($_, '\d+', { $args[0].Value.PadLeft(20) }) }
-	$vCheckPlugins = @(Get-ChildItem -Path $PluginsFolder -filter "*.ps1" -Recurse | where {$_.Directory -match "initialize"} | Sort $ToNatural)
-	$PluginsSubFolder = Get-ChildItem -Path $PluginsFolder | where {($_.PSIsContainer) -and ($_.Name -notmatch "initialize") -and ($_.Name -notmatch "finish")}
-	$vCheckPlugins += $PluginsSubFolder | % {Get-ChildItem -Path $_.FullName -filter "*.ps1" | Sort $ToNatural}
-	$vCheckPlugins += Get-ChildItem -Path $PluginsFolder -filter "*.ps1" -Recurse | where {$_.Directory -match "finish"} | Sort $ToNatural
-	$GlobalVariables = $ScriptPath + "\GlobalVariables.ps1"
+   $ToNatural = { [regex]::Replace($_, '\d+', { $args[0].Value.PadLeft(20) }) }
+   $vCheckPlugins = @(Get-ChildItem -Path $PluginsFolder -filter "*.ps1" -Recurse | where {$_.Directory -match "initialize"} | Sort $ToNatural)
+   $PluginsSubFolder = Get-ChildItem -Path $PluginsFolder | where {($_.PSIsContainer) -and ($_.Name -notmatch "initialize") -and ($_.Name -notmatch "finish")}
+   $vCheckPlugins += $PluginsSubFolder | % {Get-ChildItem -Path $_.FullName -filter "*.ps1" | Sort $ToNatural}
+   $vCheckPlugins += Get-ChildItem -Path $PluginsFolder -filter "*.ps1" -Recurse | where {$_.Directory -match "finish"} | Sort $ToNatural
+   $GlobalVariables = $ScriptPath + "\GlobalVariables.ps1"
 }
 
 ## Determine if the setup wizard needs to run
@@ -616,10 +616,10 @@ if ($SetupSetting -or $config) {
       Write-Host -foreground $host.PrivateData.WarningForegroundColor -background $host.PrivateData.WarningBackgroundColor $_.value
    }
 
-	Invoke-Settings -Filename $GlobalVariables -GB $true
-	Foreach ($plugin in $vCheckPlugins) { 
-		Invoke-Settings -Filename $plugin.Fullname
-	}
+   Invoke-Settings -Filename $GlobalVariables -GB $true
+   Foreach ($plugin in $vCheckPlugins) { 
+      Invoke-Settings -Filename $plugin.Fullname
+   }
 }
 
 ## Include GlobalVariables and validate settings (at the moment just check they exist)
@@ -627,9 +627,9 @@ if ($SetupSetting -or $config) {
 
 $vcvars = @("SetupWizard" , "Server" , "SMTPSRV" , "EmailFrom" , "EmailTo" , "EmailSubject", "DisplaytoScreen" , "SendEmail" , "SendAttachment", "TimeToRun" , "PluginSeconds" , "Style" , "Date")
 foreach($vcvar in $vcvars) {
-	if (!($(Get-Variable -Name "$vcvar" -Erroraction 'SilentlyContinue'))) {
-		Write-Error ($lang.varUndefined -f $vcvar)
-	} 
+   if (!($(Get-Variable -Name "$vcvar" -Erroraction 'SilentlyContinue'))) {
+      Write-Error ($lang.varUndefined -f $vcvar)
+   } 
 }
 
 # Create empty array of resources (i.e. Images)
@@ -638,11 +638,11 @@ $global:ReportResources = @{}
 ## Set the StylePath and include it
 $StylePath = $ScriptPath + "\Styles\" + $Style
 if(!(Test-Path ($StylePath))) {
-	# The path is not valid
-	# Use the default style
-	Write-Warning "Style path ($($StylePath)) is not valid"
-	$StylePath = $ScriptPath + "\Styles\VMware"
-	Write-Warning "Using $($StylePath)"
+   # The path is not valid
+   # Use the default style
+   Write-Warning "Style path ($($StylePath)) is not valid"
+   $StylePath = $ScriptPath + "\Styles\VMware"
+   Write-Warning "Using $($StylePath)"
 }
 
 # Import the Style
@@ -658,27 +658,27 @@ Write-Host $lang.pluginBegin -foreground $host.PrivateData.WarningForegroundColo
 # Loop over all enabled plugins
 $p = 0 
 $vCheckPlugins | Foreach {
-	$TableFormat = $null
-	$PluginInfo = Get-PluginID $_.Fullname
-	$p++
-	Write-CustomOut ($lang.pluginStart -f $PluginInfo["Title"], $PluginInfo["Author"], $PluginInfo["Version"], $p, $vCheckPlugins.count)
-	$pluginStatus = ($lang.pluginStatus -f $p, $vCheckPlugins.count, $_.Name)
-	Write-Progress -ID 1 -Activity $lang.pluginActivity -Status $pluginStatus -PercentComplete (100*$p/($vCheckPlugins.count))
-	$TTR = [math]::round((Measure-Command {$Details = . $_.FullName}).TotalSeconds, 2)
+   $TableFormat = $null
+   $PluginInfo = Get-PluginID $_.Fullname
+   $p++
+   Write-CustomOut ($lang.pluginStart -f $PluginInfo["Title"], $PluginInfo["Author"], $PluginInfo["Version"], $p, $vCheckPlugins.count)
+   $pluginStatus = ($lang.pluginStatus -f $p, $vCheckPlugins.count, $_.Name)
+   Write-Progress -ID 1 -Activity $lang.pluginActivity -Status $pluginStatus -PercentComplete (100*$p/($vCheckPlugins.count))
+   $TTR = [math]::round((Measure-Command {$Details = . $_.FullName}).TotalSeconds, 2)
 
-	Write-CustomOut ($lang.pluginEnd -f $PluginInfo["Title"], $PluginInfo["Author"], $PluginInfo["Version"], $p, $vCheckPlugins.count)
-	# Do a replacement for {count} for number of items returned in $header
-	$Header = $Header -replace "\[count\]", $Details.count
+   Write-CustomOut ($lang.pluginEnd -f $PluginInfo["Title"], $PluginInfo["Author"], $PluginInfo["Version"], $p, $vCheckPlugins.count)
+   # Do a replacement for {count} for number of items returned in $header
+   $Header = $Header -replace "\[count\]", $Details.count
 
-	$PluginResult += New-Object PSObject -Property @{"Title" = $Title;
-																	 "Author" = $PluginInfo["Author"];
-																	 "Version" = $PluginInfo["Version"];
-																	 "Details" = $Details;
-																	 "Display" = $Display;
-																	 "TableFormat" = $TableFormat;
-																	 "Header" = $Header;
-																	 "Comments" = $Comments;
-																	 "TimeToRun" = $TTR; }
+   $PluginResult += New-Object PSObject -Property @{"Title" = $Title;
+                                                    "Author" = $PluginInfo["Author"];
+                                                    "Version" = $PluginInfo["Version"];
+                                                    "Details" = $Details;
+                                                    "Display" = $Display;
+                                                    "TableFormat" = $TableFormat;
+                                                    "Header" = $Header;
+                                                    "Comments" = $Comments;
+                                                    "TimeToRun" = $TTR; }
 }
 Write-Progress -ID 1 -Activity $lang.pluginActivity -Status $lang.Complete -Completed
 

@@ -33,6 +33,10 @@ $EmailReportEvenIfEmpty = $true
 $SendAttachment = $false
 # Set the style template to use.
 $Style = "VMware"
+# Do you want to include plugin details in the report?
+$reportOnPlugins = $true
+# List Enabled plugins first in Plugin Report?
+$ListEnabledPluginsFirst = $true
 # Set the following setting to $true to see how long each Plugin takes to run as part of the report
 $TimeToRun = $true
 # Report on plugins that take longer than the following amount of seconds

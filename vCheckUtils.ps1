@@ -16,6 +16,15 @@ $global:pluginURL = "https://raw.github.com/alanrenouf/vCheck-{0}/master/Plugins
 
 .PARAMETER proxy
    URL for proxy usage.
+   
+.PARAMETER proxy_user
+   username for proxy auth.
+   
+.PARAMETER proxy_password
+   password for proxy auth.
+   
+.PARAMETER proxy_domain
+   domain for proxy auth.
 
 .EXAMPLE
    Get list of all vCheck Plugins
@@ -29,7 +38,10 @@ $global:pluginURL = "https://raw.github.com/alanrenouf/vCheck-{0}/master/Plugins
    Get plugin by name using proxy
    Get-vCheckPlugin PluginName -proxy "http://127.0.0.1:3128"
 
-
+.EXAMPLE
+   Get plugin by name using proxy with auth (domain optional depending on your proxy auth)
+   Get-vCheckPlugin PluginName -proxy "http://127.0.0.1:3128" -proxy_user "username" -proxy_pass "password -proxy_domain "domain"
+   
 .EXAMPLE
    Get plugin information
    Get-vCheckPlugins PluginName
@@ -41,9 +53,12 @@ function Get-vCheckPlugin
     (
         [Parameter(mandatory=$false)] [String]$name,
         [Parameter(mandatory=$false)] [String]$proxy,
+	[Parameter(mandatory=$false)] [String]$proxy_user,
+	[Parameter(mandatory=$false)] [String]$proxy_pass,
+	[Parameter(mandatory=$false)] [String]$proxy_domain,
         [Parameter(mandatory=$false)] [Switch]$installed,
         [Parameter(mandatory=$false)] [Switch]$notinstalled,
-		[Parameter(mandatory=$false)] [Switch]$pendingupdate,
+	[Parameter(mandatory=$false)] [Switch]$pendingupdate,
         [Parameter(mandatory=$false)] [String]$category
     )
     Process
@@ -84,7 +99,7 @@ function Get-vCheckPlugin
             $pluginObject | Add-Member -MemberType NoteProperty -Name description -value $localPluginDesc
             $pluginObject | Add-Member -MemberType NoteProperty -Name author -value $localPluginAuthor
             $pluginObject | Add-Member -MemberType NoteProperty -Name version -value $localPluginVersion
-			$pluginObject | Add-Member -MemberType NoteProperty -Name category -Value $localPluginCategory
+	    $pluginObject | Add-Member -MemberType NoteProperty -Name category -Value $localPluginCategory
             $pluginObject | Add-Member -MemberType NoteProperty -Name status -value "Installed"
             $pluginObject | Add-Member -MemberType NoteProperty -Name location -Value $LocalpluginFile.FullName
             $pluginObjectList += $pluginObject
@@ -98,7 +113,20 @@ function Get-vCheckPlugin
 				if ($proxy)
 				{
 					$proxyURL = new-object System.Net.WebProxy $proxy
-					$proxyURL.UseDefaultCredentials = $true
+					if (($proxy_user) -and ($proxy_pass))
+					{
+						$proxyURL.UseDefaultCredentials = $false
+						$proxyURL.Credentials = New-Object Net.NetworkCredential("$proxy_user","$proxy_pass")
+					}
+					elseif (($proxy_user) -and ($proxy_pass) -and ($proxy_domain))
+					{
+						$proxyURL.UseDefaultCredentials = $false
+						$proxyURL.Credentials = New-Object Net.NetworkCredential("$proxy_user","$proxy_pass","$proxy_domain")
+					}
+					else
+					{
+						$proxyURL.UseDefaultCredentials = $true
+					}
 					$webclient.proxy = $proxyURL
 				}
                 $response = $webClient.openread($pluginXMLURL)

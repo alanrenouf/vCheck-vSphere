@@ -10,6 +10,11 @@ $ChartSize = "200x200"
 # Header Images
 Add-ReportResource "Header-vCheck" ($StylePath + "\Header.jpg") -Used $true
 
+# Hash table of key/value replacements
+$StyleReplace = @{"_HEADER_" = ("'$reportTitle'");
+                  "_CONTENT_" = "Get-ReportContentHTML";
+                  "_TOC_" = "Get-ReportTOC"}
+
 #region Function Defniitions
 <#
    Get-ReportHTML - *REQUIRED*
@@ -66,11 +71,6 @@ function Get-ReportTOC {
    return $TOCHTML
 }
 #endregion
-
-# Hash table of key/value replacements
-$StyleReplace = @{"_HEADER_" = ("'$Server'");
-                  "_CONTENT_" = "Get-ReportContentHTML";
-                  "_TOC_" = "Get-ReportTOC"}
 
 # Report HTML structure
 $ReportHTML = @"

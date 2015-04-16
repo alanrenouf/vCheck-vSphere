@@ -16,6 +16,11 @@ $ChartSize = "200x200"
 Add-ReportResource "Header-vCheck" ($StylePath + "\Header.jpg") -Used $true
 Add-ReportResource "Header-VMware" ($StylePath + "\Header-vmware.png") -Used $true
 
+# Hash table of key/value replacements
+$StyleReplace = @{"_HEADER_" = ("'$reportTitle'");
+                  "_CONTENT_" = "Get-ReportContentHTML";
+                  "_TOC_" = "Get-ReportTOC"}
+
 #region Function Defniitions
 <#
    Get-ReportHTML - *REQUIRED*
@@ -77,36 +82,28 @@ function Get-ReportTOC {
 }
 #endregion
 
-# Hash table of key/value replacements
-$StyleReplace = @{"_HEADER_" = ("'{0} vCheck'" -f $Server);
-                  "_CONTENT_" = "Get-ReportContentHTML";
-                  "_TOC_" = "Get-ReportTOC"}
-
 # Report HTML structure
 $ReportHTML = @"
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
    <head>
       <title>_HEADER_</title>
-		<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
-		<style type='text/css'>
+      <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+      <style type='text/css'>
          table	{
             width: 100%;
             margin: 0px;
             padding: 0px;
          }
-
          tr:nth-child(even) { 
-               background-color: #e5e5e5; 
+            background-color: #e5e5e5; 
          }
-            
          td {
                vertical-align: top; 
                font-family: Tahoma, sans-serif;
                font-size: 8pt;
                padding: 0px;
          }
-                  
          th {
                vertical-align: top;  
                color: #018AC0; 
@@ -115,12 +112,11 @@ $ReportHTML = @"
                font-size: 8pt;
          }
          .pluginContent td { padding: 5px; }
-
          .warning { background: #FFFBAA !important }
-			.critical { background: #FFDDDD !important }
+         .critical { background: #FFDDDD !important }
       </style>
-	</head>
-	<body style="padding: 0 10px; margin: 0px; font-family:Arial, Helvetica, sans-serif; ">
+   </head>
+   <body style="padding: 0 10px; margin: 0px; font-family:Arial, Helvetica, sans-serif; ">
       <a name="top" />
         <table width='100%' style='background-color: #0A77BA; border-collapse: collapse; border: 0px; margin: 0; padding: 0;'>
          <tr>
@@ -140,12 +136,12 @@ $ReportHTML = @"
    <div style='height: 10px; font-size: 10px;'>&nbsp;</div>
    <table width='100%'><tr><td style='font-size:14px; font-weight:bold; height: 25px; text-align: center; vertical-align: middle; background-color:#0A77BA; color: white;'>vCheck v$($vCheckVersion) by <a href='http://virtu-al.net' sytle='color: white;'>Alan Renouf</a> generated on $($ENV:Computername) on $($Date.ToLongDateString()) at $($Date.ToLongTimeString())</td></tr></table>
    </body>
-</html>      
+</html>
 "@
 
 # Structure of each Plugin
 $PluginHTML = @"
-	<!-- Plugin Start - _TITLE_ -->
+   <!-- Plugin Start - _TITLE_ -->
       <div style='height: 10px; font-size: 10px;'>&nbsp;</div>
       <a name="_PLUGINID_" />
       <table width='100%' style='padding: 0px; border-collapse: collapse;'><tr><td style='background-color: #1D6325; border: 1px solid #1D6325; font-family: Tahoma, sans-serif; font-weight: bold; font-size: 8pt; color: #FFFFFF; text-indent: 10px; height: 30px; vertical-align: middle;'>_TITLE_</td></tr>

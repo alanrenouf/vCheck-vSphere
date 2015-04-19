@@ -1,5 +1,4 @@
 # Start of Settings 
-# Report on the VMs Memory/CPU Hot Add Status
 # End of Settings
 
 $HotAdd = @($VM | Select-Object Name, @{N="CPU Hot Plug Enabled"; E={$_.ExtensionData.config.CpuHotAddEnabled}}, @{N="Memory Hot Add Enabled"; E={$_.ExtensionData.config.MemoryHotAddEnabled}})

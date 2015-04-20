@@ -627,7 +627,7 @@ if ($SetupSetting -or $config) {
 ## Include GlobalVariables and validate settings (at the moment just check they exist)
 . $GlobalVariables
 
-$vcvars = @("SetupWizard" , "Server" , "SMTPSRV" , "EmailFrom" , "EmailTo" , "EmailSubject", "DisplaytoScreen" , "SendEmail" , "SendAttachment", "TimeToRun" , "PluginSeconds" , "Style" , "Date")
+$vcvars = @("SetupWizard" , "reportHeader" , "SMTPSRV" , "EmailFrom" , "EmailTo" , "EmailSubject", "DisplaytoScreen" , "SendEmail" , "SendAttachment", "TimeToRun" , "PluginSeconds" , "Style" , "Date")
 foreach($vcvar in $vcvars) {
    if (!($(Get-Variable -Name "$vcvar" -Erroraction 'SilentlyContinue'))) {
       Write-Error ($lang.varUndefined -f $vcvar)

@@ -7,8 +7,8 @@ $SetupWizard = $true
 
 
 # Start of Settings
-# Please Specify the address (and optional port) of the server to connect to [servername(:port)]
-$Server = "192.168.0.9"
+# Report header
+$reportHeader = "vCheck"
 # Would you like the report displayed in the local browser once completed ?
 $DisplaytoScreen = $true
 # Display the report even if it is empty?

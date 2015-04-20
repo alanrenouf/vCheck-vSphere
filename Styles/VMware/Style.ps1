@@ -3,7 +3,7 @@
 $ShowTOC = $true
 # End of Settings
 
-$StyleVersion = 1.2
+$StyleVersion = 1.3
 
 # Define Chart Colours
 $ChartColours = @("377C2B", "0A77BA", "1D6325", "89CBE1")
@@ -17,7 +17,7 @@ Add-ReportResource "Header-vCheck" ($StylePath + "\Header.jpg") -Used $true
 Add-ReportResource "Header-VMware" ($StylePath + "\Header-vmware.png") -Used $true
 
 # Hash table of key/value replacements
-$StyleReplace = @{"_HEADER_" = ("'$reportTitle'");
+$StyleReplace = @{"_HEADER_" = ("'$reportHeader'");
                   "_CONTENT_" = "Get-ReportContentHTML";
                   "_TOC_" = "Get-ReportTOC"}
 

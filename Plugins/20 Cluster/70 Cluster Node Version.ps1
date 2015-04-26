@@ -3,7 +3,7 @@
 
 $HostsVer = @()
 foreach ($clusview in $clusviews) {
-	$HostsVerMiss = $HostsViews | ?{ $_.Parent -match $clusview.MoRef} | select @{N="FullName";E={$_.Config.Product.FullName}} -Unique
+	$HostsVerMiss = $HostsViews | ?{ $_.Parent -match "^$($clusview.MoRef)$"} | select @{N="FullName";E={$_.Config.Product.FullName}} -Unique
 	if (($HostsVerMiss | Measure-Object).Count -gt 1) {
 		$allVer = ""
 		foreach ($Ver in $HostsVerMiss) { $allVer = $allVer + $Ver.FullName + ";" }

@@ -232,8 +232,6 @@ $TableFormat = @{"PercentFree" = @(@{ "-le 25" = "Row,class|warning"; }, @{ "-le
  ```
 Here we see the rules that apply to two different columns, with rules applied to the values in a fashion similar to Example 1.
 
-[*Back to top*](#Title)
-
 <a name="Styles">
 # Styles
 [*Back to top*](#Title)

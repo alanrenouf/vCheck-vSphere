@@ -144,7 +144,7 @@ See out [Contributions](CONTRIBUTING.md) guidelines
 [*Back to top*](#Title)
 
 ## Plugin Structure
-This document describes the basic structure of a vCheck plugin so that you can write your own plugins for either private use, or to contribute to the vCheck project.
+This section describes the basic structure of a vCheck plugin so that you can write your own plugins for either private use, or to contribute to the vCheck project.
 
 ### Settings
 Your plugin must contain a section for settings. This may be blank, or may contain one or more variables that must be defined for your plugin to determine how it operates.

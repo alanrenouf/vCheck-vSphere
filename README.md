@@ -269,3 +269,69 @@ To include image resources, you may call Add-ReportResource, specifying CID and 
 <a name="JobsSettings">
 # Jobs & Settings
 [*Back to top*](#Title)
+
+## Job XML Specifications
+
+In order to use the `-Job` parameter, an XML configuration file is used.
+
+The root element is `<vCheck>`, under this there are two elements:
+* `<globalVariables>` element specifies the path to the file containing the vCheck settings (by default globalVariables.ps1)
+* `<plugins>` element has a semi-colon separated attribute name path, which contains the path(s) to search for plugins contained in child `<plugin>` elements.
+
+Each `<plugin>` element contains the plugin name.
+
+### Config Example
+  ```
+  <vCheck> 
+    <globalVariables>GlobalVariables.ps1</globalVariables> 
+    <plugins path="plugins-vSphere"> 
+       <plugin>00 Connection Plugin for vCenter.ps1</plugin> 
+       <plugin>03 Datastore Information.ps1</plugin> 
+       <plugin>11 VMs with over CPU Count LOL WRONG PATH.ps1</plugin> 
+       <plugin>99 VeryLastPlugin Used to Disconnect.ps1</plugin> 
+    </plugins> 
+  </vCheck>
+  ```
+## Export/Import Settings
+This section describes how to import and export your vCheck settings between builds.
+
+These functions were added to vCheckUtils.ps1 in June '14 (first release build TBD)
+
+You can copy a newer version of vCheckUtils.ps1 to your existing build in order to use the new functions.
+
+To utilize the new functions, simply dot source the vCheckUtils.ps1 file in a PowerShell console:
+```
+PS E:\scripts\vCheck-vSphere> . .\vCheckUtils.ps1
+```
+This should load and list the functions available to you.
+We will be focusing on Export-vCheckSettings and Import-vCheckSettings. If you do not see these listed, you will need a newer version of vCheckUtils.ps1.
+
+### Example
+Lets assume we have an existing build located at
+`E:\Scripts\vCheck-vSphere`
+
+First lets rename the folder
+`E:\Scripts\vCheck-vSphere-old`
+
+Now we can download the latest build, unblock the zip file and unpack to `E:\Scripts` leaving us with two builds in our Scripts directory - `vCheck-vSphere-old` and `vCheck-vSphere`
+
+Next we'll export the settings from the old build - using PowerShell navigate to `E:\Scripts\vCheck-vSphere-old` and dot source `vCheckUtils.ps1`
+
+### Export Settings
+Running `Export-vCheckSettings` will by default create a CSV file named `vCheckSettings.csv` in the current directory.
+You can also specify a settings file
+```
+PS E:\scripts\vCheck-vSphere-old> Export-vCheckSettings -outfile E:\MyvCheckSettings.csv
+```
+
+That's all there is to exporting your vCheck settings. Note that the settings file will be overwritten if you were to run the function again.
+
+### Import Settings
+To import your vCheck settings, in PowerShell navigate to the new build at `E:\Scripts\vCheck-vSphere` and dot source `vCheckUtils.ps1` once again.
+
+Here we have two options - if we run `Import-vCheckSettings` with no parameters it will expect the `vCheckSettings.csv` file to be in the same directory. If not found it will prompt for the full path to the settings CSV file.
+The second option is to specify the path to the settings CSV file when running Import-vCheckSettings
+```
+PS E:\scripts\vCheck-vSphere> Import-vCheckSettings -csvfile E:\MyvCheckSettings.csv
+```
+If new settings or plugins have been added to the new build you will be asked to answer the questions, similar to running the initial config. During the import, the initial config is disabled, so once the import is complete you are ready to run your new build.

@@ -85,7 +85,7 @@ We are in the process of adding/consolidating more detailed documentation around
 
 ## Creating a new plugin
 
-We are in the process of adding/consolidating more detailed documentation around this.
+We are in the process of adding/consolidating more detailed documentation around this. In the meantime, you can review the documentation that we do have inside the [README.md](README.md) file for the repo.
 
 ## Gitter & Waffle
 

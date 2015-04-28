@@ -11,6 +11,9 @@
 |[More Info](#More)|
 |[Release Notes](#ReleaseNotes)|
 |[Contributing](#Contributing)|
+|[Plugins](#Plugins)|
+|[Styles](#Styles)|
+|[Jobs & Settings](#JobsSettings)|
 
 <a name="About">
 # About
@@ -25,8 +28,7 @@ One of they key things about this report is if there is no issue in a particular
 This script is not to be confused with an Audit script, although the reporting framework can also be used for auditing scripts too.  I don't want to remind you that you have 5 hosts and what there names are and how many CPU's they have each and every day as you don't want to read that kind of information unless you need it, this script will only tell you about problem areas with your infrastructure.
 
 <a name="Features">
-What is checked for in the vSphere version ?
-============================================
+# What is checked for in the vSphere version ?
 [*Back to top*](#Title)
 
 The following items are included as part of the vCheck vSphere download, they are included as vCheck Plugins and can be removed or altered very easily by editing the specific plugin file which contains the data.  vCheck Plugins are found under the Plugins folder.
@@ -84,8 +86,7 @@ The following items are included as part of the vCheck vSphere download, they ar
 - Much, Much more.......
 
 <a name="More">
-More Info
-=========
+# More Info
 [*Back to top*](#Title)
 
 For more information please read here: http://www.virtu-al.net/vcheck-pluginsheaders/vcheck/
@@ -93,8 +94,7 @@ For more information please read here: http://www.virtu-al.net/vcheck-pluginshea
 For an example vSphere output (doesnt contain all info) click here http://virtu-al.net/Downloads/vCheck/vCheck.htm
 
 <a name="ReleaseNotes">
-Release Notes
-=========
+# Release Notes
 [*Back to top*](#Title)
 
 * 6.22 - Fixes to VMware style. Consolidating plugins. Updates to style handling.
@@ -138,3 +138,73 @@ Release Notes
 [*Back to top*](#Title)
 
 See out [Contributions](CONTRIBUTING.md) guidelines
+
+<a name="Plugins">
+# Plugins
+[*Back to top*](#Title)
+
+## Plugin Structure
+This document describes the basic structure of a vCheck plugin so that you can write your own plugins for either private use, or to contribute to the vCheck project.
+
+## Settings
+Your plugin must contain a section for settings. This may be blank, or may contain one or more variables that must be defined for your plugin to determine how it operates.
+
+**Examples**
+
+No Settings
+
+    # Start of Settings   
+    # End of Settings
+
+Settings to define two variables
+
+    # Start of Settings   
+    # Comment - presented as part of the setup wizard   
+    $variable = "value"     
+    # Second variable     
+    $variable2 = "value2"     
+    ...     
+    # End of Settings
+
+## Required variables
+Each plugin **must** define the following variables:
+$Title - The display name of the plugin
+$Header - the header of the plugin in the report
+$Display - The format of the plugin (See Content section)
+$Author - The author's name
+$PluginVersion - Version of the plugin 
+$PluginCategory - The Category of the plugin
+
+## Content
+### Report output
+Anything that is written to stdout is included in the report. This should be either an object or hashtable in order to generate the report information.
+
+### $Display variable
+- List
+- Table
+- Chart - Not currently merged to master
+
+### Plugin Template
+
+	# Start of Settings
+	# End of Settings
+
+	# generate your report content here. Simple placeholder hashtable for the sake of example
+	@{"Plugin"="Awesome"}
+
+	$Title = "Plugin Template"
+	$Header =  "Plugin Template"
+	$Comments = "Comment about this awesome plugin"
+	$Display = "List"
+	$Author = "Plugin Author"
+	$PluginVersion = 1.0
+	$PluginCategory = "vSphere"
+
+<a name="Styles">
+# Style Structure
+[*Back to top*](#Title)
+
+
+<a name="JobsSettings">
+# Jobs & Settings
+[*Back to top*](#Title)

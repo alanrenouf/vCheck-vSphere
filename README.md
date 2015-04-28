@@ -10,6 +10,7 @@
 |[Features](#Features)|
 |[More Info](#More)|
 |[Release Notes](#ReleaseNotes)|
+|[Contributions](#Contributions)|
 
 <a name="About">
 # About
@@ -131,3 +132,9 @@ Release Notes
 * 4.2 - Added General Capacity Information based on CPU and MEM ussage per cluster
 * 4.1 - Added the ability to change the colours of the report.
 * 4.0 - HTML Tidy up, comments added for each item and the ability to enable/disable comments.
+
+<a name="Contributions">
+# Contributions
+[*Back to top*](#Title)
+
+See out [Contributions](CONTRIBUTIONS.md) guidelines

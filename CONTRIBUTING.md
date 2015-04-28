@@ -20,7 +20,7 @@ To contribute these changes back into the original repository, a user simply cre
 * **Always create pull requests to the `dev` branch of a repository**. 
 For more information, learn about the [branch structure](#branch-structure) that we are using.
 
-![PR-Dev.png](Images/PR-dev.png)
+![PR-Dev.png](https://github.com/vScripter/vCheck-vSphere/blob/dev/Images/PR-Dev.PNG)
 
 * When you create a pull request, fill out the description with a summary of what's included in your changes. 
 If the changes are related to an existing GitHub issue, please reference the issue in your description.

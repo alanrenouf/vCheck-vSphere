@@ -88,7 +88,7 @@ The following items are included as part of the vCheck vSphere download, they ar
 
 <a name="Enhancements">
 # Enhancements
-[*Back to top*](#Enhancements)
+[*Back to top*](#Title)
 
 * **Unit Testing / CI** - We are working on full support for [Pester](https://github.com/pester/Pester/blob/master/README.md) tests, which will help automate code validation. We will start small and work to provide as much documentation as we can to help with integration. 
 

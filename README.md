@@ -202,7 +202,44 @@ Anything that is written to stdout is included in the report. This should be eit
   $PluginVersion = 1.0
   $PluginCategory = "vSphere"
   ```
-  
+## Table Formatting
+Since v6.16, vCheck has supported Table formatting rules in plugins. This allows you to define a set of rules for data, in order to provide more richly formatted HTML reports.
+
+### Using Formatting Rules
+
+To use formatting rules, a `$TableFormat` variable must be defined in the module. 
+
+The `$TableFormat` variable is a Hastable, with the key being the "column" of the table that the rule should apply to.
+
+The Value of the Hashtable is an array of rule. Each rule is a hashtable, with the Key being the expression to evaluate, and the value containing the formatting options. 
+
+### Formatting options
+
+The Formatting options are made up of two comma-separated values: 
+ 1. The scope of the formatting rule - "Row" to apply to the entire row, or "Cell" to only apply to that particular cell. 
+ 2. A pipe-separated HTML attribute, and value. E.g. class|green to apply the "green" class to the HTML element specified in number 1. 
+
+### Examples
+
+#### Example 1
+
+Assume you have a CSS class named "green", which you want to apply to any compliant objects. Similarly, you have a "red" class that you wish to use to highlight non-compliant objects. We would define the formatting rules as follows:
+
+`$TableFormat = @{"Compliant" = @(@{ "-eq $true" = "Cell,class|green"; }, @{ "-eq$false" = "Cell,class|red" })}` 
+
+Here we can see two rules; the first checks if the value in the Compliant column is equal to $true, in which case it applies the "green" class to the table cell (i.e. 
+element). The second rule applies when the compliant column is equal to $false, and applied the "red" class. 
+
+#### Example 2
+
+Suppose you now want to run a report on Datastores. You wish to highlight datastores with less than 25% free space as "warning", those with free space less than 15% as "critical". To make them stand out more, you want to highlight the entire row on the report. You also wish to highlight datastores with a capacity less than 500GB as silver.
+
+To achieve this, you could use the following: 
+```
+$TableFormat = @{"PercentFree" = @(@{ "-le 25" = "Row,class|warning"; }, @{ "-le 15" = "Row,class|critical" }); "CapacityGB" = @(@{ "-lt 500" = "Cell,style|background-color: silver"})}
+ ```
+Here we see the rules that apply to two different columns, with rules applied to the values in a fashion similar to Example 1.
+
 [*Back to top*](#Title)
 
 

@@ -1,8 +1,8 @@
 ![Alt text](http://www.virtu-al.net/wp-content/uploads/2014/02/vCheck619.jpg "vCheck Sample")
 
-[![Stories in Ready](http://badge.waffle.io/alanrenouf/vCheck-vSphere.png)](http://waffle.io/alanrenouf/vCheck-vSphere)  
 vCheck-vSphere
 ==============
++[![Join the chat at https://gitter.im/alanrenouf/vCheck-vSphere](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/alanrenouf/vCheck-vSphere?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Stories in Ready](http://badge.waffle.io/alanrenouf/vCheck-vSphere.png)](http://waffle.io/alanrenouf/vCheck-vSphere)  
 
 vCheck Daily Report for vSphere
 
@@ -12,7 +12,7 @@ This script picks on the key known issues and potential issues scripted as plugi
 
 One of they key things about this report is if there is no issue in a particular place you will not receive that section in the email, for example if there are no datastores with less than 5% free space (configurable) then the disk space section in the virtual infrastructure version of this script, it will not show in the email, this ensures that you have only the information you need in front of you when you get into the office.
 
-This script is not to be confused with an Audit script, although the reporting framework can also be used for auditing scripts too.  I dont want to remind you that you have 5 hosts and what there names are and how many CPUs they have each and every day as you dont want to read that kind of information unless you need it, this script will only tell you about problem areas with your infrastructure.
+This script is not to be confused with an Audit script, although the reporting framework can also be used for auditing scripts too.  I don't want to remind you that you have 5 hosts and what there names are and how many CPUs they have each and every day as you don't want to read that kind of information unless you need it, this script will only tell you about problem areas with your infrastructure.
 
 What is checked for in the vSphere version ?
 ============================================

@@ -1,9 +1,9 @@
-# Contribute to vCheck-vSphere repository
+# Contribute to the vCheck-vSphere repository
 
 Hi! We can't thank you enough for wanting to contribute; the community is what keeps the wheels moving on this awesome project.
 All we ask is that you follow some simple guidelines. The roots of these guidelines stem from the developer community and the actual document has been borrowed from [Microsoft's DscResources](https://github.com/PowerShell/DscResources) repository; they did an excellent job putting these guidelines together; why reinvent the wheel?
 
-## Use GitHub, Git, and this repository
+## Using GitHub, Git, and this repository
 
 We are working on more detailed instructions that outline the basics.
 
@@ -29,7 +29,9 @@ If the changes are related to an existing GitHub issue, please reference the iss
 
 ### Contributing to documentation
 One of the easiest ways to contribute to a PowerShell project is by helping to write and edit documentation. 
-All of our documentation hosted on GitHub is written using [GitHub Flavored Markdown](https://help.github.com/articles/github-flavored-markdown/) (we are at lest working on shifting things over to GFM)
+All of our documentation hosted on GitHub is written using [GitHub Flavored Markdown](https://help.github.com/articles/github-flavored-markdown/) 
+
+*We are at lest working on shifting things over to GFM, for 'core' documentation. Some things may still live on the GitHub wiki, but using GFM allows the documentation to exist in the repo, so you always have a local copy to reference ;)*
 
 To [edit an existing file](https://help.github.com/articles/editing-files-in-another-user-s-repository/), simply navigate to it and click the "Edit" button. 
 GitHub will automatically create your own fork of our repository where you can make your changes. 
@@ -77,13 +79,9 @@ Multiple element lists work the same way as with ordered lists.
 * **Links:** The syntax for a hyperlink is `[visible link text](link url)`.
 Links can also have references, which will be discussed in the "Link and Image References" section below.
 
-### Improving test coverage for existing resources
-
-
-### Editing an existing plugin
+## Editing an existing plugin
 
 We are in the process of adding/consolidating more detailed documentation around this.
-
 
 ## Creating a new plugin
 
@@ -91,9 +89,9 @@ We are in the process of adding/consolidating more detailed documentation around
 
 ## Gitter & Waffle
 
-We are using [Gitter](https://gitter.im/alanrenouf/vCheck-vSphere) for general discussion around the vCheck utility. This is a good place for general questions or minor issues that someone might be able to answer, on the spot. If something cannot be resolved in the chat, it may warrant the submission of an Issue.
+We are using [![Join the chat at https://gitter.im/alanrenouf/vCheck-vSphere](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/alanrenouf/vCheck-vSphere?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) for general discussion around the vCheck utility. This is a good place for general questions or minor issues that someone might be able to answer, on the spot. If something cannot be resolved in the chat, it may warrant the submission of an Issue.
 
-We are also using Waffle.io to help track and resolve issues. You can visit the the [waffle dashboard](https://waffle.io/alanrenouf/vCheck-vSphere) to view or submit issues (you can also still use the GitHub web interface to submit/view issues).
+We are also using Waffle.io to help track and resolve issues. You can visit the the dashboard [![Stories in Ready](http://badge.waffle.io/alanrenouf/vCheck-vSphere.png)](http://waffle.io/alanrenouf/vCheck-vSphere) to view or submit issues (you can also still use the GitHub web interface to submit/view issues).
 
 
 ## Style guidelines

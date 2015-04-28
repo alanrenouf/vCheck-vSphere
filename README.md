@@ -8,6 +8,7 @@
 |-----------------|
 |[About](#About)|
 |[Features](#Features)|
+|[Enhancements](#Enhancements)|
 |[Release Notes](#ReleaseNotes)|
 |[Contributing](#Contributing)|
 |[Plugins](#Plugins)|
@@ -84,6 +85,18 @@ The following items are included as part of the vCheck vSphere download, they ar
 - HA VM restarts and resets
 - Inaccessible VMs
 - Much, Much more.......
+
+<a name="Enhancements">
+# Enhancements
+[*Back to top*](#Enhancements)
+
+* **Unit Testing / CI** - We are working on full support for [Pester](https://github.com/pester/Pester/blob/master/README.md) tests, which will help automate code validation. We will start small and work to provide as much documentation as we can to help with integration. 
+
+* **Module Support** - We are looking at our options to convert some, or all of the plugins to PowerShell modules. This will make things much easier to version and track, individually. Additionally, if we convert vCheck, itself, to a module, we open our options to support publishing to the [PowerShell Gallery](https://www.powershellgallery.com/), or at least providing users and organizations a standard platform to distrubute it. Again, these options are currently under review. 
+
+* **Settings GUI** - A settings GUI would be a basic form that would allow a user to view/set/change current vCheck configuration settings, without the complexity of settings values from within a file. This initiative is currently in development.
+ 
+In the meantime, don't hessitate to pop over to [![Join the chat at https://gitter.im/alanrenouf/vCheck-vSphere](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/alanrenouf/vCheck-vSphere?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) and join in on active conversations about anything you see, or don't see, here!
 
 <a name="ReleaseNotes">
 # Release Notes

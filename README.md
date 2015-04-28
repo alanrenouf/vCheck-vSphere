@@ -242,6 +242,29 @@ Here we see the rules that apply to two different columns, with rules applied to
 
 [*Back to top*](#Title)
 
+<a name="Styles">
+# Styles
+[*Back to top*](#Title)
+
+Each style *must* implement a function named Get-ReportHTML, as this is what is called by vCheck to generate the HTML report.
+
+An array of plugin results is passed to Get-ReportHTML, which contains the following properties:
+* Title
+* Author
+* Version
+* Details
+* Display
+* TableFormat
+* Header
+* Comments
+* TimeToRun
+
+Additionally, if the style is to define colours to be used by charts, the following variables need to be defined:
+* `[string[]] $ChartColours` - Array containing HTML colours without the hash e.g. $ChartColours = @("377C2B", "0A77BA", "1D6325", "89CBE1")
+* `[string] $ChartBackground` - HTML colour without the hash. e.g. "FFFFFF"
+* `[string] $ChartSize` - YYYxZZZ formatted string - where YYY is horizontal size, and ZZZ is height. E.g. "200x200"
+
+To include image resources, you may call Add-ReportResource, specifying CID and data. As these are not referenced by table formatting rules, this will need to be called with the `-Used $true` parameter.
 
 <a name="JobsSettings">
 # Jobs & Settings

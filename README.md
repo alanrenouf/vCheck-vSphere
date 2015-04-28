@@ -146,27 +146,29 @@ See out [Contributions](CONTRIBUTING.md) guidelines
 ## Plugin Structure
 This document describes the basic structure of a vCheck plugin so that you can write your own plugins for either private use, or to contribute to the vCheck project.
 
-## Settings
+### Settings
 Your plugin must contain a section for settings. This may be blank, or may contain one or more variables that must be defined for your plugin to determine how it operates.
 
 **Examples**
 
 No Settings
-
-    # Start of Settings   
-    # End of Settings
+  ```
+  # Start of Settings   
+  # End of Settings
+  ```
 
 Settings to define two variables
-
-    # Start of Settings   
-    # Comment - presented as part of the setup wizard   
-    $variable = "value"     
-    # Second variable     
-    $variable2 = "value2"     
-    ...     
-    # End of Settings
-
-## Required variables
+  ```
+  # Start of Settings   
+  # Comment - presented as part of the setup wizard   
+  $variable = "value"     
+  # Second variable     
+  $variable2 = "value2"     
+  ...     
+  # End of Settings
+  ```
+  
+### Required variables
 Each plugin **must** define the following variables:
 $Title - The display name of the plugin
 $Header - the header of the plugin in the report
@@ -175,33 +177,32 @@ $Author - The author's name
 $PluginVersion - Version of the plugin 
 $PluginCategory - The Category of the plugin
 
-## Content
-### Report output
+### Content
+#### Report output
 Anything that is written to stdout is included in the report. This should be either an object or hashtable in order to generate the report information.
 
-### $Display variable
+#### $Display variable
 - List
 - Table
 - Chart - Not currently merged to master
 
-### Plugin Template
+#### Plugin Template
+  ```
+  # Start of Settings
+  # End of Settings
 
-	# Start of Settings
-	# End of Settings
+  # generate your report content here. Simple placeholder hashtable for the sake of example
+  @{"Plugin"="Awesome"}
 
-	# generate your report content here. Simple placeholder hashtable for the sake of example
-	@{"Plugin"="Awesome"}
-
-	$Title = "Plugin Template"
-	$Header =  "Plugin Template"
-	$Comments = "Comment about this awesome plugin"
-	$Display = "List"
-	$Author = "Plugin Author"
-	$PluginVersion = 1.0
-	$PluginCategory = "vSphere"
-
-<a name="Styles">
-# Style Structure
+  $Title = "Plugin Template"
+  $Header =  "Plugin Template"
+  $Comments = "Comment about this awesome plugin"
+  $Display = "List"
+  $Author = "Plugin Author"
+  $PluginVersion = 1.0
+  $PluginCategory = "vSphere"
+  ```
+  
 [*Back to top*](#Title)
 
 

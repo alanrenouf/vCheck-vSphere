@@ -10,7 +10,7 @@
 |[Features](#Features)|
 |[More Info](#More)|
 |[Release Notes](#ReleaseNotes)|
-|[Contributions](#Contributions)|
+|[Contributing](#Contributing)|
 
 <a name="About">
 # About
@@ -133,8 +133,8 @@ Release Notes
 * 4.1 - Added the ability to change the colours of the report.
 * 4.0 - HTML Tidy up, comments added for each item and the ability to enable/disable comments.
 
-<a name="Contributions">
-# Contributions
+<a name="Contributing">
+# Contributing
 [*Back to top*](#Title)
 
-See out [Contributions](CONTRIBUTIONS.md) guidelines
+See out [Contributions](CONTRIBUTING.md) guidelines

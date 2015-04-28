@@ -8,12 +8,12 @@
 |-----------------|
 |[About](#About)|
 |[Features](#Features)|
-|[More Info](#More)|
 |[Release Notes](#ReleaseNotes)|
 |[Contributing](#Contributing)|
 |[Plugins](#Plugins)|
 |[Styles](#Styles)|
 |[Jobs & Settings](#JobsSettings)|
+|[More Info](#More)|
 
 <a name="About">
 # About
@@ -84,14 +84,6 @@ The following items are included as part of the vCheck vSphere download, they ar
 - HA VM restarts and resets
 - Inaccessible VMs
 - Much, Much more.......
-
-<a name="More">
-# More Info
-[*Back to top*](#Title)
-
-For more information please read here: http://www.virtu-al.net/vcheck-pluginsheaders/vcheck/
-
-For an example vSphere output (doesnt contain all info) click here http://virtu-al.net/Downloads/vCheck/vCheck.htm
 
 <a name="ReleaseNotes">
 # Release Notes
@@ -335,3 +327,11 @@ The second option is to specify the path to the settings CSV file when running I
 PS E:\scripts\vCheck-vSphere> Import-vCheckSettings -csvfile E:\MyvCheckSettings.csv
 ```
 If new settings or plugins have been added to the new build you will be asked to answer the questions, similar to running the initial config. During the import, the initial config is disabled, so once the import is complete you are ready to run your new build.
+
+<a name="More">
+# More Info
+[*Back to top*](#Title)
+
+For more information please read here: http://www.virtu-al.net/vcheck-pluginsheaders/vcheck/
+
+For an example vSphere output (doesnt contain all info) click here http://virtu-al.net/Downloads/vCheck/vCheck.htm

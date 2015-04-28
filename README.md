@@ -1,10 +1,19 @@
 ![Alt text](http://www.virtu-al.net/wp-content/uploads/2014/02/vCheck619.jpg "vCheck Sample")
 
-[![Stories in Ready](http://badge.waffle.io/alanrenouf/vCheck-vSphere.png)](http://waffle.io/alanrenouf/vCheck-vSphere)  
-vCheck-vSphere
-==============
+<a name="Title">
+# vCheck-vSphere
+[![Stories in Ready](http://badge.waffle.io/alanrenouf/vCheck-vSphere.png)](http://waffle.io/alanrenouf/vCheck-vSphere) &nbsp;&nbsp; &nbsp; [![Join the chat at https://gitter.im/alanrenouf/vCheck-vSphere](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/alanrenouf/vCheck-vSphere?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-vCheck Daily Report for vSphere
+|Navigation|
+|-----------------|
+|[About](#About)|
+|[Features](#Features)|
+|[More Info](#More)|
+|[Release Notes](#ReleaseNotes)|
+
+<a name="About">
+# vCheck Daily Report for vSphere
+[*Back to top*](#Title)
 
 vCheck is a PowerShell HTML framework script, the script is designed to run as a scheduled task before you get into the office to present you with key information via an email directly to your inbox in a nice easily readable format.
 
@@ -14,8 +23,10 @@ One of they key things about this report is if there is no issue in a particular
 
 This script is not to be confused with an Audit script, although the reporting framework can also be used for auditing scripts too.  I don't want to remind you that you have 5 hosts and what there names are and how many CPU's they have each and every day as you don't want to read that kind of information unless you need it, this script will only tell you about problem areas with your infrastructure.
 
+<a name="Features">
 What is checked for in the vSphere version ?
 ============================================
+[*Back to top*](#Title)
 
 The following items are included as part of the vCheck vSphere download, they are included as vCheck Plugins and can be removed or altered very easily by editing the specific plugin file which contains the data.  vCheck Plugins are found under the Plugins folder.
 
@@ -71,15 +82,20 @@ The following items are included as part of the vCheck vSphere download, they ar
 - Inaccessible VMs
 - Much, Much more.......
 
+<a name="More">
 More Info
 =========
+[*Back to top*](#Title)
 
 For more information please read here: http://www.virtu-al.net/vcheck-pluginsheaders/vcheck/
 
 For an example vSphere output (doesnt contain all info) click here http://virtu-al.net/Downloads/vCheck/vCheck.htm
 
-Changelog
+<a name="ReleaseNotes">
+Release Notes
 =========
+[*Back to top*](#Title)
+
 * 6.22 - Fixes to VMware style. Consolidating plugins. Updates to style handling.
 * 6.21 - Added support for charts. New plugins. Support non-standard vCenter Ports. Bugfixes
 * 6.20 - First tagged release. Bugfixes. Email resource support added.

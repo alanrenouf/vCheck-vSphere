@@ -1,6 +1,6 @@
 <a name="Title">
 # vCheck Daily Report for vSphere
-[![Stories in Ready](http://badge.waffle.io/alanrenouf/vCheck-vSphere.png)](http://waffle.io/alanrenouf/vCheck-vSphere) &nbsp;&nbsp; &nbsp; [![Join the chat at https://gitter.im/alanrenouf/vCheck-vSphere](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/alanrenouf/vCheck-vSphere?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Stories in Ready](http://badge.waffle.io/alanrenouf/vCheck-vSphere.png?label=Ready)](http://waffle.io/alanrenouf/vCheck-vSphere) &nbsp;&nbsp; &nbsp; [![Join the chat at https://gitter.im/alanrenouf/vCheck-vSphere](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/alanrenouf/vCheck-vSphere?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ![Alt text](http://www.virtu-al.net/wp-content/uploads/2014/02/vCheck619.jpg "vCheck Sample")
 
@@ -15,7 +15,6 @@
 |[Styles](#Styles)|
 |[Jobs & Settings](#JobsSettings)|
 |[More Info](#More)|
-=======
 
 <a name="About">
 # About

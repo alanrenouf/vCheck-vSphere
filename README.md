@@ -4,7 +4,6 @@
 
 ![Alt text](http://www.virtu-al.net/wp-content/uploads/2014/02/vCheck619.jpg "vCheck Sample")
 
-<<<<<<< HEAD
 |Navigation|
 |-----------------|
 |[About](#About)|

@@ -9,11 +9,13 @@ If ($vSphere){
       If ($Cluster.ExtensionData.Configuration.DasConfig.Enabled -eq $true -and 
           $Cluster.ExtensionData.Configuration.DasConfig.AdmissionControlPolicy.getType() -eq [VMware.Vim.ClusterFailoverLevelAdmissionControlPolicy]){
          $SlotDetails = $Cluster.ExtensionData.RetrieveDasAdvancedRuntimeInfo()
-         $Details = "" | Select Cluster, TotalSlots, UsedSlots, AvailableSlots
-         $Details.Cluster = $Cluster.Name
-         $Details.TotalSlots =  $SlotDetails.TotalSlots
-         $Details.UsedSlots = $SlotDetails.UsedSlots
-         $Details.AvailableSlots = $SlotDetails.UnreservedSlots
+         
+         $Details = [PSCustomObject] @{
+            Cluster = $Cluster.Name
+            TotalSlots = $SlotDetails.TotalSlots
+            UsedSlots = $SlotDetails.UsedSlots
+            AvailableSlots = $SlotDetails.UnreservedSlots
+         }
          $SlotInfo += $Details
       }
    }

@@ -50,7 +50,7 @@ foreach ($cluv in ($clusviews | Where {$_.Summary.NumHosts -gt 0 } | Sort Name))
    else {$VMVMHostRatio = 0}
 
    $clucapacity = [PSCustomObject] @{
-      Datacenter = (Get-VIObjectByView -MoRef $cluv.Parent).Parent.Name
+      Datacenter = (Get-VIObjectByVIView -MoRef $cluv.Parent).Parent.Name
       ClusterName = $cluv.name
       "Estimated Num VM Left (CPU)" = $CpuVmLeft
       "Estimated Num VM Left (MEM)" = $MemVmLeft

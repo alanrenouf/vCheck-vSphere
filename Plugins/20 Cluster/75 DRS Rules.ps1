@@ -5,10 +5,13 @@ $ShowVMAffinity = $true
 $ShowVMAntiAffinity = $true
 # Display HOSTaffinity rules?
 $ShowHostAffinity = $true
+# Set DRS Rule name exception (regex)
+$excludeName = "ExcludeMe"
 # End of Settings
 
 # Changelog
 ## 1.0 : Initial Version
+## 1.1 : Add ability to specify excluded DRS Rules based on name
 
 # Add pretty icons
 Add-ReportResource -cid "Error" -Type "SystemIcons" -ResourceData "Error"
@@ -21,7 +24,7 @@ if ($ShowVMAntiAffinity) { $Types += "VMAntiAffinity"}
 if ($ShowHostAffinity)   { $Types += "VMHostAffinity"}
 
 $Clusters | Foreach {
-	Get-DrsRule -Cluster $_ -Type $Types |
+	Get-DrsRule -Cluster $_ -Type $Types | Where { $_.Name -notmatch $excludeName } | 
 	Select Cluster, Enabled, Name, Type, @{N="VM";E={(Get-View $_.VMIDS | Select -ExpandProperty Name) -join "<br />"}},
 	  @{N="Rule Host";E={(Get-View $_.AffineHostIds | Select -ExpandProperty Name) -join "<br />" }},
 	  @{N="Running on";E={(Get-View (Get-View $_.VMIDS | %{$_.Runtime.Host}) | Select -ExpandProperty Name) -join "<br />"}}

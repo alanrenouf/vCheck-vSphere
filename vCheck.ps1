@@ -260,7 +260,6 @@ Function Get-HTMLTable {
 	
 	# Use an XML object for ease of use
 	$XMLTable = [xml]($content | ConvertTo-Html -Fragment)
-	$XMLTable.table.RemoveChild($XMLTable.table.colgroup) | out-null
 	$XMLTable.table.SetAttribute("width", "100%")
 	
 	# If format rules are specified

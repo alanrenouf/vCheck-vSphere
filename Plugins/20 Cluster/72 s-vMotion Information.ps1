@@ -1,6 +1,10 @@
 # Start of Settings 
 # Set the number of days to go back and check for s/vMotions
-$vMotionAge = 14
+$vMotionAge = 5
+# Include vMotions in report
+$IncludevMotions = $true;
+# Include Storage vMotions in report
+$IncludeSvMotions = $true;
 # End of Settings
 
 # Search for any vmotion-related events
@@ -12,18 +16,34 @@ $EventFilterSpec.Type = "VmMigratedEvent", "DrsVmMigratedEvent", "VmBeingHotMigr
 $vmotions = @((get-view (get-view ServiceInstance -Property Content.EventManager).Content.EventManager).QueryEvents($EventFilterSpec)) 
 
 $Motions = @()
-# Group by chainID - each chain should have a start and finish event
 foreach($vmotion in ($vmotions | Sort-object CreatedTime | Group-Object ChainID)) {
     if($vmotion.Group.count -eq 2){
+            $type = &{if($vmotion.Group[0].Host.Name -eq $vmotion.Group[1].Host.Name){"SvMotion"}else{"vMotion"}}
+            if ($type -eq "SvMotion")
+            {
+               $src = $vmotion.Group[0].ds.name
+               $dst = $vmotion.Group[0].DestDatastore.Name  
+            }
+            else
+            {
+               $src = $vmotion.Group[0].Host.name
+               $dst = $vmotion.Group[0].DestHost.Name
+            }
+            
             $Motions += New-Object PSObject -Property @{
                 Name = $vmotion.Group[0].vm.name
-                Type = &{if($vmotion.Group[0].Host.Name -eq $vmotion.Group[1].Host.Name){"SvMotion"}else{"vMotion"}}
+                Type = $type
+                Source = $src
+                Destination =  $dst
                 StartTime = $vmotion.Group[0].CreatedTime
                 EndTime = $vmotion.Group[1].CreatedTime
                 Duration = New-TimeSpan -Start $vmotion.Group[0].CreatedTime -End $vmotion.Group[1].CreatedTime
             }
     }
 }
+# Filter out unwanted vMotion Events
+if (-not $IncludevMotions) { $Motions = $Motions | Where { $_.Type -ne "vMotion" }}
+if (-not $IncludeSvMotions) { $Motions = $Motions | Where { $_.Type -ne "SvMotion" }}
 $Motions
 
 $Title = "s/vMotion Information"
@@ -31,7 +51,7 @@ $Header = "s/vMotion Information (Over $vMotionAge Days Old) : $(@($Motions).cou
 $Comments = "s/vMotions and how long they took to migrate between hosts and datastores"
 $Display = "Table"
 $Author = "Alan Renouf"
-$PluginVersion = 1.1
+$PluginVersion = 1.2
 $PluginCategory = "vSphere"
 
 Remove-Variable Motions, EventFilterSpec, vmotions

@@ -7,7 +7,7 @@ $ExcludedDatastores = "ExcludeMe"
 
 $filteredstorageviews = $storageviews | Where-Object { $_.Name -notmatch $ExcludedDatastores }
 $voverallocation = @()
-foreach ($storage in $$filteredstorageviews)
+foreach ($storage in $filteredstorageviews)
 {
 	if ($storage.Summary.Uncommitted -gt "0")
 	{

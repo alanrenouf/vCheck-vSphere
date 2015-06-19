@@ -28,7 +28,7 @@ foreach ($VMHost in ($HostsViews)){
 			$VMKernelWarnings += $VMKernelWarning | Sort-Object -Property Length -Unique |select VMHost, Message, KBSearch, Google
 		}	
 	} else {
-		$Warnings = (Get-Log -VMHost ($VMHost.Name) -Key vmkernel -ErrorAction SilentlyContinue).Entries | where {$_ -match "warning"}
+		$Warnings = (Get-Log -VMHost ($VMHost.Name) -Key vmkernel -ErrorAction SilentlyContinue).Entries | where {$_ -match "warning" -and $_ -notmatch "unsupported ioctl"}
 		if ($Warnings -ne $null) {
 			$VMKernelWarning = @()
 			$Warnings | Foreach {

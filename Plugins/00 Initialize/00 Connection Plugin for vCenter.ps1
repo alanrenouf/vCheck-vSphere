@@ -50,9 +50,11 @@ else
 # Path to credentials file which is automatically created if needed
 $Credfile = $ScriptPath + "\Windowscreds.xml"
 
-# Adding PowerCLI core snapin
-if (!(get-pssnapin -name VMware.VimAutomation.Core -erroraction silentlycontinue)) {
-	add-pssnapin VMware.VimAutomation.Core
+# Adding PowerCLI core snapin, also check if powerCLI module is alsready added
+if (!(get-module -name VMware.VimAutomation.Core -erroraction silentlycontinue)) {
+	if (!(get-pssnapin -name VMware.VimAutomation.Core -erroraction silentlycontinue)) {
+		add-pssnapin VMware.VimAutomation.Core -erroraction silentlycontinue
+	}
 }
 
 $OpenConnection = $global:DefaultVIServers | where { $_.Name -eq $VIServer }

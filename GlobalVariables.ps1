@@ -7,8 +7,8 @@ $SetupWizard = $true
 
 
 # Start of Settings
-# Please Specify the address (and optional port) of the server to connect to [servername(:port)]
-$Server = "192.168.0.9"
+# Report header
+$reportHeader = "vCheck"
 # Would you like the report displayed in the local browser once completed ?
 $DisplaytoScreen = $true
 # Display the report even if it is empty?
@@ -33,9 +33,13 @@ $EmailReportEvenIfEmpty = $true
 $SendAttachment = $false
 # Set the style template to use.
 $Style = "VMware"
+# Do you want to include plugin details in the report?
+$reportOnPlugins = $true
+# List Enabled plugins first in Plugin Report?
+$ListEnabledPluginsFirst = $true
 # Set the following setting to $true to see how long each Plugin takes to run as part of the report
 $TimeToRun = $true
-# Report an plugins that take longer than the following amount of seconds
+# Report on plugins that take longer than the following amount of seconds
 $PluginSeconds = 30
 # End of Settings
 

@@ -1,4 +1,4 @@
-$StyleVersion = 1.0
+$StyleVersion = 1.1
 
 # Define Chart Colours
 $ChartColours = @("377C2B", "0A77BA", "1D6325", "89CBE1")
@@ -9,6 +9,11 @@ $ChartSize = "200x200"
 
 # Header Images
 Add-ReportResource "Header-vCheck" ($StylePath + "\Header.jpg") -Used $true
+
+# Hash table of key/value replacements
+$StyleReplace = @{"_HEADER_" = ("'$reportHeader'");
+                  "_CONTENT_" = "Get-ReportContentHTML";
+                  "_TOC_" = "Get-ReportTOC"}
 
 #region Function Defniitions
 <#
@@ -66,11 +71,6 @@ function Get-ReportTOC {
    return $TOCHTML
 }
 #endregion
-
-# Hash table of key/value replacements
-$StyleReplace = @{"_HEADER_" = ("'$Server'");
-                  "_CONTENT_" = "Get-ReportContentHTML";
-                  "_TOC_" = "Get-ReportTOC"}
 
 # Report HTML structure
 $ReportHTML = @"

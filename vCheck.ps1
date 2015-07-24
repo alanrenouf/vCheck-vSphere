@@ -261,6 +261,8 @@ Function Get-HTMLTable {
 	# Use an XML object for ease of use
 	$XMLTable = [xml]($content | ConvertTo-Html -Fragment)
 	$XMLTable.table.SetAttribute("width", "100%")
+
+	$ActiveBlock = $false
 	
 	# If format rules are specified
 	if ($FormatRules) {
@@ -304,11 +306,44 @@ Function Get-HTMLTable {
 										$XMLTable.table.tr[$RowN].selectSingleNode("td[$($ColN + 1)]").SetAttribute($RuleActions[0], $RuleActions[1])
 									}
 								}
+								"BeginShowHideBlock"  {
+									if ($ActiveBlock -eq $true) {
+										$NewElement = $XMLTable.CreateElement("tbody")
+										$XMLTable.table.selectSingleNode("tr[$($RowN+1)]").PrependChild($NewElement) | Out-Null
+										$ActiveBlock = $false
+									}
+
+									$NewElement = $XMLTable.CreateElement("a")
+									$NewElement.SetAttribute("href", "_self")
+									$NewElement.SetAttribute("onclick", "showHideBlock('Block$RowN')")
+									$XMLTable.table.tr[$RowN].selectSingleNode("td[$($ColN+1)]").PrependChild($NewElement) | Out-Null
+
+									$ActiveBlock = $true
+
+									$NewElement = $XMLTable.CreateElement("tbody")
+									$NewElement.SetAttribute("id", "Block$RowN")
+									$NewElement.SetAttribute("style", "display: none")
+									$XMLTable.table.selectSingleNode("tr[$($RowN+1)]").AppendChild($NewElement) | Out-Null
+
+								}
+								"EndShowHideBlock"  {
+									if ($ActiveBlock -eq $true) {
+										$NewElement = $XMLTable.CreateElement("tbody")
+										$XMLTable.table.selectSingleNode("tr[$($RowN+1)]").PrependChild($NewElement) | Out-Null
+     										$ActiveBlock = $false
+     									}
+								}
 							}
 						}
 					}
 				}
 			}
+		}
+		if ($ActiveBlock -eq $true) {
+			$RowN = $XMLTable.table.tr.count - 1
+			$NewElement = $XMLTable.CreateElement("tbody")
+			$XMLTable.table.selectSingleNode("tr[$($RowN+1)]").AppendChild($NewElement) | Out-Null
+			$ActiveBlock = $false
 		}
 	}
 	return (Format-HTMLEntities ([string]($XMLTable.OuterXml)))

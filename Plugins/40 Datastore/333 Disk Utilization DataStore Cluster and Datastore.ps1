@@ -11,7 +11,7 @@ $DatastoreIgnore = "local"
 # 1.0 - Initial script
 # 1.1 - 
 
-$DatastoreClustersCapicity = @(Get-DatastoreCluster | Sort Name | Where-Object {$_.Name -notmatch $DatastoreIgnore} | Select-Object Name, @{N="CapacityGB";E={[math]::Round($_.CapacityGB, 2)}}, @{N="FreeSpaceGB";E={[math]::Round($_.FreeSpaceGB, 2)}}, @{N="PercentFree";E={[math]::Round(($_.FreeSpaceGB / $_.CapacityGB) * 100, 2)}} | Sort-Object Name)
+$DatastoreClustersCapicity = @(Get-DatastoreCluster | Where-Object {$_.Name -notmatch $DatastoreIgnore} | Sort-Object Name)
 
 $OutputDatastoreSpaceUtilization = @()
 ForEach ($Cluster in $DatastoreClustersCapicity){
@@ -19,25 +19,25 @@ ForEach ($Cluster in $DatastoreClustersCapicity){
     $ClusterObj.Cluster = $Cluster.Name
     $ClusterObj.DataStore = $null
     $ClusterObj.VMGuest = $null
-    $ClusterObj.CapacityGB = $Cluster.CapacityGB
-    $ClusterObj.FreeSpaceGB = $Cluster.FreeSpaceGB
-    $ClusterObj.PercentFree = $Cluster.PercentFree
+    $ClusterObj.CapacityGB = [math]::Round($Cluster.CapacityGB, 2)
+    $ClusterObj.FreeSpaceGB = [math]::Round($Cluster.FreeSpaceGB, 2)
+    $ClusterObj.PercentFree = [math]::Round(($Cluster.FreeSpaceGB / $Cluster.CapacityGB) * 100, 2)
 
 	$OutputDatastoreSpaceUtilization += $ClusterObj
 
-    $DataStoresCapacity = Get-Datastore -RelatedObject $Cluster.Name | Select-Object Name, @{N="CapacityGB";E={[math]::Round($_.CapacityGB, 2)}}, @{N="FreeSpaceGB";E={[math]::Round($_.FreeSpaceGB, 2)}}, @{N="PercentFree";E={[math]::Round(($_.FreeSpaceGB / $_.CapacityGB) * 100, 2)}} | Sort-Object Name
+    $DataStoresCapacity = $Datastores | where {$_.ExtensionData.Parent -eq $Cluster.ExtensionData.MoRef} | Sort-Object Name
     ForEach ($DataStore in $DataStoresCapacity){
         $DataStoreObj = "" | Select Cluster, DataStore, VMGuest, CapacityGB, FreeSpaceGB, PercentFree
         $DatastoreObj.Cluster = $null
         $DatastoreObj.DataStore = $DataStore.Name
         $DatastoreObj.VMGuest = $null
-        $DatastoreObj.CapacityGB = $DataStore.CapacityGB
-        $DatastoreObj.FreeSpaceGB = $DataStore.FreeSpaceGB
+        $DatastoreObj.CapacityGB = [math]::Round($DataStore.CapacityGB, 2)
+        $DatastoreObj.FreeSpaceGB = [math]::Round($DataStore.FreeSpaceGB, 2)
         $DatastoreObj.PercentFree = [math]::Round(($DataStore.FreeSpaceGB / $DataStore.CapacityGB) * 100, 2)
         
 		$OutputDatastoreSpaceUtilization += $DatastoreObj
 
-        $VMGuestCapacity = Get-VM -Datastore $DataStore.Name | Sort-Object Name
+        $VMGuestCapacity = $VM | where {$_.DatastoreIdList -eq $DataStore.ExtensionData.MoRef} | Sort-Object Name
         ForEach ($VMGuest in $VMGuestCapacity){
             $VMGuestObj = "" | Select Cluster, DataStore, VMGuest, CapacityGB, FreeSpaceGB, PercentFree
             $VMGuestObj.Cluster = $null
@@ -62,9 +62,8 @@ $Author = "Dan Rowe"
 $PluginVersion = 1.1
 $PluginCategory = "vSphere"
 
-$TableFormat = @{"DataStore"   = @(@{ "-like '[A-Za-z]*'"                 = "BeginShowHideBlock,style|display: none"});
-                 "Cluster"     = @(@{ "-like '[A-Za-z]*'"                 = "EndShowHideBlock,style|display: "});
+$TableFormat = @{"DataStore"   = @(@{ "-like '[A-Za-z]*'"                 = "BegintbodyBlock,a|href|#Block|a|onclick|showHideBlock('UID')|id|UID|style|display: none"});
+                 "Cluster"     = @(@{ "-like '[A-Za-z]*'"                 = "EndtbodyBlock,style|display: "});
                  "PercentFree" = @(@{ "-le $CriticalDatastorePercentFree" = "Row,class|critical"; },
 		 		  			       @{ "-le $WarningDatastorePercentFree"  = "Row,class|warning" });
                 }
-Enter file contents here

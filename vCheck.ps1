@@ -306,32 +306,48 @@ Function Get-HTMLTable {
 										$XMLTable.table.tr[$RowN].selectSingleNode("td[$($ColN + 1)]").SetAttribute($RuleActions[0], $RuleActions[1])
 									}
 								}
-								"BeginShowHideBlock"  {
+								"BegintbodyBlock" {
 									if ($ActiveBlock -eq $true) {
 										$NewElement = $XMLTable.CreateElement("tbody")
 										$XMLTable.table.selectSingleNode("tr[$($RowN+1)]").PrependChild($NewElement) | Out-Null
 										$ActiveBlock = $false
 									}
 
-									$NewElement = $XMLTable.CreateElement("a")
-									$NewElement.SetAttribute("href", "_self")
-									$NewElement.SetAttribute("onclick", "showHideBlock('Block$RowN')")
-									$XMLTable.table.tr[$RowN].selectSingleNode("td[$($ColN+1)]").PrependChild($NewElement) | Out-Null
-
 									$ActiveBlock = $true
-
 									$NewElement = $XMLTable.CreateElement("tbody")
-									$NewElement.SetAttribute("id", "Block$RowN")
-									$NewElement.SetAttribute("style", "display: none")
-									$XMLTable.table.selectSingleNode("tr[$($RowN+1)]").AppendChild($NewElement) | Out-Null
+									$BlockName = "Block" + $RowN
+									$ActiveAnchor = $false
 
+									for ($RuleActionNum = 0; $RuleActions[$RuleActionNum]; $RuleActionNum++) {
+										if ($RuleActions[$RuleActionNum] -eq "a") {
+											if ($ActiveAnchor -eq $false) {
+												$NewAnchor = $XMLTable.CreateElement("a")
+												$ActiveAnchor = $true
+											}
+
+											$RuleActionNum++
+											$RuleActions[$($RuleActionNum+1)] = $RuleActions[$($RuleActionNum+1)] -replace "UID", $BlockName
+											$NewAnchor.SetAttribute($RuleActions[$RuleActionNum], $RuleActions[$($RuleActionNum+1)])
+										} else {
+											$RuleActions[$($RuleActionNum+1)] = $RuleActions[$($RuleActionNum+1)] -replace "UID", $BlockName
+											$NewElement.SetAttribute($RuleActions[$RuleActionNum], $RuleActions[$($RuleActionNum+1)])
+										}
+										
+										$RuleActionNum++
+									}
+
+									if ($ActiveAnchor -eq $true) {
+										$XMLTable.table.tr[$RowN].selectSingleNode("td[$($ColN+1)]").PrependChild($NewAnchor) | Out-Null
+									}
+
+									$XMLTable.table.selectSingleNode("tr[$($RowN+1)]").AppendChild($NewElement) | Out-Null
 								}
-								"EndShowHideBlock"  {
+								"EndtbodyBlock" {
 									if ($ActiveBlock -eq $true) {
 										$NewElement = $XMLTable.CreateElement("tbody")
 										$XMLTable.table.selectSingleNode("tr[$($RowN+1)]").PrependChild($NewElement) | Out-Null
-     										$ActiveBlock = $false
-     									}
+										$ActiveBlock = $false
+									}
 								}
 							}
 						}

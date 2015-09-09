@@ -7,8 +7,6 @@ $Display = "List"
 $PluginCategory = "vSphere"
 
 # Start of Settings
-# Please Specify the address (and optional port) of the vCenter server to connect to [servername(:port)]
-$Server = "192.168.0.0"
 # Maximum number of samples to gather for events
 $MaxSampleVIEvent = 100000
 # End of Settings

@@ -1,7 +1,9 @@
 # Start of Settings 
 # Set the Recommended number of paths per LUN
-$RecLUNPaths = 2
+$RecLUNPaths = 4
+$HostDoesNotInclude = "hostname"	#In regular expressions $ matches at the end of a line, ^ at the beginning
 # End of Settings
+# 4/22/14 Added HostDoesNotInclude feature to ignore certain hosts, like Vblock AMP rack servers. -Greg Hatch
 
 $missingpaths = @() 
 foreach ($esxhost in ($HostsViews | where {$_.Runtime.ConnectionState -match "Connected|Maintenance"})) {
@@ -34,13 +36,14 @@ foreach ($esxhost in ($HostsViews | where {$_.Runtime.ConnectionState -match "Co
 		}
 	}
 }
-	
-$missingpaths
+
+$PathReport = @($missingpaths | where { $_.ESXHost -notmatch $HostDoesNotInclude }) | sort ESXHost
+if($PathReport -ne $null) {$PathReport}
 
 $Title = "Check LUNS have the recommended number of paths"
-$Header = "LUNs not having the recommended number of paths ($RecLUNPaths): $(@($missingpaths).count)"
+$Header =  "LUNs not having the recommended number of paths ($RecLUNPaths): $(@($missingpaths).count)"
 $Comments = "Not enough storage paths can effect storage availability in a FC SAN environment"
 $Display = "Table"
 $Author = "Craig Smith"
-$PluginVersion = 1.0
+$PluginVersion = 1.1
 $PluginCategory = "vSphere"

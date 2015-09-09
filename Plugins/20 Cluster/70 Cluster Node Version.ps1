@@ -1,5 +1,6 @@
 # Start of Settings 
 # End of Settings 
+# 3/5/14 Added table formatting for mismatches -Greg Hatch
 
 $HostsVer = @()
 foreach ($clusview in $clusviews) {
@@ -28,3 +29,4 @@ $Display = "Table"
 $Author = "Raphael Schitz, Frederic Martin"
 $PluginVersion = 1.1
 $PluginCategory = "vSphere"
+$TableFormat = @{"Ver" = @(@{ $HighlightRow = "Row,style|background-color: #FFDDDD"})}

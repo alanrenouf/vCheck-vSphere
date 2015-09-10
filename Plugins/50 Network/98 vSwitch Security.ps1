@@ -13,7 +13,8 @@ $MacChangesPolicy = $true
 ## 1.0 : Initial Release
 ## 1.1 : Re-written for performance improvements
 ## 1.2 : Added version check (Issue #71)
-# 1.21 : 9/10/2015 Updated to avoid error message with PowerCLI v6 -Greg Hatch
+## 1.22: 9/10/2015 Updated to avoid error message with PowerCLI v6 and ignore DVUplinks -Greg Hatch
+
 
 # Check Power CLI version. Build must be at least 1012425 (5.1 Release 2) to contain Get-VDPortGroup cmdlet
 $VersionOK = $false
@@ -50,7 +51,7 @@ if ($VersionOK) {
       $results += $Output
    }
 
-   Get-VDPortGroup | % {
+   Get-VDPortGroup | where {$_.Name -notmatch "DVUplinks"} | % {
       $Output = "" | Select-Object Host,Type,vSwitch,Portgroup,AllowPromiscuous,ForgedTransmits,MacChanges
       $Output.Host = "*"
       $Output.Type = "vDS Port Group"
@@ -86,7 +87,7 @@ else {
 
 $Title = "vSwitch Security"
 $Header = "vSwitch and portgroup security settings"
-$Comments = "All security options for standard vSwitches should be set to REJECT.  Distributed vSwitches may require <em>ForgedTrasmits</em> in the default portgroup but should be disabled in other VM Network portgroups unless expressly required."
+$Comments = "All security options for standard vSwitches should be set to REJECT.  Distributed vSwitches may require <em>ForgedTransmits</em> in the default portgroup but should be disabled in other VM Network portgroups unless expressly required."
 $Display = "Table"
 $Author = "Justin Mercier, Sam McGeown, John Sneddon"
 $PluginVersion = 1.21

@@ -2,6 +2,7 @@
 # Only show NICs that are set to Connect at Startup
 $ShowOnlyStartupNICS = $true
 # End of Settings
+# Added OS column -Greg Hatch
 
 $VMsNetworkNotConnected = @()
 # Check only on powered on VMs
@@ -13,6 +14,7 @@ foreach ($myVM in $FullVM | ?{$_.runtime.powerState -eq "PoweredOn"}) {
          $vmNetworkNotConnected.VM = $myVM.Name
          $vmNetworkNotConnected.vmNetworkAdapter = $myCard.deviceInfo.label
          $vmNetworkNotConnected.State = "Disconnected"
+         $vmNetworkNotConnected.SelectedOS = $vmguest.Summary.Config.GuestFullName
          $VMsNetworkNotConnected += $vmNetworkNotConnected
       }
 	}
@@ -25,5 +27,5 @@ $Header = "VM - is my network connected?"
 $Comments = "Check if all network cards are connected"
 $Display = "Table"
 $Author = "Cyril Epiney"
-$PluginVersion = 1.2
+$PluginVersion = 1.21
 $PluginCategory = "vSphere"

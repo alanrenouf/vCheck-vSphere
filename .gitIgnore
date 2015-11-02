@@ -1,2 +1,4 @@
 # Ignore Windowscreds.xml
 Windowscreds.xml
+GlobalVariables.ps1.bak
+*.bak

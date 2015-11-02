@@ -1,6 +1,7 @@
-# Start of Settings 
+# Start of Settings
+# End of Settings
+
 $HighlightRow = '-match "mismatch"'
-# End of Settings 
 # 3/5/14 Added table formatting for mismatches -Greg Hatch
 
 $HostsVer = @()

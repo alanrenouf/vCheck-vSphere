@@ -41,7 +41,7 @@ if ($DRSMigrateAge -gt 0) {
 # Adding vSphere 5 informations
 if ($VIVersion -ge 5) {
 	$Info | Add-Member Noteproperty "Number of Datastore Clusters" $(@($DatastoreClustersView).Count)
-	if ($SDRSMigrateAge -gt 0) {
+	if (($MigrationQuery2) -and ($SDRSMigrateAge -gt 0)) {
 		$Info | Add-Member Noteproperty "Storage DRS Migrations for last $($SDRSMigrateAge) Days" (@($MigrationQuery2 | Where {$_.FullFormattedMessage -imatch "(Storage vMotion){1}.*(DRS){1}"}).Count)
 	}
 }

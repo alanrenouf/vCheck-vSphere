@@ -3,7 +3,7 @@
 $DvSwitchLeft = 10
 # End of Settings
 
-if (Get-PSSnapin VMware.VimAutomation.Vds -ErrorAction SilentlyContinue)
+if ( (Get-PSSnapin VMware.VimAutomation.Vds -ErrorAction SilentlyContinue) -or (Import-Module VMware.VimAutomation.Vds -PassThru -ErrorAction SilentlyContinue))
 {
     if ($vdspg = Get-VDSwitch | Sort-Object -Property Name | Get-VDPortgroup)
     {

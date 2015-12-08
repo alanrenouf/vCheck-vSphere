@@ -19,9 +19,17 @@ $VersionOK = $false
 if (((Get-PowerCLIVersion) -match "VMware vSphere PowerCLI (.*) build ([0-9]+)")) {
    if ([int]($Matches[2]) -ge 1012425) {
       $VersionOK = $true
-      # Add required Snap-In
-      if (!(Get-PSSnapin -name VMware.VimAutomation.Vds -ErrorAction SilentlyContinue)) {
-         Add-PSSnapin VMware.VimAutomation.Vds
+      if ([int]($Matches[2]) -ge 2548067) {
+        #PowerCLI 6+
+        if(!(Get-Module -Name VMware.VimAutomation.Vds -ErrorAction SilentlyContinue)) {
+           Import-Module VMware.VimAutomation.Vds
+        }
+      }
+      else {
+        # Add required Snap-In
+        if (!(Get-PSSnapin -name VMware.VimAutomation.Vds -ErrorAction SilentlyContinue)) {
+           Add-PSSnapin VMware.VimAutomation.Vds
+        }
       }
    }
 }

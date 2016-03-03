@@ -870,8 +870,8 @@ if ($SendEmail -and (!($emptyReport -and !$EmailReportEvenIfEmpty))) {
 	
 	# Find the VI Server and port from the global settings file
 	$smtpClient.Host = ($SMTPSRV -Split ":")[0]
-	if (($server -split ":")[1]) {
-		$smtpClient.Port = ($server -split ":")[1]
+	if (($SMTPSRV -split ":")[1]) {
+		$smtpClient.Port = ($SMTPSRV -split ":")[1]
 	}
 	
 	if ($EmailSSL -eq $true) {

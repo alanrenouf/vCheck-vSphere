@@ -3,7 +3,7 @@ $Author = "Alan Renouf"
 $PluginVersion = 1.5
 $Header = "Connection Settings"
 $Comments = "Connection Plugin for connecting to vSphere"
-$Display = "List"
+$Display = "None"
 $PluginCategory = "vSphere"
 
 # Start of Settings

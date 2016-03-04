@@ -40,14 +40,14 @@ foreach ($cluv in ($clusviews | Where {$_.Summary.NumHosts -gt 0 } | Sort Name))
 
    # vCPU to pCPU ratio
    if ($cluvmlist){
-      $vCPUpCPUratio = [math]::round(($cluvmlist|Measure-Object -Sum -Property NumCpu).sum / $cluv.summary.NumCpuThreads,0)
+      $vCPUpCPUratio = ("1:{0}" -f [math]::round(($cluvmlist|Measure-Object -Sum -Property NumCpu).sum / $cluv.summary.NumCpuThreads,1))
+      $VMVMHostRatio = ("1:{0}" -f [math]::round(($cluvmlist).count/$cluv.Summary.NumHosts,1))
    }
-   else { $vCPUpCPUratio = "0 (vCPU < pCPU)"}
-   
-   if ($cluvmlist){
-      $VMVMHostRatio = [math]::round(($cluvmlist).count/$cluv.Summary.NumHosts,0)
+   else 
+   { 
+      $vCPUpCPUratio = "0 (vCPU < pCPU)"
+      $VMVMHostRatio = 0
    }
-   else {$VMVMHostRatio = 0}
 
    $clucapacity = [PSCustomObject] @{
       Datacenter = (Get-VIObjectByVIView -MoRef $cluv.Parent).Parent.Name
@@ -68,5 +68,5 @@ $Header = "QuickStats Capacity Planning"
 $Comments = "The following gives brief capacity information for each cluster based on QuickStats CPU/Mem usage and counting for HA failover requirements"
 $Display = "Table"
 $Author = "Raphael Schitz, Frederic Martin"
-$PluginVersion = 1.5
+$PluginVersion = 1.7
 $PluginCategory = "vSphere"

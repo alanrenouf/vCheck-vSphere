@@ -808,6 +808,7 @@ Foreach ($pr in $PluginResult) {
 			"List"  { $pr.Details = Get-HTMLList $pr.Details }
 			"Table" { $pr.Details = Get-HTMLTable $pr.Details $pr.TableFormat }
 			"Chart" { $pr.Details = Get-HTMLChart "plugin$($p)" $pr.Details }
+			default { $pr.Details = $null }
 		}
 		$pr | Add-Member -Type NoteProperty -Name pluginID -Value "plugin-$p"
 		$p++

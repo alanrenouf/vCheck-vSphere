@@ -1,9 +1,9 @@
+[Join the vCheck community on slack and ask questions here!](https://vcheck.slack.com/x-36356421826-36356470818/signup)
+
 ![Alt text](http://www.virtu-al.net/wp-content/uploads/2014/02/vCheck619.jpg "vCheck Sample")
 
 vCheck-vSphere
 ==============
-[![Join the chat at https://gitter.im/alanrenouf/vCheck-vSphere](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/alanrenouf/vCheck-vSphere?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Stories in Ready](http://badge.waffle.io/alanrenouf/vCheck-vSphere.png?label=Ready)](http://waffle.io/alanrenouf/vCheck-vSphere)  
-
 vCheck Daily Report for vSphere
 
 vCheck is a PowerShell HTML framework script, the script is designed to run as a scheduled task before you get into the office to present you with key information via an email directly to your inbox in a nice easily readable format.

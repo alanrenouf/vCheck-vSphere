@@ -3,7 +3,14 @@
 $VMsNewRemovedAge = 5
 # End of Settings
 
-@(Get-VIEventPlus -Start ((get-date).adddays(-$VMsNewRemovedAge)) -EventType "VmRemovedEvent" | Select CreatedTime, UserName, fullFormattedMessage)
+$Events = Get-VIEventPlus -Start ((get-date).adddays(-$VMsNewRemovedAge)) -EventType "VmRemovedEvent"
+
+$report = @()
+ForEach ($Event in $Events){
+$report += New-Object psobject -Property @{VMName=$($Event.vm.name);User=$($Event.username);Created=$($Event.CreatedTime)}
+}
+
+@($report)
 
 $Title = "Removed VMs"
 $Header = "VMs Removed (Last $VMsNewRemovedAge Day(s)) : [count]"

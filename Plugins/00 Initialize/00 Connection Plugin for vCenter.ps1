@@ -1,6 +1,6 @@
 $Title = "Connection settings for vCenter"
 $Author = "Alan Renouf"
-$PluginVersion = 1.5
+$PluginVersion = 1.6
 $Header = "Connection Settings"
 $Comments = "Connection Plugin for connecting to vSphere"
 $Display = "None"
@@ -104,7 +104,7 @@ New-VIProperty -Name LastPoweredOnDate -ObjectType VirtualMachine -Value {(Get-V
 
 New-VIProperty -Name PercentFree -ObjectType Datastore -Value {
 	param($ds)
-	[math]::Round(((100 * ($ds.FreeSpaceMB)) / ($ds.CapacityMB)),0)
+	[math]::Round(((100 * ($ds.FreeSpaceMB)) / ($ds.CapacityMB)),2)
 } -Force | Out-Null
 
 New-VIProperty -Name "HWVersion" -ObjectType VirtualMachine -Value {

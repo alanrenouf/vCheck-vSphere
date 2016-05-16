@@ -1,4 +1,4 @@
-[Join the vCheck community on slack and ask questions here!](https://vcheck.slack.com/x-36356421826-36356470818/signup)
+[Join the VMware Code and #vCheck channel on slack and ask questions here!](https://code.vmware.com/slack/)
 
 ![Alt text](http://www.virtu-al.net/wp-content/uploads/2014/02/vCheck619.jpg "vCheck Sample")
 

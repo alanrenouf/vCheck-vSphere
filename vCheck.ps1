@@ -270,7 +270,14 @@ Function Get-HTMLTable {
 				if ($FormatRules.keys -contains $XMLTable.table.tr[0].th[$ColN]) {
 					# Current cell has a rule, test to see if they are valid
 					foreach ($rule in $FormatRules[$XMLTable.table.tr[0].th[$ColN]]) {
-						$value = $XMLTable.table.tr[$RowN].td[$ColN]
+						if ($XMLTable.table.tr[$RowN].td[$ColN]."#text")
+                				{
+                					$value = $XMLTable.table.tr[$RowN].td[$ColN]."#text"
+                				}
+                				else
+                				{
+                					$value = $XMLTable.table.tr[$RowN].td[$ColN]
+                				}
 						if ($value -notmatch "^[0-9.]+$") {
 							$value = """$value"""
 						}

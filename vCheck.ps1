@@ -262,6 +262,12 @@ Function Get-HTMLTable {
 	$XMLTable = [xml]($content | ConvertTo-Html -Fragment)
 	$XMLTable.table.SetAttribute("width", "100%")
 	
+	# If only one column, fix up the table header
+	if (($content | Get-Member -MemberType Properties).count -eq 1)
+	{
+		$XMLTable.table.tr[0].th = (($content | Get-Member -MemberType Properties) | Select -ExpandProperty Name -First 1).ToString()
+	}
+	
 	# If format rules are specified
 	if ($FormatRules) {
 		# Check each cell to see if there are any format rules
@@ -734,10 +740,10 @@ $vCheckPlugins | Foreach {
 	Write-CustomOut ($lang.pluginStart -f $PluginInfo["Title"], $PluginInfo["Author"], $PluginInfo["Version"], $p, $vCheckPlugins.count)
 	$pluginStatus = ($lang.pluginStatus -f $p, $vCheckPlugins.count, $_.Name)
 	Write-Progress -ID 1 -Activity $lang.pluginActivity -Status $pluginStatus -PercentComplete (100 * $p/($vCheckPlugins.count))
-	$TTR = [math]::round((Measure-Command { $Details = . $_.FullName }).TotalSeconds, 2)
+	$TTR = [math]::round((Measure-Command { $Details = @(. $_.FullName)}).TotalSeconds, 2)
 	
 	Write-CustomOut ($lang.pluginEnd -f $PluginInfo["Title"], $PluginInfo["Author"], $PluginInfo["Version"], $p, $vCheckPlugins.count)
-	# Do a replacement for {count} for number of items returned in $header
+	# Do a replacement for [count] for number of items returned in $header
 	$Header = $Header -replace "\[count\]", $Details.count
 	
 	$PluginResult += New-Object PSObject -Property @{

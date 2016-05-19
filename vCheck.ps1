@@ -350,6 +350,13 @@ Function Get-HTMLList {
 			$trNode = $XMLTable.SelectSingleNode("/table/tr[$($i + 1)]")
 			$trNode.ReplaceChild($elem, $node) | Out-Null
 		}
+		
+		# If only one column, fix up the table header
+		if (($content | Get-Member -MemberType Properties).count -eq 1)
+		{
+			$XMLTable.table.tr[0].th = (($content | Get-Member -MemberType Properties) | Select -ExpandProperty Name -First 1).ToString()
+		}
+		
 		return (Format-HTMLEntities ([string]($XMLTable.OuterXml)))
 	}
 }

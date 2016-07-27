@@ -26,7 +26,7 @@ $HAIssues += $Clusters | Where-Object {$_.Name -notmatch $ClustersDoNotInclude -
   Select-Object @{Name="Cluster";Expression={$_.Name}},@{Name="Configuration Issue";Expression={$pLang.HADisabled}}
 
 # Clusters with host monitoring disabled 
-$HAIssues += $clusviews | where {$_.Name -notmatch $ClustersDoNotInclude -and ( $_.Configuration.DasConfig.HostMonitoring -eq "enabled" ) -eq $ClusterHAHostMonitoringShouldBeEnabled } |
+$HAIssues += $clusviews | where {$_.Name -notmatch $ClustersDoNotInclude -and ( $_.Configuration.DasConfig.HostMonitoring -eq "enabled" ) -ne $ClusterHAHostMonitoringShouldBeEnabled } |
    Select-Object @{Name="Cluster";Expression={$_.Name}}, @{N="Configuration Issue";E={$pLang.HAMonDisabled}}
 
 # Clusters with admission Control Disabled

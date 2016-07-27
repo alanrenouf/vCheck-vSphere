@@ -1,6 +1,8 @@
 # Start of Settings
 # HA Configuration Issues, do not report on any Clusters that are defined here
 $ClustersDoNotInclude = "Example_Cluster_*|Test_Cluster_*"
+# HA Admission Control should be set to
+$ClusterHAAdmissionControlShouldBeEnabled = $false
 # End of Settings
 
 # Setup plugin-specific language table
@@ -24,7 +26,7 @@ $HAIssues += $clusviews | where {$_.Name -notmatch $ClustersDoNotInclude -and $_
    Select-Object @{Name="Cluster";Expression={$_.Name}}, @{N="Configuration Issue";E={$pLang.HAMonDisabled}}
 
 # Clusters with admission Control Disabled
-$HAIssues += $Clusters | Where-Object {$_.Name -notmatch $ClustersDoNotInclude -and -not $_.HAAdmissionControlEnabled} |
+$HAIssues += $Clusters | Where-Object {$_.Name -notmatch $ClustersDoNotInclude -and $_.HAAdmissionControlEnabled -ne $ClusterHAAdmissionControlShouldBeEnabled } |
   Select-Object @{Name="Cluster";Expression={$_.Name}},@{Name="Configuration Issue";Expression={$pLang.HAACDisabled}}
    
    

@@ -12,9 +12,9 @@ $ClusterHAAdmissionControlShouldBeEnabled = $true
 # Setup plugin-specific language table
 $pLang = DATA {
    ConvertFrom-StringData @' 
-      HADisabled = HA Disabled on this cluster. 
-      HAMonDisabled = Host Monitoring disabled.
-      HAACDisabled = HA Admission Control disabled. 
+      HADisabled = HA config not compliant on this cluster. 
+      HAMonDisabled = Host Monitoring config not compliant.
+      HAACDisabled = HA Admission Control config not compliant.
 '@
 }
 # Override the default (en) if it exists in lang directory

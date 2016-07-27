@@ -1,8 +1,12 @@
 # Start of Settings
 # HA Configuration Issues, do not report on any Clusters that are defined here
 $ClustersDoNotInclude = "Example_Cluster_*|Test_Cluster_*"
-# HA Admission Control should be set to
-$ClusterHAAdmissionControlShouldBeEnabled = $false
+# HA should be set to ...
+$CLusterHAShouldBeEnabled = $true
+# HA host monitoring should be set to ...
+$ClusterHAHostMonitoringShouldBeEnabled = $true
+# HA Admission Control should be set to ...
+$ClusterHAAdmissionControlShouldBeEnabled = $true
 # End of Settings
 
 # Setup plugin-specific language table
@@ -18,11 +22,11 @@ Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable pLa
 
 # Clusters with HA disabled
 $HAIssues = @()
-$HAIssues += $Clusters | Where-Object {$_.Name -notmatch $ClustersDoNotInclude -and -not $_.HAEnabled} |
+$HAIssues += $Clusters | Where-Object {$_.Name -notmatch $ClustersDoNotInclude -and $_.HAEnabled -ne $CLusterHAShouldBeEnabled } |
   Select-Object @{Name="Cluster";Expression={$_.Name}},@{Name="Configuration Issue";Expression={$pLang.HADisabled}}
 
 # Clusters with host monitoring disabled 
-$HAIssues += $clusviews | where {$_.Name -notmatch $ClustersDoNotInclude -and $_.Configuration.DasConfig.HostMonitoring -eq "disabled"} |
+$HAIssues += $clusviews | where {$_.Name -notmatch $ClustersDoNotInclude -and ( $_.Configuration.DasConfig.HostMonitoring -eq "enabled" ) -eq $ClusterHAHostMonitoringShouldBeEnabled } |
    Select-Object @{Name="Cluster";Expression={$_.Name}}, @{N="Configuration Issue";E={$pLang.HAMonDisabled}}
 
 # Clusters with admission Control Disabled

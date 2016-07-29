@@ -59,10 +59,10 @@ if (!(get-module -name VMware.VimAutomation.Core -erroraction silentlycontinue))
 
 $OpenConnection = $global:DefaultVIServers | where { $_.Name -eq $VIServer }
 if($OpenConnection.IsConnected) {
-	Write-CustomOut $pLang.connReuse
+	Write-CustomOut ( "{0}: {1}" -f $pLang.connReuse, $Server )
 	$VIConnection = $OpenConnection
 } else {
-	Write-CustomOut $pLang.connOpen
+	Write-CustomOut ( "{0}: {1}" -f $pLang.connOpen, $Server )
 	$VIConnection = Connect-VIServer -Server $VIServer -Port $Port
 }
 

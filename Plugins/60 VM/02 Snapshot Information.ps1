@@ -69,7 +69,7 @@ function Get-SnapshotExtra ($snap){
 
 	$filter = New-Object VMware.Vim.TaskFilterSpec
 	$filter.Time = New-Object VMware.Vim.TaskFilterSpecByTime
-	$filter.Time.beginTime = (($snap.Created).AddDays(-5))
+	$filter.Time.beginTime = (($snap.Created).AddDays(-$SnapshotAge))
 	$filter.Time.timeType = "startedTime"
 	# Added filter to only view for the selected VM entity. Massive speed up.
 	# Entity name check could be removed in line 91.
@@ -117,5 +117,5 @@ $Header =  "Snapshots (Over $SnapshotAge Days Old) : $(@($snapshots).count)"
 $Comments = "VMware snapshots which are kept for a long period of time may cause issues, filling up datastores and also may impact performance of the virtual machine."
 $Display = "Table"
 $Author = "Alan Renouf, Raphael Schitz"
-$PluginVersion = 1.4
+$PluginVersion = 1.5
 $PluginCategory = "vSphere"

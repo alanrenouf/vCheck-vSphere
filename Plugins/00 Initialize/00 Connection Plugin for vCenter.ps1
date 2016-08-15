@@ -78,7 +78,7 @@ function Get-VMLastPoweredOffDate {
   process {
     $Report = "" | Select-Object -Property Name,LastPoweredOffDate
      $Report.Name = $_.Name
-    $Report.LastPoweredOffDate = (Get-VIEvent -Entity $vm | `
+    $Report.LastPoweredOffDate = (Get-VIEventPlus -Entity $vm | `
       Where-Object { $_.Gettype().Name -eq "VmPoweredOffEvent" } | `
        Select-Object -First 1).CreatedTime
      $Report
@@ -92,8 +92,8 @@ function Get-VMLastPoweredOnDate {
   process {
     $Report = "" | Select-Object -Property Name,LastPoweredOnDate
      $Report.Name = $_.Name
-    $Report.LastPoweredOnDate = (Get-VIEvent -Entity $vm | `
-      Where-Object { $_.Gettype().Name -eq "VmPoweredOnEvent" } | `
+    $Report.LastPoweredOnDate = (Get-VIEventPlus -Entity $vm | `
+      Where-Object { $_.Gettype().Name -match "VmPoweredOnEvent" } | `
        Select-Object -First 1).CreatedTime
      $Report
   }

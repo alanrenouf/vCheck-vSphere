@@ -1,6 +1,6 @@
 $Title = "Connection settings for vCenter"
 $Author = "Alan Renouf"
-$PluginVersion = 1.6
+$PluginVersion = 1.7
 $Header = "Connection Settings"
 $Comments = "Connection Plugin for connecting to vSphere"
 $Display = "None"
@@ -183,6 +183,9 @@ if ($VIVersion -ge 5) {
 	A switch indicating if the full message shall be compiled.
 	This switch can improve the execution speed if the full
 	message is not needed.   
+.PARAMETER UseUTC
+	A switch indicating if the event shoukld remain in UTC or
+	local time.
 .EXAMPLE
 	PS> Get-VIEventPlus -Entity $vm
 .EXAMPLE
@@ -199,7 +202,8 @@ function Get-VIEventPlus {
 		[string[]]$User,
 		[Switch]$System,
 		[string]$ScheduledTask,
-		[switch]$FullMessage = $false
+		[switch]$FullMessage = $false,
+		[switch]$UseUTC = $false
 	)
 
 	process {
@@ -250,6 +254,11 @@ function Get-VIEventPlus {
 			}
 			$eventCollector.DestroyCollector()
 		}
+		if (-not $UseUTC)
+		{
+			$events | % { $_.createdTime = $_.createdTime.ToLocalTime() }
+		}
+		
 		$events
 	}
 }

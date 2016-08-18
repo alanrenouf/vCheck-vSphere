@@ -1,7 +1,7 @@
 # Start of Settings 
 # End of Settings 
 
-$Result = @(Get-VIEvent -maxsamples $MaxSampleVIEvent -Start ($Date).AddDays(-$VCEventAge ) -Type Error | Select @{N="Host";E={$_.host.name}}, createdTime, @{N="User";E={($_.userName.split("\"))[1]}}, fullFormattedMessage)
+$Result = @(Get-VIEvent -maxsamples $MaxSampleVIEvent -Start ($Date).AddDays(-$VCEventAge ) -Types Error | Select @{N="Host";E={$_.host.name}}, createdTime, @{N="User";E={($_.userName.split("\"))[1]}}, fullFormattedMessage)
 $Result
 
 $Title = "Checking VI Events"

@@ -5,8 +5,8 @@ $LostAccessVolumeAge = 1
 
 # Changelog
 ## 1.1 : Correctly formatted the Start / End Settings and used $MaxSampleVIEvent which is defined in plugin 00
-
-$Result = @(Get-VIEvent -Start ($Date).AddDays(-$LostAccessVolumeAge) -MaxSamples $MaxSampleVIEvent | Where-Object {$_.GetType().Name -eq "EventEx" -and $_.EventTypeId -like "esx.problem.vmfs.heartbeat.*"} | Select-Object -Property @{Name="VMHost";Expression={$_.Host.Name}},CreatedTime,FullFormattedMessage | Sort-Object -Property VMHost,CreatedTime)
+## 1.2 : Update to use Get-VIEventPlus
+$Result = @(Get-VIEventPlus -Start ($Date).AddDays(-$LostAccessVolumeAge) | Where-Object {$_.GetType().Name -eq "EventEx" -and $_.EventTypeId -like "esx.problem.vmfs.heartbeat.*"} | Select-Object -Property @{Name="VMHost";Expression={$_.Host.Name}},CreatedTime,FullFormattedMessage | Sort-Object -Property VMHost,CreatedTime)
 $Result
 
 $Title = "Lost Access to Volume"
@@ -14,5 +14,5 @@ $Header = "Lost Access to Volume: $(@($Result | Where-Object {$_.FullFormattedMe
 $Comments = "The following hosts have lost access to a volume. This may indicate a problem with your storage solution."
 $Display = "Table"
 $Author = "Robert van den Nieuwendijk, Jonathan Medd"
-$PluginVersion = 1.1
+$PluginVersion = 1.2
 $PluginCategory = "vSphere"

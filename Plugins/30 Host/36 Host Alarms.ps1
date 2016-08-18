@@ -1,27 +1,21 @@
 # Start of Settings 
 # End of Settings 
 
-$alarms = $alarmMgr.GetAlarm($null)
-$valarms = $alarms | select value, @{N="name";E={(Get-View -Id $_).Info.Name}}
-$hostsalarms = @()
-foreach ($HostsView in $HostsViews){
-	if ($HostsView.TriggeredAlarmState){
-		$hostsTriggeredAlarms = $HostsView.TriggeredAlarmState
-		Foreach ($hostsTriggeredAlarm in $hostsTriggeredAlarms){
-			$Details = "" | Select-Object Object, Alarm, Status, Time
-			$Details.Object = $HostsView.name
-			$Details.Alarm = ($valarms | Where {$_.value -eq ($hostsTriggeredAlarm.alarm.value)}).name
-			$Details.Status = $hostsTriggeredAlarm.OverallStatus
-			$Details.Time = $hostsTriggeredAlarm.time
-			$hostsalarms += $Details
-		}
-	}
-}
+$valarms = $alarmMgr.GetAlarm($null) | select value, @{N="name";E={(Get-View -Id $_).Info.Name}}
 
-@($hostsalarms |sort Object)
+foreach ($HostsView in ($HostsViews | Where {$_.TriggeredAlarmState} | Sort-Object Name)){
+   Foreach ($hostsTriggeredAlarm in $HostsView.TriggeredAlarmState){
+      New-Object PSObject -Property @{
+         "Object" = $HostsView.name;
+         "Alarm" = ($valarms | Where {$_.value -eq ($hostsTriggeredAlarm.alarm.value)}).name;
+         "Status" = $hostsTriggeredAlarm.OverallStatus;
+         "Time" = $hostsTriggeredAlarm.time.ToLocalTime()
+      } | Select Object, Alarm, Status, Time
+   }
+}
     
 $Title = "Host Alarms"
-$Header = "Host(s) Alarm(s): $(@($hostsalarms).Count)"
+$Header = "Host(s) Alarm(s): [count]]"
 $Comments = "The following alarms have been registered against hosts in vCenter"
 $Display = "Table"
 $Author = "Alan Renouf, John Sneddon"
@@ -29,5 +23,4 @@ $PluginVersion = 1.2
 $PluginCategory = "vSphere"
 
 $TableFormat = @{"Status" = @(@{ "-eq 'yellow'"     = "Row,class|warning"; },
-							  @{ "-eq 'red'"     = "Row,class|critical" })
-				}
+                              @{ "-eq 'red'"     = "Row,class|critical" })}

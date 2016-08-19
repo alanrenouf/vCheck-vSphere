@@ -838,22 +838,9 @@ Foreach ($pr in $PluginResult) {
 # Run Style replacement
 $MyReport = Get-ReportHTML
 
-<<<<<<< HEAD
-# Set the output filename - if one is specified use it, otherwise just use temp
-if ($Outputpath) {
-   $DateHTML = Get-Date -Format "yyyyMMddHH"
-   $ArchiveFilePath = $Outputpath + "\Archives\" + $VIServer
-   if (-not (Test-Path -PathType Container $ArchiveFilePath)) { New-Item $ArchiveFilePath -type directory | Out-Null }
-   $Filename = $ArchiveFilePath + "\" + $VIServer + "_vCheck_" + $DateHTML + ".htm"
-}
-else {
-   $Filename = $Env:TEMP + "\" + $VIServer + "_vCheck_" + $Date.Day + "-" + $Date.Month + "-" + $Date.Year + ".htm"
-}
-=======
 # Set the output filename 
 if (-not (Test-Path -PathType Container $Outputpath)) { New-Item $Outputpath -type directory | Out-Null }
 $Filename = ("{0}\{1}_vCheck_{2}.htm" -f $Outputpath, $Server, (Get-Date -Format "yyyyMMdd_HHmm"))
->>>>>>> origin/dev
 
 # Always generate the report with embedded images
 $embedReport = $MyReport

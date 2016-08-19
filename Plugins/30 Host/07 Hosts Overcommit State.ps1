@@ -18,7 +18,7 @@ $VMHCount = $VMH | Measure
 Foreach ($VMHost in $VMH) {
 	Write-Progress -ID 2 -Parent 1 -Activity $plang.pluginActivity -Status $VMHost.Name -PercentComplete ((100*$i)/$VMHCount.Count)
 	if ($VMMem) { Clear-Variable VMMem }
-	$VM | ?{$_.VMHost.Name -eq $VMHost.Name} | Foreach {
+	$VM | ?{$_.VMHost.Name -eq $VMHost.Name -and $_.PowerState -ne "PoweredOff"} | Foreach {
 		[INT]$VMMem += $_.MemoryMB
 	}
 
@@ -53,9 +53,9 @@ $OverCommit | Select Host, "TotalMem$Units", "TotalAssignedMem$Units", "TotalUse
 
 
 $Title = "Hosts Overcommit state"
-$Header = "Hosts overcommitting memory : $(@($OverCommit).count)"
+$Header = "Hosts overcommitting memory: [count]]"
 $Comments = "Overcommitted hosts may cause issues with performance if memory is not issued when needed, this may cause ballooning and swapping"
 $Display = "Table"
 $Author = "Alan Renouf"
-$PluginVersion = 1.3
+$PluginVersion = 1.4
 $PluginCategory = "vSphere"

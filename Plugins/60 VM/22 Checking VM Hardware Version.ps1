@@ -5,13 +5,12 @@ $HWVers = 8
 $vmIgnore = "vShield*|dsva*"
 # End of Settings
 
-$HWver = @($VM | Where-Object {$_.Name -notmatch $vmIgnore} | Select-Object Name, HWVersion | Where-Object {[INT]($_.HWVersion).ToString() -lt $HWVers})
-$HWVer				
+@($VM | Where-Object {$_.Name -notmatch $vmIgnore} | Select-Object Name, HWVersion | Where-Object {[INT]($_.HWVersion)-lt $HWVers})
 
 $Title = "Checking VM Hardware Version"
-$Header = "VMs with old hardware: $(@($HWVer).Count)"
+$Header = "VMs with old hardware: [count]"
 $Comments = "The following VMs are not at the latest hardware version, you may gain performance enhancements if you convert them to the latest version"
 $Display = "Table"
 $Author = "Alan Renouf"
-$PluginVersion = 1.1
+$PluginVersion = 1.2
 $PluginCategory = "vSphere"

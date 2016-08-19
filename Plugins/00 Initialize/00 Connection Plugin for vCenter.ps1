@@ -1,9 +1,9 @@
 $Title = "Connection settings for vCenter"
 $Author = "Alan Renouf"
-$PluginVersion = 1.5
+$PluginVersion = 1.7
 $Header = "Connection Settings"
 $Comments = "Connection Plugin for connecting to vSphere"
-$Display = "List"
+$Display = "None"
 $PluginCategory = "vSphere"
 
 # Start of Settings
@@ -50,17 +50,19 @@ else
 # Path to credentials file which is automatically created if needed
 $Credfile = $ScriptPath + "\Windowscreds.xml"
 
-# Adding PowerCLI core snapin
-if (!(get-pssnapin -name VMware.VimAutomation.Core -erroraction silentlycontinue)) {
-	add-pssnapin VMware.VimAutomation.Core
+# Adding PowerCLI core snapin, also check if powerCLI module is alsready added
+if (!(get-module -name VMware.VimAutomation.Core -erroraction silentlycontinue)) {
+	if (!(get-pssnapin -name VMware.VimAutomation.Core -erroraction silentlycontinue)) {
+		add-pssnapin VMware.VimAutomation.Core -erroraction silentlycontinue
+	}
 }
 
 $OpenConnection = $global:DefaultVIServers | where { $_.Name -eq $VIServer }
 if($OpenConnection.IsConnected) {
-	Write-CustomOut $pLang.connReuse
+	Write-CustomOut ( "{0}: {1}" -f $pLang.connReuse, $Server )
 	$VIConnection = $OpenConnection
 } else {
-	Write-CustomOut $pLang.connOpen
+	Write-CustomOut ( "{0}: {1}" -f $pLang.connOpen, $Server )
 	$VIConnection = Connect-VIServer -Server $VIServer -Port $Port
 }
 
@@ -76,7 +78,7 @@ function Get-VMLastPoweredOffDate {
   process {
     $Report = "" | Select-Object -Property Name,LastPoweredOffDate
      $Report.Name = $_.Name
-    $Report.LastPoweredOffDate = (Get-VIEvent -Entity $vm | `
+    $Report.LastPoweredOffDate = (Get-VIEventPlus -Entity $vm | `
       Where-Object { $_.Gettype().Name -eq "VmPoweredOffEvent" } | `
        Select-Object -First 1).CreatedTime
      $Report
@@ -90,8 +92,8 @@ function Get-VMLastPoweredOnDate {
   process {
     $Report = "" | Select-Object -Property Name,LastPoweredOnDate
      $Report.Name = $_.Name
-    $Report.LastPoweredOnDate = (Get-VIEvent -Entity $vm | `
-      Where-Object { $_.Gettype().Name -eq "VmPoweredOnEvent" } | `
+    $Report.LastPoweredOnDate = (Get-VIEventPlus -Entity $vm | `
+      Where-Object { $_.Gettype().Name -match "VmPoweredOnEvent" } | `
        Select-Object -First 1).CreatedTime
      $Report
   }
@@ -102,7 +104,7 @@ New-VIProperty -Name LastPoweredOnDate -ObjectType VirtualMachine -Value {(Get-V
 
 New-VIProperty -Name PercentFree -ObjectType Datastore -Value {
 	param($ds)
-	[math]::Round(((100 * ($ds.FreeSpaceMB)) / ($ds.CapacityMB)),0)
+	[math]::Round(((100 * ($ds.FreeSpaceMB)) / ($ds.CapacityMB)),2)
 } -Force | Out-Null
 
 New-VIProperty -Name "HWVersion" -ObjectType VirtualMachine -Value {
@@ -181,6 +183,9 @@ if ($VIVersion -ge 5) {
 	A switch indicating if the full message shall be compiled.
 	This switch can improve the execution speed if the full
 	message is not needed.   
+.PARAMETER UseUTC
+	A switch indicating if the event shoukld remain in UTC or
+	local time.
 .EXAMPLE
 	PS> Get-VIEventPlus -Entity $vm
 .EXAMPLE
@@ -197,7 +202,8 @@ function Get-VIEventPlus {
 		[string[]]$User,
 		[Switch]$System,
 		[string]$ScheduledTask,
-		[switch]$FullMessage = $false
+		[switch]$FullMessage = $false,
+		[switch]$UseUTC = $false
 	)
 
 	process {
@@ -248,6 +254,11 @@ function Get-VIEventPlus {
 			}
 			$eventCollector.DestroyCollector()
 		}
+		if (-not $UseUTC)
+		{
+			$events | % { $_.createdTime = $_.createdTime.ToLocalTime() }
+		}
+		
 		$events
 	}
 }

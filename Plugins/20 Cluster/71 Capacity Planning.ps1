@@ -6,61 +6,67 @@ $limitResourceMEMClusNonHA = 0.6
 # End of Settings
 
 $capacityinfo = @()
-foreach ($cluv in ($clusviews | Sort Name)) {
-		$clucapacity = "" |Select ClusterName, "Estimated Num VM Left (CPU)", "Estimated Num VM Left (MEM)", "vCPU/pCPU ratio", "VM/VMHost ratio"
-		if ( $cluv.Configuration.DasConfig.Enabled -eq $true ) {
-			$DasRealCpuCapacity = $cluv.Summary.EffectiveCpu - (($cluv.Summary.EffectiveCpu * $cluv.Configuration.DasConfig.FailoverLevel)/$cluv.Summary.NumHosts)
-			$DasRealMemCapacity = $cluv.Summary.EffectiveMemory - (($cluv.Summary.EffectiveMemory * $cluv.Configuration.DasConfig.FailoverLevel)/$cluv.Summary.NumHosts)
-		} else {
-			$DasRealCpuCapacity = $cluv.Summary.EffectiveCpu * $limitResourceCPUClusNonHA
-			$DasRealMemCapacity = $cluv.Summary.EffectiveMemory * $limitResourceMEMClusNonHA
-		}
-		
-		$cluvmlist = $VM | where { $cluv.Host -contains $_.VMHost.Id  }
-		
-		#CPU
-			$CluCpuUsage = (get-view $cluv.ResourcePool).Summary.runtime.cpu.OverallUsage
-		$CluCpuUsageAvg = $CluCpuUsage
-		if ($cluvmlist -and $cluv.host -and $CluCpuUsageAvg -gt 0){
-			$VmCpuAverage = $CluCpuUsageAvg/($cluvmlist.count)
-			$CpuVmLeft = [math]::round(($DasRealCpuCapacity-$CluCpuUsageAvg)/$VmCpuAverage,0)
-		}
-		elseif ($CluCpuUsageAvg -eq 0) {$CpuVmLeft = "N/A"}
-		else {$CpuVmLeft = 0}
-		
-	
-		#MEM
-			$CluMemUsage = (get-view $cluv.ResourcePool).Summary.runtime.memory.OverallUsage
-		$CluMemUsageAvg = $CluMemUsage/1MB
-		if ($cluvmlist -and $cluv.host -and $CluMemUsageAvg -gt 100){
-			$VmMemAverage = $CluMemUsageAvg/(Get-Cluster $cluv.name|Get-VM).count
-			$MemVmLeft = [math]::round(($DasRealMemCapacity-$CluMemUsageAvg)/$VmMemAverage,0)
-		}
-		elseif ($CluMemUsageAvg -lt 100) {$CluMemUsageAvg = "N/A"}
-		else{$MemVmLeft = 0}
-	
-		$clucapacity.ClusterName = $cluv.name
-		$clucapacity."Estimated Num VM Left (CPU)" = $CpuVmLeft
-		$clucapacity."Estimated Num VM Left (MEM)" = $MemVmLeft
-		if ($cluvmlist){
-			$vCPUpCPUratio = [math]::round(($cluvmlist|Measure-Object -Sum -Property NumCpu).sum / $cluv.summary.NumCpuThreads,0)
-			$clucapacity."vCPU/pCPU ratio" = $vCPUpCPUratio
-		}
-		else {$clucapacity."vCPU/pCPU ratio" = "0 (vCPU < pCPU)"}
-		if ($cluvmlist){
-			$clucapacity."VM/VMHost ratio" = [math]::round(($cluvmlist).count/$cluv.Summary.NumHosts,0)
-		}
-		else {$clucapacity."VM/VMHost ratio" = 0}
+foreach ($cluv in ($clusviews | Where {$_.Summary.NumHosts -gt 0 } | Sort Name)) {
+   
+   if ( $cluv.Configuration.DasConfig.Enabled -eq $true ) {
+      $DasRealCpuCapacity = $cluv.Summary.EffectiveCpu - (($cluv.Summary.EffectiveCpu * $cluv.Configuration.DasConfig.FailoverLevel)/$cluv.Summary.NumHosts)
+      $DasRealMemCapacity = $cluv.Summary.EffectiveMemory - (($cluv.Summary.EffectiveMemory * $cluv.Configuration.DasConfig.FailoverLevel)/$cluv.Summary.NumHosts)
+   } else {
+      $DasRealCpuCapacity = $cluv.Summary.EffectiveCpu * $limitResourceCPUClusNonHA
+      $DasRealMemCapacity = $cluv.Summary.EffectiveMemory * $limitResourceMEMClusNonHA
+   }
+   
+   $cluvmlist = $VM | where { $cluv.Host -contains $_.VMHost.Id  }
 
-		$capacityinfo += $clucapacity
+   #CPU
+   $CluCpuUsage = (get-view $cluv.ResourcePool).Summary.runtime.cpu.OverallUsage
+   $CluCpuUsageAvg = $CluCpuUsage
+   if ($cluvmlist -and $cluv.host -and $CluCpuUsageAvg -gt 0){
+      $VmCpuAverage = $CluCpuUsageAvg/($cluvmlist.count)
+      $CpuVmLeft = [math]::round(($DasRealCpuCapacity-$CluCpuUsageAvg)/$VmCpuAverage,0)
+   }
+   elseif ($CluCpuUsageAvg -eq 0) {$CpuVmLeft = "N/A"}
+   else {$CpuVmLeft = 0}
+   
+   #MEM
+   $CluMemUsage = (get-view $cluv.ResourcePool).Summary.runtime.memory.OverallUsage
+   $CluMemUsageAvg = $CluMemUsage/1MB
+   if ($cluvmlist -and $cluv.host -and $CluMemUsageAvg -gt 100){
+      $VmMemAverage = $CluMemUsageAvg/(Get-Cluster $cluv.name|Get-VM).count
+      $MemVmLeft = [math]::round(($DasRealMemCapacity-$CluMemUsageAvg)/$VmMemAverage,0)
+   }
+   elseif ($CluMemUsageAvg -lt 100) {$CluMemUsageAvg = "N/A"}
+   else{$MemVmLeft = 0}
+
+   # vCPU to pCPU ratio
+   if ($cluvmlist){
+      $vCPUpCPUratio = ("1:{0}" -f [math]::round(($cluvmlist|Measure-Object -Sum -Property NumCpu).sum / $cluv.summary.NumCpuThreads,1))
+      $VMVMHostRatio = ("1:{0}" -f [math]::round(($cluvmlist).count/$cluv.Summary.NumHosts,1))
+   }
+   else 
+   { 
+      $vCPUpCPUratio = "0 (vCPU < pCPU)"
+      $VMVMHostRatio = 0
+   }
+
+   $clucapacity = [PSCustomObject] @{
+      Datacenter = (Get-VIObjectByVIView -MoRef $cluv.Parent).Parent.Name
+      ClusterName = $cluv.name
+      "Estimated Num VM Left (CPU)" = $CpuVmLeft
+      "Estimated Num VM Left (MEM)" = $MemVmLeft
+      "vCPU/pCPU ratio" =  $vCPUpCPUratio
+      "VM/VMHost ratio" = $VMVMHostRatio
+   }
+   
+   $capacityinfo += $clucapacity
 }
 
-$capacityinfo | Sort ClusterName
+$capacityinfo | Sort Datacenter, ClusterName
 
 $Title = "QuickStats Capacity Planning"
 $Header = "QuickStats Capacity Planning"
 $Comments = "The following gives brief capacity information for each cluster based on QuickStats CPU/Mem usage and counting for HA failover requirements"
 $Display = "Table"
 $Author = "Raphael Schitz, Frederic Martin"
-$PluginVersion = 1.4
+$PluginVersion = 1.7
 $PluginCategory = "vSphere"

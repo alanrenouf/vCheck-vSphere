@@ -58,6 +58,8 @@
 param (
 	[Switch]$config,
 
+    [Switch]$GUIConfig,
+
 	[ValidateScript({ Test-Path $_ -PathType 'Container' })]
 	[string]$Outputpath=$Env:TEMP,
 
@@ -85,6 +87,9 @@ $lang = DATA {
       setupMsg09  = Please complete the following questions or hit Enter to accept the current setting
       setupMsg10  = After completing this wizard the vCheck report will be displayed on the screen.
       setupMsg11  =
+      configMsg01 = After you have exported the new settings from the configuration interface,
+      configMsg02  = import the settings CSV file using Import-vCheckSettings -csvfile C:\\path\\to\\vCheckSettings.csv
+      configMsg03  = NOTE: If vCheckSettings.csv is stored in the vCheck folder, simply run Import-vCheckSettings
       resFileWarn = Image File not found for {0}!
       pluginInvalid = Plugin does not exist: {0}
       pluginpathInvalid = Plugin path "{0}" is invalid, defaulting to {1}
@@ -238,6 +243,79 @@ Function Invoke-Settings {
 	} # end PROCESS block
 	
 } # end Function Invoke-Settings
+
+Function Invoke-HTMLSettings {
+	
+	<#
+	.DESCRIPTION
+		Run through settings for specified file, expects question on one line, and variable/value on following line.  
+        Outputs settings to HTML file, which accepts input, and can create a configuration file.
+	.NOTES
+		Updated: 20160830
+		Updated By: David Seibel
+		Update Notes:
+		- Initial creation
+	#>
+	
+	[CmdletBinding(PositionalBinding = $true)]
+	param (
+		[parameter(Position = 0)]
+		$Filename,
+		[parameter(Position = 1)]
+		$GB
+	)
+	
+	PROCESS {
+		
+		$file = Get-Content $filename
+		$OriginalLine = ($file | Select-String -Pattern "# Start of Settings").LineNumber
+		$EndLine = ($file | Select-String -Pattern "# End of Settings").LineNumber
+		
+		if (!(($OriginalLine + 1) -eq $EndLine)) {
+
+			$Line = $OriginalLine
+            $PluginInfo = Get-PluginID $Filename
+			$PluginName = $PluginInfo.Title
+			
+            $htmlOutput = ""
+			If ($PluginName.EndsWith(".ps1", 1)) {				
+				$PluginName = ($PluginName.split("\")[-1]).split(".")[0]				
+			} # end if
+
+            $htmlOutput += "<table>"
+			
+			do {				
+				$Question = $file[$Line]
+                $QuestionWithoutHash = $Question.Replace("# ", "")
+				$Line++
+				$Split = ($file[$Line]).Split("=")
+				$Var = $Split[0].Trim()
+                if ($Split.count -gt 1) {
+				    $CurSet = $Split[1].Trim()
+				    # Check if the current setting is in speech marks
+				    $String = $false
+				    if ($CurSet -match '"') {					
+					    $String = $true
+					    $CurSet = $CurSet.Replace('"', '').Trim()					
+				    } # end if
+
+                    $htmlOutput += "<tr><td>$QuestionWithoutHash</td><td><input name='$Filename|$Question|$Var' type='text' value='$CurSet' size=60 /></td></tr>`n"
+                }
+			} Until ($Line -ge ($EndLine - 1))
+			
+            $htmlOutput += "</table>"
+	        $PluginConfig += New-Object PSObject -Property @{
+		        "Details" = $htmlOutput;
+		        "Header" = $PluginName;
+                "PluginID" = $PluginName;
+	        }
+
+            return $PluginConfig
+		} # end if
+		
+	} # end PROCESS block
+	
+} # end Function Invoke-HTMLSettings
 
 <# Replace HTML Entities in string. Used to stop <br /> tags from being mangled in tables #>
 function Format-HTMLEntities {
@@ -615,6 +693,58 @@ function Get-ReportResource {
 	}
 }
 
+
+function Get-ConfigScripts {
+    return "function createCSV() {
+            var inputs = document.getElementsByTagName('input');
+            
+            var strsplit = null
+            //var output = 'filename,question,var\n'
+            var output = '<vCheck>\n'
+            for (var i = 0; i < inputs.length; i += 1) {
+                strsplit = inputs[i].name.split('|')
+                output += '\t<setting>\n'
+                output += '\t\t<filename>'
+                output += strsplit[0]
+                output += '</filename>\n'
+                output += '\t\t<question>'
+                output += strsplit[1]
+                output += '</question>\n'
+                output += '\t\t<varname>'
+                output += strsplit[2] 
+                output += '</varname>\n'
+                output += '\t\t<var>""'
+                output += inputs[i].value
+                output += '""</var>\n'
+                output += '\t</setting>\n'   
+            }
+            output += '</vCheck>'
+            downloadFile('vCheckSettings.xml', output)
+        }
+        function downloadFile(filename, rows) {
+	        var fileContent = '';
+	        for (var i = 0; i < rows.length; i++) {
+		        fileContent += rows[i];
+	        }
+
+	        var blob = new Blob([fileContent], { type: 'text/xml;charset=utf-8;' });
+	        if (navigator.msSaveBlob) { // IE 10+
+		        navigator.msSaveBlob(blob, filename);
+	        } else {
+		        var link = document.createElement('a');
+		        if (link.download !== undefined) { // feature detection
+			        // Browsers that support HTML5 download attribute
+			        var url = URL.createObjectURL(blob);
+			        link.setAttribute('href', url);
+			        link.setAttribute('download', filename);
+			        link.style.visibility = 'hidden';
+			        document.body.appendChild(link);
+			        link.click();
+			        document.body.removeChild(link);
+		        }
+	        }
+        }"
+}
 #endregion functions
 
 #region initialization
@@ -687,19 +817,6 @@ $Setup = ($file | Select-String -Pattern '# Set the following to true to enable 
 $SetupLine = $Setup++
 $SetupSetting = Invoke-Expression (($file[$SetupLine]).Split("="))[1]
 
-if ($SetupSetting -or $config) {
-	
-	Clear-Host
-	
-	($lang.GetEnumerator() | Where-Object { $_.Name -match "setupMsg[0-9]*" } | Sort-Object Name) | ForEach-Object {		
-		Write-Warning -Message "$($_.value)"
-	}
-	
-	Invoke-Settings -Filename $GlobalVariables -GB $true
-	Foreach ($plugin in $vCheckPlugins) {
-		Invoke-Settings -Filename $plugin.Fullname
-	}
-}
 
 ## Include GlobalVariables and validate settings (at the moment just check they exist)
 . $GlobalVariables
@@ -727,186 +844,234 @@ if (!(Test-Path ($StylePath))) {
 # Import the Style
 . ("$($StylePath)\Style.ps1")
 
+
+if ($SetupSetting -or $config -or $GUIConfig) {	
+	#Clear-Host
+	
+	($lang.GetEnumerator() | Where-Object { $_.Name -match "setupMsg[0-9]*" } | Sort-Object Name) | ForEach-Object {		
+		Write-Warning -Message "$($_.value)"
+	}	
+
+    if ($GUIConfig) {
+        $PluginResult = @()        
+
+        # Set the output filename 
+        if (-not (Test-Path -PathType Container $Outputpath)) { New-Item $Outputpath -type directory | Out-Null }
+        $Filename = ("{0}\{1}_vCheck-Config_{2}.html" -f $Outputpath, $Server, (Get-Date -Format "yyyyMMdd_HHmm"))
+        
+        #$configHTML = "<table>"
+	    #$configHTML += Invoke-HTMLSettings -Filename $GlobalVariables
+        $PluginResult += Invoke-HTMLSettings -Filename $GlobalVariables
+        Foreach ($plugin in $vCheckPlugins) {
+		    #$configHTML += Invoke-HTMLSettings -Filename $plugin.Fullname
+		    $PluginResult += Invoke-HTMLSettings -Filename $plugin.Fullname
+	    }
+                
+        # Run Style replacement
+        $MyConfig = Get-ReportHTML
+        # Always generate the report with embedded images
+        $embedConfig = $MyConfig
+        # Loop over all CIDs and replace them
+        Foreach ($cid in $global:ReportResources.Keys) {
+	        $embedConfig = $embedConfig -replace ("cid:{0}" -f $cid), (Get-ReportResource $cid -ReturnType "embed")
+        }
+
+        $embedConfig | Out-File $Filename
+        Invoke-Item $Filename
+        ($lang.GetEnumerator() | Where-Object { $_.Name -match "configMsg[0-9]*" } | Sort-Object Name) | ForEach-Object {		
+		    Write-Warning -Message "$($_.value)"
+	    }
+
+    } elseif ($config) {
+	    Invoke-Settings -Filename $GlobalVariables -GB $true
+	    Foreach ($plugin in $vCheckPlugins) {
+		    Invoke-Settings -Filename $plugin.Fullname
+	    }
+    }
+}
+
 #endregion initialization
+if (-not $GUIConfig) {
 
-#region scriptlogic
-################################################################################
-#                                 Script logic                                 #
-################################################################################
-# Start generating the report
-$PluginResult = @()
+    #region scriptlogic
+    ################################################################################
+    #                                 Script logic                                 #
+    ################################################################################
+    # Start generating the report
+    $PluginResult = @()
 
-Write-Warning -Message $lang.pluginBegin
+    Write-Warning -Message $lang.pluginBegin
 
-# Loop over all enabled plugins
-$p = 0
-$vCheckPlugins | Foreach {
-	$TableFormat = $null
-	$PluginInfo = Get-PluginID $_.Fullname
-	$p++
-	Write-CustomOut ($lang.pluginStart -f $PluginInfo["Title"], $PluginInfo["Author"], $PluginInfo["Version"], $p, $vCheckPlugins.count)
-	$pluginStatus = ($lang.pluginStatus -f $p, $vCheckPlugins.count, $_.Name)
-	Write-Progress -ID 1 -Activity $lang.pluginActivity -Status $pluginStatus -PercentComplete (100 * $p/($vCheckPlugins.count))
-	$TTR = [math]::round((Measure-Command { $Details = @(. $_.FullName)}).TotalSeconds, 2)
+    # Loop over all enabled plugins
+    $p = 0
+    $vCheckPlugins | Foreach {
+	    $TableFormat = $null
+	    $PluginInfo = Get-PluginID $_.Fullname
+	    $p++
+	    Write-CustomOut ($lang.pluginStart -f $PluginInfo["Title"], $PluginInfo["Author"], $PluginInfo["Version"], $p, $vCheckPlugins.count)
+	    $pluginStatus = ($lang.pluginStatus -f $p, $vCheckPlugins.count, $_.Name)
+	    Write-Progress -ID 1 -Activity $lang.pluginActivity -Status $pluginStatus -PercentComplete (100 * $p/($vCheckPlugins.count))
+	    $TTR = [math]::round((Measure-Command { $Details = @(. $_.FullName)}).TotalSeconds, 2)
 	
-	Write-CustomOut ($lang.pluginEnd -f $PluginInfo["Title"], $PluginInfo["Author"], $PluginInfo["Version"], $p, $vCheckPlugins.count)
-	# Do a replacement for [count] for number of items returned in $header
-	$Header = $Header -replace "\[count\]", $Details.count
+	    Write-CustomOut ($lang.pluginEnd -f $PluginInfo["Title"], $PluginInfo["Author"], $PluginInfo["Version"], $p, $vCheckPlugins.count)
+	    # Do a replacement for [count] for number of items returned in $header
+	    $Header = $Header -replace "\[count\]", $Details.count
 	
-	$PluginResult += New-Object PSObject -Property @{
-		"Title" = $Title;
-		"Author" = $PluginInfo["Author"];
-		"Version" = $PluginInfo["Version"];
-		"Details" = $Details;
-		"Display" = $Display;
-		"TableFormat" = $TableFormat;
-		"Header" = $Header;
-		"Comments" = $Comments;
-		"TimeToRun" = $TTR;
-	}
-}
-Write-Progress -ID 1 -Activity $lang.pluginActivity -Status $lang.Complete -Completed
+	    $PluginResult += New-Object PSObject -Property @{
+		    "Title" = $Title;
+		    "Author" = $PluginInfo["Author"];
+		    "Version" = $PluginInfo["Version"];
+		    "Details" = $Details;
+		    "Display" = $Display;
+		    "TableFormat" = $TableFormat;
+		    "Header" = $Header;
+		    "Comments" = $Comments;
+		    "TimeToRun" = $TTR;
+	    }
+    }
+    Write-Progress -ID 1 -Activity $lang.pluginActivity -Status $lang.Complete -Completed
 
-# Add report on plugins
-if ($reportOnPlugins) {
-	$Comments = "Plugins in numerical order"
-	$Plugins = @()
-	foreach ($Plugin in (Get-ChildItem $PluginsFolder -Include *.ps1, *.ps1.disabled -Recurse)) {
-		$Plugins += New-Object PSObject -Property @{
-			"Name" = (Get-PluginID  $Plugin.FullName).Title;
-			"Enabled" = (($vCheckPlugins | Select -ExpandProperty FullName) -Contains $plugin.FullName)
-		}
-	}
+    # Add report on plugins
+    if ($reportOnPlugins) {
+	    $Comments = "Plugins in numerical order"
+	    $Plugins = @()
+	    foreach ($Plugin in (Get-ChildItem $PluginsFolder -Include *.ps1, *.ps1.disabled -Recurse)) {
+		    $Plugins += New-Object PSObject -Property @{
+			    "Name" = (Get-PluginID  $Plugin.FullName).Title;
+			    "Enabled" = (($vCheckPlugins | Select -ExpandProperty FullName) -Contains $plugin.FullName)
+		    }
+	    }
 	
-	if ($ListEnabledPluginsFirst) {
-		$Plugins = $Plugins | Sort -property @{ Expression = "Enabled"; Descending = $true }
-		$Comments = "Plugins in numerical order, enabled plugins listed first"
-	}
+	    if ($ListEnabledPluginsFirst) {
+		    $Plugins = $Plugins | Sort -property @{ Expression = "Enabled"; Descending = $true }
+		    $Comments = "Plugins in numerical order, enabled plugins listed first"
+	    }
 	
-	$PluginResult += New-Object PSObject -Property @{
-		"Title" = $lang.repPRTitle;
-		"Author" = "vCheck";
-		"Version" = $vCheckVersion;
-		"Details" = $Plugins;
-		"Display" = "Table";
-		"TableFormat" = $null;
-		"Header" = $lang.repPRTitle;
-		"Comments" = $Comments;
-		"TimeToRun" = 0;
-	}
-}
+	    $PluginResult += New-Object PSObject -Property @{
+		    "Title" = $lang.repPRTitle;
+		    "Author" = "vCheck";
+		    "Version" = $vCheckVersion;
+		    "Details" = $Plugins;
+		    "Display" = "Table";
+		    "TableFormat" = $null;
+		    "Header" = $lang.repPRTitle;
+		    "Comments" = $Comments;
+		    "TimeToRun" = 0;
+	    }
+    }
 
-# Add Time to Run detail for plugins - if specified in GlobalVariables.ps1
-if ($TimeToRun) {
-	$Finished = Get-Date
-	$PluginResult += New-Object PSObject -Property @{
-		"Title" = $lang.repTTRTitle;
-		"Author" = "vCheck";
-		"Version" = $vCheckVersion;
-		"Details" = ($PluginResult | Where { $_.TimeToRun -gt $PluginSeconds } | Select Title, TimeToRun | Sort-Object TimeToRun -Descending);
-		"Display" = "List";
-		"TableFormat" = $null;
-		"Header" = ($lang.repTime -f [math]::round(($Finished - $Date).TotalMinutes, 2), ($Finished.ToLongDateString()), ($Finished.ToLongTimeString()));
-		"Comments" = ($lang.slowPlugins -f $PluginSeconds);
-		"TimeToRun" = 0;
-	}
-}
+    # Add Time to Run detail for plugins - if specified in GlobalVariables.ps1
+    if ($TimeToRun) {
+	    $Finished = Get-Date
+	    $PluginResult += New-Object PSObject -Property @{
+		    "Title" = $lang.repTTRTitle;
+		    "Author" = "vCheck";
+		    "Version" = $vCheckVersion;
+		    "Details" = ($PluginResult | Where { $_.TimeToRun -gt $PluginSeconds } | Select Title, TimeToRun | Sort-Object TimeToRun -Descending);
+		    "Display" = "List";
+		    "TableFormat" = $null;
+		    "Header" = ($lang.repTime -f [math]::round(($Finished - $Date).TotalMinutes, 2), ($Finished.ToLongDateString()), ($Finished.ToLongTimeString()));
+		    "Comments" = ($lang.slowPlugins -f $PluginSeconds);
+		    "TimeToRun" = 0;
+	    }
+    }
 
-#endregion scriptlogic
+    #endregion scriptlogic
 
-#region output
-################################################################################
-#                                    Output                                    #
-################################################################################
-# Loop over plugin results and generate HTML from style
-$emptyReport = $true
-$p = 1
-Foreach ($pr in $PluginResult) {
-	If ($pr.Details) {
-		$emptyReport = $false
-		switch ($pr.Display) {
-			"List"  { $pr.Details = Get-HTMLList $pr.Details }
-			"Table" { $pr.Details = Get-HTMLTable $pr.Details $pr.TableFormat }
-			"Chart" { $pr.Details = Get-HTMLChart "plugin$($p)" $pr.Details }
-			default { $pr.Details = $null }
-		}
-		$pr | Add-Member -Type NoteProperty -Name pluginID -Value "plugin-$p"
-		$p++
-	}
-}
+    #region output
+    ################################################################################
+    #                                    Output                                    #
+    ################################################################################
+    # Loop over plugin results and generate HTML from style
+    $emptyReport = $true
+    $p = 1
+    Foreach ($pr in $PluginResult) {
+	    If ($pr.Details) {
+		    $emptyReport = $false
+		    switch ($pr.Display) {
+			    "List"  { $pr.Details = Get-HTMLList $pr.Details }
+			    "Table" { $pr.Details = Get-HTMLTable $pr.Details $pr.TableFormat }
+			    "Chart" { $pr.Details = Get-HTMLChart "plugin$($p)" $pr.Details }
+			    default { $pr.Details = $null }
+		    }
+		    $pr | Add-Member -Type NoteProperty -Name pluginID -Value "plugin-$p"
+		    $p++
+	    }
+    }
 
-# Run Style replacement
-$MyReport = Get-ReportHTML
+    # Run Style replacement
+    $MyReport = Get-ReportHTML
 
-# Set the output filename 
-if (-not (Test-Path -PathType Container $Outputpath)) { New-Item $Outputpath -type directory | Out-Null }
-$Filename = ("{0}\{1}_vCheck_{2}.htm" -f $Outputpath, $Server, (Get-Date -Format "yyyyMMdd_HHmm"))
+    # Set the output filename 
+    if (-not (Test-Path -PathType Container $Outputpath)) { New-Item $Outputpath -type directory | Out-Null }
+    $Filename = ("{0}\{1}_vCheck_{2}.htm" -f $Outputpath, $Server, (Get-Date -Format "yyyyMMdd_HHmm"))
 
-# Always generate the report with embedded images
-$embedReport = $MyReport
-# Loop over all CIDs and replace them
-Foreach ($cid in $global:ReportResources.Keys) {
-	$embedReport = $embedReport -replace ("cid:{0}" -f $cid), (Get-ReportResource $cid -ReturnType "embed")
-}
-$embedReport | Out-File -encoding ASCII -filepath $Filename
+    # Always generate the report with embedded images
+    $embedReport = $MyReport
+    # Loop over all CIDs and replace them
+    Foreach ($cid in $global:ReportResources.Keys) {
+	    $embedReport = $embedReport -replace ("cid:{0}" -f $cid), (Get-ReportResource $cid -ReturnType "embed")
+    }
+    $embedReport | Out-File -encoding ASCII -filepath $Filename
 
-# Display to screen
-if ($DisplayToScreen -and (!($emptyReport -and !$DisplayReportEvenIfEmpty))) {
-	Write-CustomOut $lang.HTMLdisp
-	Invoke-Item $Filename
-}
+    # Display to screen
+    if ($DisplayToScreen -and (!($emptyReport -and !$DisplayReportEvenIfEmpty))) {
+	    Write-CustomOut $lang.HTMLdisp
+	    Invoke-Item $Filename
+    }
 
-# Generate email
-if ($SendEmail -and (!($emptyReport -and !$EmailReportEvenIfEmpty))) {
-	Write-CustomOut $lang.emailSend
-	$msg = New-Object System.Net.Mail.MailMessage ($EmailFrom, $EmailTo)
-	# If CC address specified, add
-	If ($EmailCc -ne "") {
-		$msg.CC.Add($EmailCc)
-	}
-	$msg.subject = $EmailSubject
+    # Generate email
+    if ($SendEmail -and (!($emptyReport -and !$EmailReportEvenIfEmpty))) {
+	    Write-CustomOut $lang.emailSend
+	    $msg = New-Object System.Net.Mail.MailMessage ($EmailFrom, $EmailTo)
+	    # If CC address specified, add
+	    If ($EmailCc -ne "") {
+		    $msg.CC.Add($EmailCc)
+	    }
+	    $msg.subject = $EmailSubject
 	
-	# if send attachment, just send plaintext email with HTML report attached
-	If ($SendAttachment) {
-		$msg.Body = $lang.emailAtch
-		$attachment = new-object System.Net.Mail.Attachment $Filename
-		$msg.Attachments.Add($attachment)
-	}
-	# Otherwise send the HTML email
-	else {
-		$msg.IsBodyHtml = $true;
-		$html = [System.Net.Mail.AlternateView]::CreateAlternateViewFromString($MyReport, $null, 'text/html')
-		$msg.AlternateViews.Add($html)
+	    # if send attachment, just send plaintext email with HTML report attached
+	    If ($SendAttachment) {
+		    $msg.Body = $lang.emailAtch
+		    $attachment = new-object System.Net.Mail.Attachment $Filename
+		    $msg.Attachments.Add($attachment)
+	    }
+	    # Otherwise send the HTML email
+	    else {
+		    $msg.IsBodyHtml = $true;
+		    $html = [System.Net.Mail.AlternateView]::CreateAlternateViewFromString($MyReport, $null, 'text/html')
+		    $msg.AlternateViews.Add($html)
 		
-		# Loop over all CIDs and replace them
-		Foreach ($cid in $global:ReportResources.Keys) {
-			if ($global:ReportResources[$cid].Uses -gt 0) {
-				$lr = (Get-ReportResource $cid -ReturnType "linkedresource")
-				$html.LinkedResources.Add($lr);
-			}
-		}
-	}
-	# Send the email
-	$smtpClient = New-Object System.Net.Mail.SmtpClient
+		    # Loop over all CIDs and replace them
+		    Foreach ($cid in $global:ReportResources.Keys) {
+			    if ($global:ReportResources[$cid].Uses -gt 0) {
+				    $lr = (Get-ReportResource $cid -ReturnType "linkedresource")
+				    $html.LinkedResources.Add($lr);
+			    }
+		    }
+	    }
+	    # Send the email
+	    $smtpClient = New-Object System.Net.Mail.SmtpClient
 	
-	# Find the VI Server and port from the global settings file
-	$smtpClient.Host = ($SMTPSRV -Split ":")[0]
-	if (($SMTPSRV -split ":")[1]) {
-		$smtpClient.Port = ($SMTPSRV -split ":")[1]
-	}
+	    # Find the VI Server and port from the global settings file
+	    $smtpClient.Host = ($SMTPSRV -Split ":")[0]
+	    if (($SMTPSRV -split ":")[1]) {
+		    $smtpClient.Port = ($SMTPSRV -split ":")[1]
+	    }
 	
-	if ($EmailSSL -eq $true) {
-		$smtpClient.EnableSsl = $true
-	}
-	$smtpClient.UseDefaultCredentials = $true;
-	$smtpClient.Send($msg)
-	If ($SendAttachment) { $attachment.Dispose() }
-	$msg.Dispose()
-}
+	    if ($EmailSSL -eq $true) {
+		    $smtpClient.EnableSsl = $true
+	    }
+	    $smtpClient.UseDefaultCredentials = $true;
+	    $smtpClient.Send($msg)
+	    If ($SendAttachment) { $attachment.Dispose() }
+	    $msg.Dispose()
+    }
 
-# Run EndScript once everything else is complete
-if (Test-Path ($ScriptPath + "\EndScript.ps1")) {
-	. ($ScriptPath + "\EndScript.ps1")
-}
+    # Run EndScript once everything else is complete
+    if (Test-Path ($ScriptPath + "\EndScript.ps1")) {
+	    . ($ScriptPath + "\EndScript.ps1")
+    }
 
-#endregion output
+    #endregion output
+}

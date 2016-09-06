@@ -8,6 +8,7 @@
 |-----------------|
 |[About](#About)|
 |[Features](#Features)|
+|[Installing](#Installing)|
 |[Enhancements](#Enhancements)|
 |[Release Notes](#ReleaseNotes)|
 |[Contributing](#Contributing)|
@@ -88,6 +89,11 @@ The following items are included as part of the vCheck vSphere download, they ar
 - HA VM restarts and resets
 - Inaccessible VMs
 - Much, Much more.......
+
+# Installing
+[*Back to top*](#Title)
+
+Copy the vCheck files to the desired location. Run the script `SchedulevChec.ps1` and answer the prompts to configure the scheduled job.
 
 <a name="Enhancements">
 # Enhancements

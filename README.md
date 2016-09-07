@@ -93,7 +93,7 @@ The following items are included as part of the vCheck vSphere download, they ar
 # Installing
 [*Back to top*](#Title)
 
-Copy the vCheck files to the desired location. Run the script `SchedulevChec.ps1` and answer the prompts to configure the scheduled job.
+Copy the vCheck files to the desired location. Run the script `vCheckUtils.ps1` and call the function `Schedule-vCheck`. Answer the prompts to configure the scheduled job.
 
 <a name="Enhancements">
 # Enhancements

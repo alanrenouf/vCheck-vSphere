@@ -62,10 +62,15 @@ param (
 	[string]$Outputpath=$Env:TEMP,
 
 	[ValidateScript({ Test-Path $_ -PathType 'Leaf' })]
-	[string]$job
+	[string]$job,
+
+	[string]$Server = "192.168.0.0",
+
+	[string]$DataCenter = ""
+
 )
 
-$vCheckVersion = "6.23-alpha-3"
+$vCheckVersion = "6.24"
 $Date = Get-Date
 
 #region Internationalization

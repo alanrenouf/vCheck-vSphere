@@ -64,6 +64,7 @@ param (
 	[ValidateScript({ Test-Path $_ -PathType 'Leaf' })]
 	[string]$job,
 
+	# Please Specify the address (and optional port) of the vCenter server to connect to [servername(:port)]
 	[string]$Server = "192.168.0.0",
 
 	[string]$DataCenter = ""

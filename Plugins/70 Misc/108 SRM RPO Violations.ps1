@@ -34,6 +34,7 @@ $ActiveViolationsOnly = $true
 ## 0.3 : Removed extra timing in output as this is displayed as part of Write-CustomOut
 ## 0.4 : Fixed a bug/typo while filtering results by duration of RPO violation. ($RPOviolationMin should have been $RPOviolationMins)
 ## 0.5 : Fixed a bug where filtering results by duration of RPO violation was not working.
+## 0.6 : Change to Get-VIEventPlus, removed MaxSampleVIEvent variable.
 
 ## Begin code block obtained from: http://www.virtu-al.net/2013/06/14/reporting-on-rpo-violations-from-vsphere-replication/
 #  modified by Joel Gibson
@@ -41,13 +42,13 @@ $VMs = $VM | Where { $_.name -match $VMNameRegex }
  
 $Results = @()
 Foreach ($RPOvm in $VMs) {
-                Write-CustomOut ".... Retrieving events for $($RPOvm.name)"
-                $Events = Get-VIEvent -MaxSamples $MaxSampleVIEvent -Entity $RPOvm
-                Write-CustomOut ".... Filtering RPO events for $($RPOvm.name)"
+
+                $Events = Get-VIEventPlus -Entity $RPOvm
+
                 $RPOEvents = $Events | where { $_.EventTypeID -match "rpo" } | Where { $_.Vm.Name -eq $RPOvm.Name } | Select EventTypeId, CreatedTime, FullFormattedMessage, @{Name="VMName";Expression={$_.Vm.Name}} | Sort CreatedTime
                 if ($RPOEvents) {
                                 $Count = 0
-                                Write-CustomOut ".... Finding replication results for $($RPOvm.Name)"
+
                                 do {
                                                 $details = "" | Select VMName, ViolationStart, ViolationEnd, Mins
                                                 if ($RPOEvents[$count].EventTypeID -match "Violated") {
@@ -110,5 +111,5 @@ $Header = "Site Recovery Manager - RPO Violations: $(@($Results).count)"
 $Comments = "This is a customizable report of RPO violations found in the vCenter event log."
 $Display = "Table"
 $Author = "Joel Gibson, based on work by Alan Renouf"
-$PluginVersion = 0.5
+$PluginVersion = 0.6
 $PluginCategory = "vSphere"

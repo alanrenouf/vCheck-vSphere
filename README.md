@@ -346,4 +346,4 @@ If new settings or plugins have been added to the new build you will be asked to
 
 For more information please read here: http://www.virtu-al.net/vcheck-pluginsheaders/vcheck/
 
-For an example vSphere output (doesnt contain all info) [click here](https://s3.amazonaws.com/vcheck/vCheck-AD_Sample.html)
+For an example vSphere output (doesnt contain all info) click here http://virtu-al.net/Downloads/vCheck/vCheck.htm

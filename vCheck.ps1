@@ -58,7 +58,7 @@
 param (
 	[Switch]$config,
 
-    [Switch]$GUIConfig,
+	[Switch]$GUIConfig,
 
 	[ValidateScript({ Test-Path $_ -PathType 'Container' })]
 	[string]$Outputpath=$Env:TEMP,
@@ -249,7 +249,7 @@ Function Invoke-HTMLSettings {
 	<#
 	.DESCRIPTION
 		Run through settings for specified file, expects question on one line, and variable/value on following line.  
-        Outputs settings to HTML file, which accepts input, and can create a configuration file.
+		Outputs settings to HTML file, which accepts input, and can create a configuration file.
 	.NOTES
 		Updated: 20160830
 		Updated By: David Seibel

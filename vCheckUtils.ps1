@@ -428,7 +428,7 @@ Function Set-PluginSettings {
     $OriginalLine = ($file | Select-String -SimpleMatch "# Start of Settings").LineNumber
     $EndLine = ($file | Select-String -SimpleMatch "# End of Settings").LineNumber
     $PluginName = ($filename.split("\")[-1]).split(".")[0]
-    Write-Host "`nProcessing - $PluginName" -foreground $host.PrivateData.WarningForegroundColor -background $host.PrivateData.WarningBackgroundColor
+    Write-Warning "`nProcessing - $PluginName"
     if (!(($OriginalLine +1) -eq $EndLine)) {
         $Array = @()
         $Line = $OriginalLine
@@ -557,7 +557,7 @@ Function Import-vCheckSettings {
         $settings = $Import | Where {($_.filename).Split("\")[-1] -eq ($plugin.Fullname).Split("\")[-1]}
         Set-PluginSettings -Filename $plugin.Fullname -Settings $settings
     }
-    Write-Host "`nImport Complete!`n" -foreground $host.PrivateData.WarningForegroundColor -background $host.PrivateData.WarningBackgroundColor
+    Write-Warning "`nImport Complete!`n"
 }
 
 Function Get-vCheckCommand {

@@ -575,7 +575,7 @@ function Schedule-vCheck {
     $sb = [scriptblock]::Create($Location)
 
     $dailyTrigger = New-JobTrigger -Daily -At $TriggerTime
-    $option = New-ScheduledJobOption -StartIfOnBattery �StartIfIdle
+    $option = New-ScheduledJobOption -StartIfOnBattery -StartIfIdle
     Register-ScheduledJob -Name $vCheckJobName -Trigger $dailyTrigger -ScheduledJobOption $option `
         -ScriptBlock $sb
 }
@@ -785,13 +785,13 @@ Get-ChildItem (Get-ChildItem "$($vCheckDir)\Plugins").PsParentPath -Recurse | ? 
 	This is my process for upgrading vCheck with this function.
 	  1.  Extract a new, unmodified version of the vCheck to a directory.  For this example "C:\Scripts\vCheck\vCheck-vSphere-master".
 	  2.  Load the utility - ". C:\Scripts\vCheck\vCheck-vSphere-master\vCheckUtils.ps1" .
-	  3.  Upgrade-vCheckDirectory –CurrentvCheckPath C:\Scripts\vcheck\vcenterprod -NewvCheckSource C:\Scripts\vcheck6\vCheck-vSphere-master
+	  3.  Upgrade-vCheckDirectory âCurrentvCheckPath C:\Scripts\vcheck\vcenterprod -NewvCheckSource C:\Scripts\vcheck6\vCheck-vSphere-master
 	  4.  The list of plugin variable values is automatically opened in Notepad.
 	  5.  Change directory to C:\Scripts\vcheck\vcenterprod .
-	  6.  Run vCheck.ps1 .  Input all the prompts for variable values with the ones in the file opened by Notepad.  For the global variable “ $EmailFrom = "vcheck-vcenter@monster.com" ” I use my own email address until after I done a test run.  Then I change it back to the group email address.
+	  6.  Run vCheck.ps1 .  Input all the prompts for variable values with the ones in the file opened by Notepad.  For the global variable â $EmailFrom = "vcheck-vcenter@monster.com" â I use my own email address until after I done a test run.  Then I change it back to the group email address.
 	  7.  After all the variable have been entered vCheck will run.
 	  8.  Review the PowerShell console for script errors and the vCheck email report for any problems.  
-	  9.  If there are not problems set the “EmailFrom” variable in “GlobalVariables.ps1” back to it’s original value.
+	  9.  If there are not problems set the âEmailFromâ variable in âGlobalVariables.ps1â back to itâs original value.
 
     .LINK
         https://github.com/alanrenouf/vCheck-vSphere

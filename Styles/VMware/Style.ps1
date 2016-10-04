@@ -1,9 +1,11 @@
 # Start of Settings 
 # Show table of centents in report?
 $ShowTOC = $true
+# Number of columns in table of contents
+$ToCColumns = 1
 # End of Settings
 
-$StyleVersion = 1.3
+$StyleVersion = 1.4
 
 # Define Chart Colours
 $ChartColours = @("377C2B", "0A77BA", "1D6325", "89CBE1")
@@ -21,7 +23,7 @@ $StyleReplace = @{"_HEADER_" = ("'$reportHeader'");
                   "_CONTENT_" = "Get-ReportContentHTML";
                   "_TOC_" = "Get-ReportTOC"}
 
-#region Function Defniitions
+#region Function Definitions
 <#
    Get-ReportHTML - *REQUIRED*
    Returns the HTML for the report
@@ -68,17 +70,26 @@ function Get-PluginHTML {
    Generate table of contents
 #>
 function Get-ReportTOC {
-   if ($ShowTOC) {
-      $TOCHTML = "<ul>"
-      foreach ($pr in $PluginResult) {
-         if ($pr.Details) {
-            $TOCHTML += ("<li><a href='#{0}'>{1}</a></li>" -f $pr.PluginID, $pr.Title)
-         }
+   $TOCHTML = "<table><tr>"
+
+   $i = 0
+   foreach ($pr in ($PluginResult | Where {$_.Details})) {
+      $TOCHTML += ("<td style='padding-left: 10px'><a style='font-size: 8pt' href='#{0}'>{1}</a></td>" -f $pr.PluginID, $pr.Title)
+
+      $i++
+      # We have hit the end of the line
+      if ($i%$ToCColumns -eq 0) {
+         $TOCHTML +="</tr><tr>"
       }
-      $TOCHTML += "</ul>"
-   
-      return $TOCHTML
    }
+   # If the row is unfinished, need to pad it out with a cell
+   if ($i%$ToCColumns -gt 0) {
+      $TOCHTML += ("<td colspan='{0}'>&nbsp;</td>" -f ($ToCColumns-($i%$ToCColumns)))
+   }
+
+   $TOCHTML += "</tr></table>"
+
+   return $TOCHTML
 }
 #endregion
 

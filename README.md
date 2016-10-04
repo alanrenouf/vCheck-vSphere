@@ -1,5 +1,17 @@
 <a name="Title">
 # vCheck Daily Report for vSphere
+[![stars badge]][stars]
+[![forks badge]][forks]
+[![issues badge]][issues]
+
+[stars badge]:https://img.shields.io/github/stars/alanrenouf/vCheck-vSphere.svg
+[forks badge]:https://img.shields.io/github/forks/alanrenouf/vCheck-vSphere.svg
+[issues badge]:https://img.shields.io/github/issues/alanrenouf/vCheck-vSphere.svg
+
+[stars]:https://github.com/alanrenouf/vCheck-vSphere/stargazers
+[forks]:https://github.com/alanrenouf/vCheck-vSphere/network
+[issues]:https://github.com/alanrenouf/vCheck-vSphere/issues
+
 [Join the VMware Code and #vCheck channel on slack and ask questions here!](https://code.vmware.com/slack/)
 
 ![Alt text](http://www.virtu-al.net/wp-content/uploads/2014/02/vCheck619.jpg "vCheck Sample")

@@ -1,6 +1,18 @@
 <a name="Title">
 # vCheck Daily Report for vSphere
-[![Stories in Ready](http://badge.waffle.io/alanrenouf/vCheck-vSphere.png?label=Ready)](http://waffle.io/alanrenouf/vCheck-vSphere) &nbsp;&nbsp; &nbsp; [![Join the chat at https://gitter.im/alanrenouf/vCheck-vSphere](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/alanrenouf/vCheck-vSphere?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![stars badge]][stars]
+[![forks badge]][forks]
+[![issues badge]][issues]
+
+[stars badge]:https://img.shields.io/github/stars/alanrenouf/vCheck-vSphere.svg
+[forks badge]:https://img.shields.io/github/forks/alanrenouf/vCheck-vSphere.svg
+[issues badge]:https://img.shields.io/github/issues/alanrenouf/vCheck-vSphere.svg
+
+[stars]:https://github.com/alanrenouf/vCheck-vSphere/stargazers
+[forks]:https://github.com/alanrenouf/vCheck-vSphere/network
+[issues]:https://github.com/alanrenouf/vCheck-vSphere/issues
+
+[Join the VMware Code and #vCheck channel on slack and ask questions here!](https://code.vmware.com/slack/)
 
 ![Alt text](http://www.virtu-al.net/wp-content/uploads/2014/02/vCheck619.jpg "vCheck Sample")
 
@@ -23,20 +35,18 @@
 
 vCheck is a PowerShell HTML framework script, the script is designed to run as a scheduled task before you get into the office to present you with key information via an email directly to your inbox in a nice easily readable format.
 
-This script picks on the key known issues and potential issues scripted as plugins for various technologies written as powershell scripts and reports it all in one place so all you do in the morning is check your email.
+This script picks on the key known issues and potential issues scripted as plugins for various technologies written as Powershell scripts and reports it all in one place so all you do in the morning is check your email.
 
 One of they key things about this report is if there is no issue in a particular place you will not receive that section in the email, for example if there are no datastores with less than 5% free space (configurable) then the disk space section in the virtual infrastructure version of this script, it will not show in the email, this ensures that you have only the information you need in front of you when you get into the office.
 
-
 This script is not to be confused with an Audit script, although the reporting framework can also be used for auditing scripts too.  I don't want to remind you that you have 5 hosts and what there names are and how many CPUs they have each and every day as you don't want to read that kind of information unless you need it, this script will only tell you about problem areas with your infrastructure.
 
-This script is not to be confused with an Audit script, although the reporting framework can also be used for auditing scripts too. I don't want to remind you that you have 5 hosts and what there names are and how many CPUs they have each and every day as you don't want to read that kind of information unless you need it, this script will only tell you about problem areas with your infrastructure.
 
 <a name="Features">
 # What is checked for in the vSphere version ?
 [*Back to top*](#Title)
 
-The following items are included as part of the vCheck vSphere download, they are included as vCheck Plugins and can be removed or altered very easily by editing the specific plugin file which contains the data.  vCheck Plugins are found under the Plugins folder.
+The following items are included as part of the vCheck vSphere download, they are included as vCheck Plugins and can be removed or altered very easily by editing the specific plugin file which contains the data. vCheck Plugins are found under the Plugins folder.
 
 - General Details
 - Number of Hosts
@@ -99,13 +109,13 @@ Copy the vCheck files to the desired location. Run the script `vCheckUtils.ps1` 
 # Enhancements
 [*Back to top*](#Title)
 
-* **Unit Testing / CI** - We are working on full support for [Pester](https://github.com/pester/Pester/blob/master/README.md) tests, which will help automate code validation. We will start small and work to provide as much documentation as we can to help with integration. 
+* **Unit Testing / CI** - We are working on full support for [Pester](https://github.com/pester/Pester/blob/master/README.md) tests, which will help automate code validation. We will start small and work to provide as much documentation as we can to help with integration.
 
-* **Module Support** - We are looking at our options to convert some, or all of the plugins to PowerShell modules. This will make things much easier to version and track, individually. Additionally, if we convert vCheck, itself, to a module, we open our options to support publishing to the [PowerShell Gallery](https://www.powershellgallery.com/), or at least providing users and organizations a standard platform to distrubute it. Again, these options are currently under review. 
+* **Module Support** - We are looking at our options to convert some, or all of the plugins to PowerShell modules. This will make things much easier to version and track, individually. Additionally, if we convert vCheck, itself, to a module, we open our options to support publishing to the [PowerShell Gallery](https://www.powershellgallery.com/), or at least providing users and organizations a standard platform to distribute it. Again, these options are currently under review.
 
 * **Settings GUI** - A settings GUI would be a basic form that would allow a user to view/set/change current vCheck configuration settings, without the complexity of settings values from within a file. This initiative is currently in development.
- 
-In the meantime, don't hessitate to pop over to [![Join the chat at https://gitter.im/alanrenouf/vCheck-vSphere](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/alanrenouf/vCheck-vSphere?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) and join in on active conversations about anything you see, or don't see, here!
+
+In the meantime, don't hesitate to pop over to the [#vCheck channel on slack](https://code.vmware.com/slack/) and join in on active conversations about anything you see- or don't see- here!
 
 <a name="ReleaseNotes">
 # Release Notes
@@ -181,14 +191,14 @@ Settings to define two variables
   ...     
   # End of Settings
   ```
-  
+
 ### Required variables
 Each plugin **must** define the following variables:
 $Title - The display name of the plugin
 $Header - the header of the plugin in the report
 $Display - The format of the plugin (See Content section)
 $Author - The author's name
-$PluginVersion - Version of the plugin 
+$PluginVersion - Version of the plugin
 $PluginCategory - The Category of the plugin
 
 ### Content
@@ -221,17 +231,17 @@ Since v6.16, vCheck has supported Table formatting rules in plugins. This allows
 
 ### Using Formatting Rules
 
-To use formatting rules, a `$TableFormat` variable must be defined in the module. 
+To use formatting rules, a `$TableFormat` variable must be defined in the module.
 
 The `$TableFormat` variable is a Hastable, with the key being the "column" of the table that the rule should apply to.
 
-The Value of the Hashtable is an array of rule. Each rule is a hashtable, with the Key being the expression to evaluate, and the value containing the formatting options. 
+The Value of the Hashtable is an array of rule. Each rule is a hashtable, with the Key being the expression to evaluate, and the value containing the formatting options.
 
 ### Formatting options
 
-The Formatting options are made up of two comma-separated values: 
- 1. The scope of the formatting rule - "Row" to apply to the entire row, or "Cell" to only apply to that particular cell. 
- 2. A pipe-separated HTML attribute, and value. E.g. class|green to apply the "green" class to the HTML element specified in number 1. 
+The Formatting options are made up of two comma-separated values:
+ 1. The scope of the formatting rule - "Row" to apply to the entire row, or "Cell" to only apply to that particular cell.
+ 2. A pipe-separated HTML attribute, and value. E.g. class|green to apply the "green" class to the HTML element specified in number 1.
 
 ### Examples
 
@@ -239,16 +249,16 @@ The Formatting options are made up of two comma-separated values:
 
 Assume you have a CSS class named "green", which you want to apply to any compliant objects. Similarly, you have a "red" class that you wish to use to highlight non-compliant objects. We would define the formatting rules as follows:
 
-`$TableFormat = @{"Compliant" = @(@{ "-eq $true" = "Cell,class|green"; }, @{ "-eq$false" = "Cell,class|red" })}` 
+`$TableFormat = @{"Compliant" = @(@{ "-eq $true" = "Cell,class|green"; }, @{ "-eq$false" = "Cell,class|red" })}`
 
-Here we can see two rules; the first checks if the value in the Compliant column is equal to $true, in which case it applies the "green" class to the table cell (i.e. 
-element). The second rule applies when the compliant column is equal to $false, and applied the "red" class. 
+Here we can see two rules; the first checks if the value in the Compliant column is equal to $true, in which case it applies the "green" class to the table cell (i.e.
+element). The second rule applies when the compliant column is equal to $false, and applied the "red" class.
 
 #### Example 2
 
 Suppose you now want to run a report on Datastores. You wish to highlight datastores with less than 25% free space as "warning", those with free space less than 15% as "critical". To make them stand out more, you want to highlight the entire row on the report. You also wish to highlight datastores with a capacity less than 500GB as silver.
 
-To achieve this, you could use the following: 
+To achieve this, you could use the following:
 ```
 $TableFormat = @{"PercentFree" = @(@{ "-le 25" = "Row,class|warning"; }, @{ "-le 15" = "Row,class|critical" }); "CapacityGB" = @(@{ "-lt 500" = "Cell,style|background-color: silver"})}
  ```
@@ -294,14 +304,14 @@ Each `<plugin>` element contains the plugin name.
 
 ### Config Example
   ```
-  <vCheck> 
-    <globalVariables>GlobalVariables.ps1</globalVariables> 
-    <plugins path="plugins-vSphere"> 
-       <plugin>00 Connection Plugin for vCenter.ps1</plugin> 
-       <plugin>03 Datastore Information.ps1</plugin> 
-       <plugin>11 VMs with over CPU Count LOL WRONG PATH.ps1</plugin> 
-       <plugin>99 VeryLastPlugin Used to Disconnect.ps1</plugin> 
-    </plugins> 
+  <vCheck>
+    <globalVariables>GlobalVariables.ps1</globalVariables>
+    <plugins path="plugins-vSphere">
+       <plugin>00 Connection Plugin for vCenter.ps1</plugin>
+       <plugin>03 Datastore Information.ps1</plugin>
+       <plugin>11 VMs with over CPU Count LOL WRONG PATH.ps1</plugin>
+       <plugin>99 VeryLastPlugin Used to Disconnect.ps1</plugin>
+    </plugins>
   </vCheck>
   ```
 ## Export/Import Settings

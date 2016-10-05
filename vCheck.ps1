@@ -260,7 +260,10 @@ Function Get-HTMLTable {
 	
 	# Use an XML object for ease of use
 	$XMLTable = [xml]($content | ConvertTo-Html -Fragment)
+    $XMLTable.table.RemoveChild($XMLTable.table.colgroup) | out-null
 	$XMLTable.table.SetAttribute("width", "100%")
+
+	$ActiveBlock = $false
 	
 	# If only one column, fix up the table header
 	if (($content | Get-Member -MemberType Properties).count -eq 1)
@@ -317,11 +320,60 @@ Function Get-HTMLTable {
 										$XMLTable.table.tr[$RowN].selectSingleNode("td[$($ColN + 1)]").SetAttribute($RuleActions[0], $RuleActions[1])
 									}
 								}
+								"BegintbodyBlock" {
+									if ($ActiveBlock -eq $true) {
+										$NewElement = $XMLTable.CreateElement("tbody")
+										$XMLTable.table.selectSingleNode("tr[$($RowN+1)]").PrependChild($NewElement) | Out-Null
+										$ActiveBlock = $false
+									}
+
+									$ActiveBlock = $true
+									$NewElement = $XMLTable.CreateElement("tbody")
+									$BlockName = "Block" + $RowN
+									$ActiveAnchor = $false
+
+									for ($RuleActionNum = 0; $RuleActions[$RuleActionNum]; $RuleActionNum++) {
+										if ($RuleActions[$RuleActionNum] -eq "a") {
+											if ($ActiveAnchor -eq $false) {
+												$NewAnchor = $XMLTable.CreateElement("a")
+												$ActiveAnchor = $true
+											}
+
+											$RuleActionNum++
+											$RuleActions[$($RuleActionNum+1)] = $RuleActions[$($RuleActionNum+1)] -replace "UID", $BlockName
+											$NewAnchor.SetAttribute($RuleActions[$RuleActionNum], $RuleActions[$($RuleActionNum+1)])
+										} else {
+											$RuleActions[$($RuleActionNum+1)] = $RuleActions[$($RuleActionNum+1)] -replace "UID", $BlockName
+											$NewElement.SetAttribute($RuleActions[$RuleActionNum], $RuleActions[$($RuleActionNum+1)])
+										}
+
+										$RuleActionNum++
+									}
+
+									if ($ActiveAnchor -eq $true) {
+										$XMLTable.table.tr[$RowN].selectSingleNode("td[$($ColN+1)]").PrependChild($NewAnchor) | Out-Null
+									}
+
+									$XMLTable.table.selectSingleNode("tr[$($RowN+1)]").AppendChild($NewElement) | Out-Null
+								}
+								"EndtbodyBlock" {
+									if ($ActiveBlock -eq $true) {
+										$NewElement = $XMLTable.CreateElement("tbody")
+										$XMLTable.table.selectSingleNode("tr[$($RowN+1)]").PrependChild($NewElement) | Out-Null
+										$ActiveBlock = $false
+									}
+								}
 							}
 						}
 					}
 				}
 			}
+		}
+		if ($ActiveBlock -eq $true) {
+			$RowN = $XMLTable.table.tr.count - 1
+			$NewElement = $XMLTable.CreateElement("tbody")
+			$XMLTable.table.selectSingleNode("tr[$($RowN+1)]").AppendChild($NewElement) | Out-Null
+			$ActiveBlock = $false
 		}
 	}
 	return (Format-HTMLEntities ([string]($XMLTable.OuterXml)))

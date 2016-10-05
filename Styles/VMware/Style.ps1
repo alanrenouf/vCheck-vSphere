@@ -126,6 +126,18 @@ $ReportHTML = @"
          .warning { background: #FFFBAA !important }
          .critical { background: #FFDDDD !important }
       </style>
+      <script type='text/javascript'>
+          function showHideBlock(blockId) {
+              block = document.getElementById(blockId);
+              if (block.style.display == 'none') {
+                  block.style.display = '';
+              }
+              else {
+                  block.style.display = 'none';
+              }
+              return false;
+          }
+      </script>
    </head>
    <body style="padding: 0 10px; margin: 0px; font-family:Arial, Helvetica, sans-serif; ">
       <a name="top" />

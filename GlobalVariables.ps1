@@ -41,6 +41,8 @@ $ListEnabledPluginsFirst = $true
 $TimeToRun = $true
 # Report on plugins that take longer than the following amount of seconds
 $PluginSeconds = 30
+# Specify the location to save the vCenter credentials (with the password encrypted as a SecureString) on disk
+$vCenterCredentialsFile = "${ScriptPath}\vCenterCreds.xml"
 # End of Settings
 
 # End of Global Variables

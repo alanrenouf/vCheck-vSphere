@@ -11,9 +11,6 @@ $PluginCategory = "vSphere"
 $MNDoNotInclude = "VM1_*|VM2_*"
 # End of Settings
 
-# Update settings where there is an override
-$MNDoNotInclude = Get-vCheckSetting $Title "MNDoNotInclude" $MNDoNotInclude
-
 ($FullVM | Where {$_.Runtime.PowerState -eq 'poweredOn' -AND $_.Name -notmatch $MNDoNotInclude -AND $_.Guest.HostName -ne "" -AND $_.Guest.HostName -notmatch $_.Name }) |
    foreach {
       $vmguest = $_
@@ -37,7 +34,6 @@ $MNDoNotInclude = Get-vCheckSetting $Title "MNDoNotInclude" $MNDoNotInclude
 20141002 monahancj - Added filter to exclude powered off VMs.  Because powered off VMs aren't running the VMtools
                      to get the guest host name it report as null and then potentially a false positive for a name
                      mismatch.
-
                      Added the columns Cluster and Folder, and sorted by folder and VM name, to make it easier to
                      find a problem VM and decide if there is an urgent problem.  For instance, I'm not gong to 
                      worry about a misnamed VM in the folder "testingstuff".

@@ -1,9 +1,22 @@
+$Title = "QuickStats Capacity Planning"
+$Header = "QuickStats Capacity Planning"
+$Comments = "The following gives brief capacity information for each cluster based on QuickStats CPU/Mem usage and counting for HA failover requirements"
+$Display = "Table"
+$Author = "Raphael Schitz, Frederic Martin"
+$PluginVersion = 1.7
+$PluginCategory = "vSphere"
+
+
 # Start of Settings 
 # Max CPU usage for non HA cluster
 $limitResourceCPUClusNonHA = 0.6
 # Max MEM usage for non HA cluster
 $limitResourceMEMClusNonHA = 0.6
 # End of Settings
+
+# Update settings where there is an override
+$limitResourceCPUClusNonHA = Get-vCheckSetting $Title "limitResourceCPUClusNonHA" $limitResourceCPUClusNonHA
+$limitResourceMEMClusNonHA = Get-vCheckSetting $Title "limitResourceMEMClusNonHA" $limitResourceMEMClusNonHA
 
 $capacityinfo = @()
 foreach ($cluv in ($clusviews | Where {$_.Summary.NumHosts -gt 0 } | Sort Name)) {
@@ -62,11 +75,3 @@ foreach ($cluv in ($clusviews | Where {$_.Summary.NumHosts -gt 0 } | Sort Name))
 }
 
 $capacityinfo | Sort Datacenter, ClusterName
-
-$Title = "QuickStats Capacity Planning"
-$Header = "QuickStats Capacity Planning"
-$Comments = "The following gives brief capacity information for each cluster based on QuickStats CPU/Mem usage and counting for HA failover requirements"
-$Display = "Table"
-$Author = "Raphael Schitz, Frederic Martin"
-$PluginVersion = 1.7
-$PluginCategory = "vSphere"

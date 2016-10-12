@@ -1,9 +1,21 @@
+$Title = "Host Profile Compliance"
+$Header = "List of host profiles and compliance status"
+$Comments = "Host profiles are useful for ensuring hosts are configured in a consistent manner."
+$Display = "Table"
+$Author = "John Sneddon"
+$PluginVersion = 1.2
+$PluginCategory = "vSphere"
+
 # Start of Settings 
 # Show detailed information in report
 $ShowDetail = $true
 # Show compliant servers
 $ShowCompliant = $false
 # End of Settings
+
+# Update settings where there is an override
+$ShowDetail = Get-vCheckSetting $Title "ShowDetail" $ShowDetail
+$ShowCompliant = Get-vCheckSetting $Title "ShowCompliant" $ShowCompliant
 
 # Add resources for report
 Add-ReportResource -cid "Error" -Type "SystemIcons" -ResourceData "Error"
@@ -52,14 +64,6 @@ foreach ($Profile in $HostProfiles) {
       }
    }
 }
-
-$Title = "Host Profile Compliance"
-$Header = "List of host profiles and compliance status"
-$Comments = ""
-$Display = "Table"
-$Author = "John Sneddon"
-$PluginVersion = 1.2
-$PluginCategory = "vSphere"
 
 # Table formatting rules - requires formatting modification
 $TableFormat = @{"Compliant" = @(@{ "-eq `$true"     = "Cell,cid|OK|16x16"; },

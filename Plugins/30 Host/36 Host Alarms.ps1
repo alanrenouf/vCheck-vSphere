@@ -1,3 +1,11 @@
+$Title = "Host Alarms"
+$Header = "Host(s) Alarm(s): [count]"
+$Comments = "The following alarms have been registered against hosts in vCenter"
+$Display = "Table"
+$Author = "Alan Renouf, John Sneddon"
+$PluginVersion = 1.2
+$PluginCategory = "vSphere"
+
 # Start of Settings 
 # End of Settings 
 
@@ -13,14 +21,6 @@ foreach ($HostsView in ($HostsViews | Where {$_.TriggeredAlarmState} | Sort-Obje
       } | Select Object, Alarm, Status, Time
    }
 }
-    
-$Title = "Host Alarms"
-$Header = "Host(s) Alarm(s): [count]]"
-$Comments = "The following alarms have been registered against hosts in vCenter"
-$Display = "Table"
-$Author = "Alan Renouf, John Sneddon"
-$PluginVersion = 1.2
-$PluginCategory = "vSphere"
 
-$TableFormat = @{"Status" = @(@{ "-eq 'yellow'"     = "Row,class|warning"; },
+$TableFormat = @{"Status" = @(@{ "-eq 'yellow'"  = "Row,class|warning"; },
                               @{ "-eq 'red'"     = "Row,class|critical" })}

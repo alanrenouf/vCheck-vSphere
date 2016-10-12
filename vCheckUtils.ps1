@@ -223,11 +223,11 @@ function Add-vCheckPlugin
             $filename = [System.Web.HttpUtility]::UrlDecode($filename)
             try
             {
-                Write-Host "Downloading File..."
+                Write-Warning "Downloading File..."
                 $webClient = new-object system.net.webclient
                 $webClient.DownloadFile($pluginObject.location,"$vCheckPath\Plugins\$filename")
-                Write-Host -ForegroundColor green "The plugin `"$($pluginObject.name)`" has been installed to $vCheckPath\Plugins\$filename"
-                Write-Host -ForegroundColor green "Be sure to check the plugin for additional configuration options."
+                Write-Warning "The plugin `"$($pluginObject.name)`" has been installed to $vCheckPath\Plugins\$filename"
+                Write-Warning "Be sure to check the plugin for additional configuration options."
 
             }
             catch [System.Net.WebException]
@@ -386,17 +386,18 @@ Function Get-PluginSettings {
 		$Line = $OriginalLine		
 		do {
 			$Question = $file[$Line]
-			$Line ++
-			$Split= ($file[$Line]).Split("=")
+			$Line++
+			$Split = ($file[$Line]).Split("=")
 			$Var = $Split[0]
 			$CurSet = $Split[1]			
 			$settings = @{}
 			$settings.filename = $filename
 			$settings.question = $Question
+            $settings.varname = $Var.Trim()
 			$settings.var = $CurSet.Trim()
 			$currentsetting = New-Object -TypeName PSObject -Prop $settings
 			$psettings += $currentsetting
-			$Line ++ 
+			$Line++ 
 		} Until ( $Line -ge ($EndLine -1) )
 	}
 	$psettings
@@ -430,19 +431,19 @@ Function Set-PluginSettings {
 	$OriginalLine = ($file | Select-String -SimpleMatch "# Start of Settings").LineNumber
 	$EndLine = ($file | Select-String -SimpleMatch "# End of Settings").LineNumber
 	$PluginName = ($filename.split("\")[-1]).split(".")[0]
-	Write-Host "`nProcessing - $PluginName" -foreground $host.PrivateData.WarningForegroundColor -background $host.PrivateData.WarningBackgroundColor
+	Write-Warning "`nProcessing - $PluginName"
 	if (!(($OriginalLine +1) -eq $EndLine)) {
 		$Array = @()
 		$Line = $OriginalLine
 		do {
-			$Question = $file[$Line]
+			$Question = $file[$Line].Trim()
 			$Found = $false
 			$Line ++
 			$Split= ($file[$Line]).Split("=")
-			$Var = $Split[0]
+			$Var = $Split[0].Trim()
 			$CurSet = $Split[1].Trim()
 			Foreach ($setting in $settings) {
-				If ($question -eq $setting.question) {	
+				If ($question -eq $setting.question.Trim()) {	
 					$NewSet = $setting.var
 					$Found = $true
 				}
@@ -462,8 +463,16 @@ Function Set-PluginSettings {
 					$NewSet = "`"$NewSet`""
 				}
 			}
+            if ($NewSet -ne $CurSet) {
+                Write-Warning "Plugin setting changed:"
+                Write-Warning "    Plugin:    $PluginName"
+                Write-Warning "    Question:  $Question"
+                Write-Warning "    Variable:  $Var"
+                Write-Warning "    Old Value: $CurSet"
+                Write-Warning "    New Value: $NewSet"
+            }
 			$Array += $Question
-			$Array += "$Var= $NewSet"
+			$Array += "$Var = $NewSet"
 			$Line ++ 
 		} Until ( $Line -ge ($EndLine -1) )
 		$Array += "# End of Settings"
@@ -517,6 +526,55 @@ Function Export-vCheckSettings {
 	$Export | Select filename, question, var | Export-Csv -NoTypeInformation $outfile
 }
 
+
+
+ <#
+.SYNOPSIS
+   Retrieves configured vCheck plugin settings and exports them to XML.
+
+.DESCRIPTION
+   Export-vCheckSettings will retrieve the settings from each plugin and export them to a XML file.
+   By default, the XML file will be created in the vCheck folder named vCheckSettings.xml.
+   You can also specify a custom path using -outfile.
+   Once the export has been created the settings can then be imported via Import-vCheckSettingsXML.
+     
+.PARAMETER outfile
+   Full path to XML file
+
+.EXAMPLE
+   Export-vCheckSettings
+   Creates vCheckSettings.xml file in default location (vCheck folder)
+
+.EXAMPLE
+   Export-vCheckSettingsXML -outfile "E:\vCheck-vCenter01.xml"
+   Creates XML file in custom location E:\vCheck-vCenter01.xml
+ #>
+Function Export-vCheckSettingsXML {
+	Param
+    (
+        [Parameter(mandatory=$false)] [String]$outfile = "$vCheckPath\vCheckSettings.xml"
+    )
+	
+	$Export = @()
+	$GlobalVariables = "$vCheckPath\GlobalVariables.ps1"
+	$Export = Get-PluginSettings -Filename $GlobalVariables
+	Foreach ($plugin in (Get-ChildItem -Path $vCheckPath\Plugins\* -Include *.ps1 -Recurse)) { 
+		$Export += Get-PluginSettings -Filename $plugin.Fullname
+	}
+
+    $xml = "<vCheck>`n"
+    foreach ($e in $Export) {
+        $xml += "`t<setting>`n"
+        $xml += "`t`t<filename>$($e.Filename)</filename>`n"
+        $xml += "`t`t<question>$($e.Question)</question>`n"
+        $xml += "`t`t<varname>$($e.VarName)</varname>`n"
+        $xml += "`t`t<var>$($e.Var)</var>`n"
+        $xml += "`t</setting>`n"
+    }
+    $xml += "</vCheck>"
+    $xml | Out-File -FilePath $outfile -Encoding utf8
+}
+
  <#
 .SYNOPSIS
    Retreives settings from CSV and applies them to vCheck.
@@ -559,7 +617,52 @@ Function Import-vCheckSettings {
 		$settings = $Import | Where {($_.filename).Split("\")[-1] -eq ($plugin.Fullname).Split("\")[-1]}
 		Set-PluginSettings -Filename $plugin.Fullname -Settings $settings
 	}
-	Write-Host "`nImport Complete!`n" -foreground $host.PrivateData.WarningForegroundColor -background $host.PrivateData.WarningBackgroundColor
+	Write-Warning "`nImport Complete!`n"
+}
+
+ <#
+.SYNOPSIS
+   Retreives settings from XML and applies them to vCheck.
+
+.DESCRIPTION
+   Import-vCheckSettingsXML will retrieve the settings exported via Export-vCheckSettingsXML, or via .\vCheck.ps1 -GUIConfig
+   and apply them to the current vCheck folder.
+   By default, the XML file is expected to be located in the vCheck folder named vCheckSettings.csv.
+   You can also specify a custom path using -xmlfile.
+   If the XML file is not found you will be asked to provide the path.
+   The Setup Wizard will be disabled.
+   You will be asked any questions not found in the export. This would occur for new settings introduced
+   enabling a quick update between versions.
+     
+.PARAMETER csvfile
+   Full path to XML file
+
+.EXAMPLE
+   Import-vCheckSettingsXML
+   Imports settings from vCheckSettings.xml file in default location (vCheck folder)
+
+.EXAMPLE
+   Import-vCheckSettingsXML -xmlfile "E:\vCheck-vCenter01.xml"
+   Imports settings from XML file in custom location E:\vCheck-vCenter01.xml
+ #>
+Function Import-vCheckSettingsXML {
+	Param
+    (
+        [Parameter(mandatory=$false)] [String]$xmlFile = "$vCheckPath\vCheckSettings.xml"
+    )
+	
+	If (!(Test-Path $xmlFile)) {
+		$xmlFile = Read-Host "Enter full path to settings XML file you want to import"
+	}
+	$Import = [xml](Get-Content $xmlFile)
+	$GlobalVariables = "$vCheckPath\GlobalVariables.ps1"
+	$settings = $Import.vCheck.Setting | Where {($_.filename).Split("\")[-1] -eq ($GlobalVariables).Split("\")[-1]}
+	Set-PluginSettings -Filename $GlobalVariables -Settings $settings -GB
+	Foreach ($plugin in (Get-ChildItem -Path "$vCheckPath\Plugins\" -Filter "*.ps1" -Recurse)) { 
+		$settings = $Import.vCheck.Setting | Where {($_.filename).Split("\")[-1] -eq ($plugin.Fullname).Split("\")[-1]}
+		Set-PluginSettings -Filename $plugin.Fullname -Settings $settings
+	}
+	Write-Warning "`nImport Complete!`n"
 }
 
 Function Get-vCheckCommand {

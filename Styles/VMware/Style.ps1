@@ -19,9 +19,18 @@ Add-ReportResource "Header-vCheck" ($StylePath + "\Header.jpg") -Used $true
 Add-ReportResource "Header-VMware" ($StylePath + "\Header-vmware.png") -Used $true
 
 # Hash table of key/value replacements
-$StyleReplace = @{"_HEADER_" = ("'$reportHeader'");
-                  "_CONTENT_" = "Get-ReportContentHTML";
-                  "_TOC_" = "Get-ReportTOC"}
+if ($GUIConfig) {
+    $StyleReplace = @{"_HEADER_" = ("'$reportHeader'");
+                      "_SCRIPT_" = "Get-ConfigScripts";
+                      "_CONTENT_" = "Get-ReportContentHTML";
+                      "_CONFIGEXPORT_" = ("'<div style=""text-align:center;""><button type=""button"" onclick=""createCSV()"">Export Settings</button></div>'")
+                      "_TOC_" = ("''")}
+} else {
+    $StyleReplace = @{"_HEADER_" = ("'$reportHeader'");
+                      "_CONTENT_" = "Get-ReportContentHTML";
+                      "_CONFIGEXPORT_" = ("''")
+                      "_TOC_" = "Get-ReportTOC"}
+}
 
 #region Function Definitions
 <#
@@ -122,10 +131,17 @@ $ReportHTML = @"
                font-family: Tahoma, sans-serif;
                font-size: 8pt;
          }
+         input {
+            float:right;
+            clear:both;
+         }
          .pluginContent td { padding: 5px; }
          .warning { background: #FFFBAA !important }
          .critical { background: #FFDDDD !important }
       </style>
+      <script>
+        _SCRIPT_
+      </script>
    </head>
    <body style="padding: 0 10px; margin: 0px; font-family:Arial, Helvetica, sans-serif; ">
       <a name="top" />
@@ -143,6 +159,7 @@ $ReportHTML = @"
       <table width='100%'><tr><td style='background-color: #0A77BA; border: 1px solid #0A77BA; vertical-align: middle; height: 30px; text-indent: 10px; font-family: Tahoma, sans-serif; font-weight: bold; font-size: 8pt; color: #FFFFFF;'>_HEADER_</td></tr></table>
       <div>_TOC_</div>
       _CONTENT_
+      _CONFIGEXPORT_
    <!-- CustomHTMLClose -->
    <div style='height: 10px; font-size: 10px;'>&nbsp;</div>
    <table width='100%'><tr><td style='font-size:14px; font-weight:bold; height: 25px; text-align: center; vertical-align: middle; background-color:#0A77BA; color: white;'>vCheck v$($vCheckVersion) by <a href='http://virtu-al.net' sytle='color: white;'>Alan Renouf</a> generated on $($ENV:Computername) on $($Date.ToLongDateString()) at $($Date.ToLongTimeString())</td></tr></table>

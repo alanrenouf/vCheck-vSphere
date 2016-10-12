@@ -14,7 +14,7 @@
 
 [Join the VMware Code and #vCheck channel on slack and ask questions here!](https://code.vmware.com/slack/)
 
-![Alt text](http://www.virtu-al.net/wp-content/uploads/2014/02/vCheck619.jpg "vCheck Sample")
+![Alt text](https://vcheck.report/samples/vCheck-vSphere_Screenshot.PNG "vCheck Sample")
 
 |Navigation|
 |-----------------|

@@ -30,7 +30,7 @@
 .NOTES 
    File Name  : vCheck.ps1 
    Author     : Alan Renouf - @alanrenouf
-   Version    : 6.23
+   Version    : 6.24
 
    Thanks to all who have commented on my blog to help improve this project
    all beta testers and previous contributors to this script.
@@ -54,6 +54,7 @@
 .PARAMETER job
    This parameter lets you specify an xml config file for this invokation
 #>
+#Requires -Version 3.0
 [CmdletBinding()]
 param (
 	[Switch]$config,

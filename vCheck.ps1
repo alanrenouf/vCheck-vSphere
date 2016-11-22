@@ -125,6 +125,20 @@ function Write-CustomOut ($Details) {
 	Write-OutPut "[$($LogDate)] $Details"
 }
 
+<# Placeholder for now, just return the setting passed to it. Eventually this
+   will be used for new settings handling #>
+function Get-vCheckSetting
+{
+   param 
+   (
+      [string]$Module,
+      [string]$Setting,
+      $default
+   )
+   
+   return $default
+}
+
 <# Search $file_content for name/value pair with ID_Name and return value #>
 Function Get-ID-String ($file_content, $ID_name) {
 	if ($file_content | Select-String -Pattern "\$+$ID_name\s*=") {

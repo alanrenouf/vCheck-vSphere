@@ -1,3 +1,11 @@
+$Title = "s/vMotion Information"
+$Header = "s/vMotion Information (Over $vMotionAge Days Old) : $(@($Motions).count)"
+$Comments = "s/vMotions and how long they took to migrate between hosts and datastores"
+$Display = "Table"
+$Author = "Alan Renouf"
+$PluginVersion = 1.2
+$PluginCategory = "vSphere"
+
 # Start of Settings 
 # Set the number of days to go back and check for s/vMotions
 $vMotionAge = 5
@@ -6,6 +14,11 @@ $IncludevMotions = $true;
 # Include Storage vMotions in report
 $IncludeSvMotions = $true;
 # End of Settings
+
+# Update settings where there is an override
+$vMotionAge = Get-vCheckSetting $Title "vMotionAge" $vMotionAge
+$IncludevMotions = Get-vCheckSetting $Title "IncludevMotions" $IncludevMotions
+$IncludeSvMotions = Get-vCheckSetting $Title "IncludeSvMotions" $IncludeSvMotions
 
 # Search for any vmotion-related events
 $EventFilterSpec = New-Object VMware.Vim.EventFilterSpec
@@ -45,13 +58,5 @@ foreach($vmotion in ($vmotions | Sort-object CreatedTime | Group-Object ChainID)
 if (-not $IncludevMotions) { $Motions = $Motions | Where { $_.Type -ne "vMotion" }}
 if (-not $IncludeSvMotions) { $Motions = $Motions | Where { $_.Type -ne "SvMotion" }}
 $Motions
-
-$Title = "s/vMotion Information"
-$Header = "s/vMotion Information (Over $vMotionAge Days Old) : $(@($Motions).count)"
-$Comments = "s/vMotions and how long they took to migrate between hosts and datastores"
-$Display = "Table"
-$Author = "Alan Renouf"
-$PluginVersion = 1.2
-$PluginCategory = "vSphere"
 
 Remove-Variable Motions, EventFilterSpec, vmotions

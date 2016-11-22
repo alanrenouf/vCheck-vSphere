@@ -1,6 +1,6 @@
 $Title = "Connection settings for vCenter"
 $Author = "Alan Renouf"
-$PluginVersion = 1.7
+$PluginVersion = 1.8
 $Header = "Connection Settings"
 $Comments = "Connection Plugin for connecting to vSphere"
 $Display = "None"
@@ -9,9 +9,10 @@ $PluginCategory = "vSphere"
 # Start of Settings
 # Please Specify the address (and optional port) of the vCenter server to connect to [servername(:port)]
 $Server = "192.168.0.0"
-# Maximum number of samples to gather for events
-$MaxSampleVIEvent = 100000
 # End of Settings
+
+# Update settings where there is an override
+$Server = Get-vCheckSetting $Title "Server" $Server
 
 # Setup plugin-specific language table
 $pLang = DATA {
@@ -52,22 +53,22 @@ $Credfile = $ScriptPath + "\Windowscreds.xml"
 
 # Adding PowerCLI core snapin, also check if powerCLI module is alsready added
 if (!(get-module -name VMware.VimAutomation.Core -erroraction silentlycontinue)) {
-	if (!(get-pssnapin -name VMware.VimAutomation.Core -erroraction silentlycontinue)) {
-		add-pssnapin VMware.VimAutomation.Core -erroraction silentlycontinue
-	}
+   if (!(get-pssnapin -name VMware.VimAutomation.Core -erroraction silentlycontinue)) {
+      add-pssnapin VMware.VimAutomation.Core -erroraction silentlycontinue
+   }
 }
 
 $OpenConnection = $global:DefaultVIServers | where { $_.Name -eq $VIServer }
 if($OpenConnection.IsConnected) {
-	Write-CustomOut ( "{0}: {1}" -f $pLang.connReuse, $Server )
-	$VIConnection = $OpenConnection
+   Write-CustomOut ( "{0}: {1}" -f $pLang.connReuse, $Server )
+   $VIConnection = $OpenConnection
 } else {
-	Write-CustomOut ( "{0}: {1}" -f $pLang.connOpen, $Server )
-	$VIConnection = Connect-VIServer -Server $VIServer -Port $Port
+   Write-CustomOut ( "{0}: {1}" -f $pLang.connOpen, $Server )
+   $VIConnection = Connect-VIServer -Server $VIServer -Port $Port
 }
 
 if (-not $VIConnection.IsConnected) {
-	Write-Error $pLang.connError
+   Write-Error $pLang.connError
 }
 
 Write-CustomOut $pLang.custAttr
@@ -103,14 +104,14 @@ New-VIProperty -Name LastPoweredOffDate -ObjectType VirtualMachine -Value {(Get-
 New-VIProperty -Name LastPoweredOnDate -ObjectType VirtualMachine -Value {(Get-VMLastPoweredOnDate -vm $Args[0]).LastPoweredOnDate} | Out-Null
 
 New-VIProperty -Name PercentFree -ObjectType Datastore -Value {
-	param($ds)
-	[math]::Round(((100 * ($ds.FreeSpaceMB)) / ($ds.CapacityMB)),2)
+   param($ds)
+   [math]::Round(((100 * ($ds.FreeSpaceMB)) / ($ds.CapacityMB)),2)
 } -Force | Out-Null
 
 New-VIProperty -Name "HWVersion" -ObjectType VirtualMachine -Value {
-	param($vm)
+   param($vm)
 
-	$vm.ExtensionData.Config.Version.Substring(4)
+   $vm.ExtensionData.Config.Version.Substring(4)
 } -BasedOnExtensionProperty "Config.Version" -Force | Out-Null
 
 Write-CustomOut $pLang.collectVM
@@ -144,121 +145,121 @@ if ($ServiceInstance.Client.ServiceContent.About.OsType -eq "linux-x64"){ $VCSA 
 
 # Check for vSphere
 If ($VIVersion -ge 4){
-	$vSphere = $true
+   $vSphere = $true
 }
 
 if ($VIVersion -ge 5) {
-	Write-CustomOut $pLang.collectDDatastoreCluster
-	$DatastoreClustersView = Get-View -viewtype StoragePod
+   Write-CustomOut $pLang.collectDDatastoreCluster
+   $DatastoreClustersView = Get-View -viewtype StoragePod
 }
 
 <#   
 .SYNOPSIS  Returns vSphere events    
 .DESCRIPTION The function will return vSphere events. With
-	the available parameters, the execution time can be
-	improved, compered to the original Get-VIEvent cmdlet. 
+   the available parameters, the execution time can be
+   improved, compered to the original Get-VIEvent cmdlet. 
 .NOTES  Author:  Luc Dekens   
 .PARAMETER Entity
-	When specified the function returns events for the
-	specific vSphere entity. By default events for all
-	vSphere entities are returned. 
+   When specified the function returns events for the
+   specific vSphere entity. By default events for all
+   vSphere entities are returned. 
 .PARAMETER EventType
-	This parameter limits the returned events to those
-	specified on this parameter. 
+   This parameter limits the returned events to those
+   specified on this parameter. 
 .PARAMETER Start
-	The start date of the events to retrieve 
+   The start date of the events to retrieve 
 .PARAMETER Finish
-	The end date of the events to retrieve. 
+   The end date of the events to retrieve. 
 .PARAMETER Recurse
-	A switch indicating if the events for the children of
-	the Entity will also be returned 
+   A switch indicating if the events for the children of
+   the Entity will also be returned 
 .PARAMETER User
-	The list of usernames for which events will be returned 
+   The list of usernames for which events will be returned 
 .PARAMETER System
-	A switch that allows the selection of all system events. 
+   A switch that allows the selection of all system events. 
 .PARAMETER ScheduledTask
-	The name of a scheduled task for which the events
-	will be returned 
+   The name of a scheduled task for which the events
+   will be returned 
 .PARAMETER FullMessage
-	A switch indicating if the full message shall be compiled.
-	This switch can improve the execution speed if the full
-	message is not needed.   
+   A switch indicating if the full message shall be compiled.
+   This switch can improve the execution speed if the full
+   message is not needed.   
 .PARAMETER UseUTC
-	A switch indicating if the event shoukld remain in UTC or
-	local time.
+   A switch indicating if the event shoukld remain in UTC or
+   local time.
 .EXAMPLE
-	PS> Get-VIEventPlus -Entity $vm
+   PS> Get-VIEventPlus -Entity $vm
 .EXAMPLE
-	PS> Get-VIEventPlus -Entity $cluster -Recurse:$true
+   PS> Get-VIEventPlus -Entity $cluster -Recurse:$true
 #>
 function Get-VIEventPlus {
-	 
-	param(
-		[VMware.VimAutomation.ViCore.Impl.V1.Inventory.InventoryItemImpl[]]$Entity,
-		[string[]]$EventType,
-		[DateTime]$Start,
-		[DateTime]$Finish = (Get-Date),
-		[switch]$Recurse,
-		[string[]]$User,
-		[Switch]$System,
-		[string]$ScheduledTask,
-		[switch]$FullMessage = $false,
-		[switch]$UseUTC = $false
-	)
+    
+   param(
+      [VMware.VimAutomation.ViCore.Impl.V1.Inventory.InventoryItemImpl[]]$Entity,
+      [string[]]$EventType,
+      [DateTime]$Start,
+      [DateTime]$Finish = (Get-Date),
+      [switch]$Recurse,
+      [string[]]$User,
+      [Switch]$System,
+      [string]$ScheduledTask,
+      [switch]$FullMessage = $false,
+      [switch]$UseUTC = $false
+   )
 
-	process {
-		$eventnumber = 100
-		$events = @()
-		$eventMgr = Get-View EventManager
-		$eventFilter = New-Object VMware.Vim.EventFilterSpec
-		$eventFilter.disableFullMessage = ! $FullMessage
-		$eventFilter.entity = New-Object VMware.Vim.EventFilterSpecByEntity
-		$eventFilter.entity.recursion = &{if($Recurse){"all"}else{"self"}}
-		$eventFilter.eventTypeId = $EventType
-		if($Start -or $Finish){
-			$eventFilter.time = New-Object VMware.Vim.EventFilterSpecByTime
-			if($Start){
-				$eventFilter.time.beginTime = $Start
-			}
-			if($Finish){
-				$eventFilter.time.endTime = $Finish
-			}
-		}
-		if($User -or $System){
-			$eventFilter.UserName = New-Object VMware.Vim.EventFilterSpecByUsername
-			if($User){
-				$eventFilter.UserName.userList = $User
-			}
-			if($System){
-				$eventFilter.UserName.systemUser = $System
-			}
-		}
-		if($ScheduledTask){
-			$si = Get-View ServiceInstance
-			$schTskMgr = Get-View $si.Content.ScheduledTaskManager
-			$eventFilter.ScheduledTask = Get-View $schTskMgr.ScheduledTask |
-			where {$_.Info.Name -match $ScheduledTask} |
-			Select -First 1 |
-			Select -ExpandProperty MoRef
-		}
-		if(!$Entity){
-			$Entity = @(Get-Folder -NoRecursion)
-		}
-		$entity | %{
-			$eventFilter.entity.entity = $_.ExtensionData.MoRef
-			$eventCollector = Get-View ($eventMgr.CreateCollectorForEvents($eventFilter))
-			$eventsBuffer = $eventCollector.ReadNextEvents($eventnumber)
-			while($eventsBuffer){
-				$events += $eventsBuffer
-				$eventsBuffer = $eventCollector.ReadNextEvents($eventnumber)
-			}
-			$eventCollector.DestroyCollector()
-		}
-		if (-not $UseUTC)
-		{
-			$events | % { $_.createdTime = $_.createdTime.ToLocalTime() }
-		}
-		
-		$events
-	}
+   process {
+      $eventnumber = 100
+      $events = @()
+      $eventMgr = Get-View EventManager
+      $eventFilter = New-Object VMware.Vim.EventFilterSpec
+      $eventFilter.disableFullMessage = ! $FullMessage
+      $eventFilter.entity = New-Object VMware.Vim.EventFilterSpecByEntity
+      $eventFilter.entity.recursion = &{if($Recurse){"all"}else{"self"}}
+      $eventFilter.eventTypeId = $EventType
+      if($Start -or $Finish){
+         $eventFilter.time = New-Object VMware.Vim.EventFilterSpecByTime
+         if($Start){
+            $eventFilter.time.beginTime = $Start
+         }
+         if($Finish){
+            $eventFilter.time.endTime = $Finish
+         }
+      }
+      if($User -or $System){
+         $eventFilter.UserName = New-Object VMware.Vim.EventFilterSpecByUsername
+         if($User){
+            $eventFilter.UserName.userList = $User
+         }
+         if($System){
+            $eventFilter.UserName.systemUser = $System
+         }
+      }
+      if($ScheduledTask){
+         $si = Get-View ServiceInstance
+         $schTskMgr = Get-View $si.Content.ScheduledTaskManager
+         $eventFilter.ScheduledTask = Get-View $schTskMgr.ScheduledTask |
+         where {$_.Info.Name -match $ScheduledTask} |
+         Select -First 1 |
+         Select -ExpandProperty MoRef
+      }
+      if(!$Entity){
+         $Entity = @(Get-Folder -NoRecursion)
+      }
+      $entity | %{
+         $eventFilter.entity.entity = $_.ExtensionData.MoRef
+         $eventCollector = Get-View ($eventMgr.CreateCollectorForEvents($eventFilter))
+         $eventsBuffer = $eventCollector.ReadNextEvents($eventnumber)
+         while($eventsBuffer){
+            $events += $eventsBuffer
+            $eventsBuffer = $eventCollector.ReadNextEvents($eventnumber)
+         }
+         $eventCollector.DestroyCollector()
+      }
+      if (-not $UseUTC)
+      {
+         $events | % { $_.createdTime = $_.createdTime.ToLocalTime() }
+      }
+      
+      $events
+   }
 }

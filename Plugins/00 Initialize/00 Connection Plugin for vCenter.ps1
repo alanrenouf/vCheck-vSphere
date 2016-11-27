@@ -1,6 +1,6 @@
 $Title = "Connection settings for vCenter"
 $Author = "Alan Renouf"
-$PluginVersion = 1.8
+$PluginVersion = 1.9
 $Header = "Connection Settings"
 $Comments = "Connection Plugin for connecting to vSphere"
 $Display = "None"
@@ -51,11 +51,36 @@ else
 # Path to credentials file which is automatically created if needed
 $Credfile = $ScriptPath + "\Windowscreds.xml"
 
-# Adding PowerCLI core snapin, also check if powerCLI module is alsready added
-if (!(get-module -name VMware.VimAutomation.Core -erroraction silentlycontinue)) {
-   if (!(get-pssnapin -name VMware.VimAutomation.Core -erroraction silentlycontinue)) {
-      add-pssnapin VMware.VimAutomation.Core -erroraction silentlycontinue
-   }
+#
+# Adding PowerCLI core module/pssnapin
+#
+# Possibilities:
+# 1) PSSnpain (-le 5.8R1)
+# 2) Module + PSSnapin (-gt 5.8R1/-lt 6.5R1)
+# 3) Module (-ge 6.5R1)
+
+$pcliCore = 'VMware.VimAutomation.Core'
+
+$pssnapinPresent = $false
+$psmodulePresent = $false
+
+if(Get-Module -Name $pcliCore -ListAvailable){
+    $psmodulePresent = $true
+    if(!(Get-Module -Name $pcliCore)){
+        Import-Module -Name $pcliCore
+    }
+}
+
+if(Get-PSSnapin -Name $pcliCore -Registered -ErrorAction SilentlyContinue){
+    $pssnapinPresent = $true
+    if(!(Get-PSSnapin -Name $pcliCore -ErrorAction SilentlyContinue)){
+        Add-PSSnapin -Name $pcliCore
+    }
+}
+
+if(!$pssnapinPresent -and !$psmodulePresent){
+    Write-Error "Can't find PowerCLI. Is it installed?"
+    return
 }
 
 $OpenConnection = $global:DefaultVIServers | where { $_.Name -eq $VIServer }

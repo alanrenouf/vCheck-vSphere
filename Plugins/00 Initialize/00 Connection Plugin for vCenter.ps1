@@ -7,8 +7,6 @@ $Display = "None"
 $PluginCategory = "vSphere"
 
 # Start of Settings
-# Please Specify the address (and optional port) of the vCenter server to connect to [servername(:port)]
-$Server = "192.168.0.0"
 # Maximum number of samples to gather for events
 $MaxSampleVIEvent = 100000
 # End of Settings
@@ -113,14 +111,26 @@ New-VIProperty -Name "HWVersion" -ObjectType VirtualMachine -Value {
 	$vm.ExtensionData.Config.Version.Substring(4)
 } -BasedOnExtensionProperty "Config.Version" -Force | Out-Null
 
-Write-CustomOut $pLang.collectVM
-$VM = Get-VM | Sort Name
-Write-CustomOut $pLang.collectHost
-$VMH = Get-VMHost | Sort Name
-Write-CustomOut $pLang.collectCluster
-$Clusters = Get-Cluster | Sort Name
-Write-CustomOut $pLang.collectDatastore
-$Datastores = Get-Datastore | Sort Name
+if ( $DataCenter ) {
+	Write-CustomOut $pLang.collectVM
+	$VM = Get-VM -Location "$DataCenter" | Sort Name
+	Write-CustomOut $pLang.collectHost
+	$VMH = Get-VMHost -Location "$DataCenter" | Sort Name
+	Write-CustomOut $pLang.collectCluster
+	$Clusters = Get-Cluster -Location "$DataCenter" | Sort Name
+	Write-CustomOut $pLang.collectDatastore
+	$Datastores = Get-Datastore -Location "$DataCenter" | Sort Name
+ } else {
+	Write-CustomOut $pLang.collectVM
+	$VM = Get-VM | Sort Name
+	Write-CustomOut $pLang.collectHost
+	$VMH = Get-VMHost | Sort Name
+	Write-CustomOut $pLang.collectCluster
+	$Clusters = Get-Cluster | Sort Name
+	Write-CustomOut $pLang.collectDatastore
+	$Datastores = Get-Datastore | Sort Name
+}
+
 Write-CustomOut $pLang.collectDVM
 $FullVM = Get-View -ViewType VirtualMachine | Where {-not $_.Config.Template}
 Write-CustomOut $pLang.collectTemplate 

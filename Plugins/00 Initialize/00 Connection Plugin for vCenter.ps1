@@ -47,7 +47,7 @@ else
    $port = 443
 }
 
-# Path to credentials file which is automatically created if needed
+# Path to Windows credentials file which is automatically created if needed
 $Credfile = $ScriptPath + "\Windowscreds.xml"
 
 # Adding PowerCLI core snapin, also check if powerCLI module is alsready added
@@ -63,7 +63,14 @@ if($OpenConnection.IsConnected) {
 	$VIConnection = $OpenConnection
 } else {
 	Write-CustomOut ( "{0}: {1}" -f $pLang.connOpen, $Server )
-	$VIConnection = Connect-VIServer -Server $VIServer -Port $Port
+    if ( (Get-ChildItem $vCenterCredentialsFile).length -ne 0) {
+        $vCenterCredentials = Retrieve-vCenterCredentials($vCenterCredentialsFile)
+        $Credentials = new-object -typename System.Management.Automation.PSCredential -argumentlist $vCenterCredentials.Username,$vCenterCredentials.Password
+    	$VIConnection = Connect-VIServer -Server $VIServer -Port $Port -Credential $Credentials
+    }
+    else {   
+    	$VIConnection = Connect-VIServer -Server $VIServer -Port $Port
+    }
 }
 
 if (-not $VIConnection.IsConnected) {

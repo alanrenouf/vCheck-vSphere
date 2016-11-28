@@ -231,7 +231,7 @@ Function Invoke-Settings {
 				$out[$SetupLine] = '$SetupWizard = $False'				
 			}  # end if
 			
-			$out | Out-File $Filename
+			$out | Set-Content $Filename
 			
 		} # end if
 		
@@ -615,6 +615,37 @@ function Get-ReportResource {
 	}
 }
 
+<# Prompts for and stores vCenter credentials in a secure manner.
+   The username is saved in cleartext. The password is saved as a SecureString.
+   The output file is XML.
+ #>
+function Store-vCenterCredentials ($OutputFile)
+{
+    $NewCredential = Get-Credential -Message @"
+Enter the username and password for vCenter server '$Server'.
+These credentials will be stored securely at '$OutputFile'."
+"@
+    if ($NewCredential -eq $null) {
+        Write-Warning "No credentials were provided! Exiting."
+        Exit 1
+    }
+    $export = "" | Select-Object Username, EncryptedPassword 
+    $export.Username = $NewCredential.Username 
+    $export.EncryptedPassword = $NewCredential.Password | ConvertFrom-SecureString 
+    $export | Export-Clixml $OutputFile
+    Write-Host -foregroundcolor green "Credentials saved to: " -noNewLine 
+    Get-Item $OutputFile
+}
+
+<# Retrieves the securely stored vCenter credentials from a file on disk. #>
+function Retrieve-vCenterCredentials ($InputFile)
+{
+    $credentials = Import-Clixml $InputFile
+    $import = "" | Select-Object Username, Password 
+    $import.Username = $credentials.Username
+    $import.Password = $credentials.EncryptedPassword | ConvertTo-SecureString
+    Return $import
+}
 #endregion functions
 
 #region initialization
@@ -688,8 +719,7 @@ $SetupLine = $Setup++
 $SetupSetting = Invoke-Expression (($file[$SetupLine]).Split("="))[1]
 
 if ($SetupSetting -or $config) {
-	
-	Clear-Host
+    Clear-Host
 	
 	($lang.GetEnumerator() | Where-Object { $_.Name -match "setupMsg[0-9]*" } | Sort-Object Name) | ForEach-Object {		
 		Write-Warning -Message "$($_.value)"
@@ -703,6 +733,14 @@ if ($SetupSetting -or $config) {
 
 ## Include GlobalVariables and validate settings (at the moment just check they exist)
 . $GlobalVariables
+
+if ($SetupSetting -or $config) {
+    Store-vCenterCredentials($vCenterCredentialsFile)
+        
+    Write-Warning -Message "Configuration is complete. You can now re-run vCheck to use the stored configuration."
+
+    Exit 0;
+}
 
 $vcvars = @("SetupWizard", "reportHeader", "SMTPSRV", "EmailFrom", "EmailTo", "EmailSubject", "DisplaytoScreen", "SendEmail", "SendAttachment", "TimeToRun", "PluginSeconds", "Style", "Date")
 foreach ($vcvar in $vcvars) {

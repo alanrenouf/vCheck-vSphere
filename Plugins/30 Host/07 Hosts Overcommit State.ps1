@@ -1,5 +1,5 @@
 $Title = "Hosts Overcommit state"
-$Header = "Hosts overcommitting memory: [count]]"
+$Header = "Hosts overcommitting memory: [count]"
 $Comments = "Overcommitted hosts may cause issues with performance if memory is not issued when needed, this may cause ballooning and swapping"
 $Display = "Table"
 $Author = "Alan Renouf"

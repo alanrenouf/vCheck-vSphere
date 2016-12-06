@@ -17,12 +17,6 @@ $ForgedTransmitsPolicy = $true
 $MacChangesPolicy = $true
 # End of Settings
 
-# Changelog
-## 1.0 : Initial Release
-## 1.1 : Re-written for performance improvements
-## 1.2 : Added version check (Issue #71)
-## 1.3 add Get-vCheckSetting
-
 # Update settings where there is an override
 $vSwitchSecurityCheck = Get-vCheckSetting $Title "vSwitchSecurityCheck" $vSwitchSecurityCheck
 $AllowPromiscuousPolicy = Get-vCheckSetting $Title "AllowPromiscuousPolicy" $AllowPromiscuousPolicy
@@ -102,3 +96,10 @@ else {
    Write-Warning "PowerCLi version installed is lower than 5.1 Release 2"
    New-Object PSObject -Property @{"Message"="PowerCLi version installed is lower than 5.1 Release 2, please update to use this plugin"}
 }
+
+# Changelog
+## 1.0 : Initial Release
+## 1.1 : Re-written for performance improvements
+## 1.2 : Added version check (Issue #71)
+## 1.3 : Add Get-vCheckSetting
+## 1.4 : Fix Version checking for PowerCLI 6.5 - vSphere is no longer in the product name (Issue #514)

@@ -1,6 +1,6 @@
 $Title = "Connection settings for vCenter"
 $Author = "Alan Renouf"
-$PluginVersion = 1.9
+$PluginVersion = 1.10
 $Header = "Connection Settings"
 $Comments = "Connection Plugin for connecting to vSphere"
 $Display = "None"
@@ -33,6 +33,7 @@ $pLang = DATA {
       collectDCluster = Collecting Detailed Cluster Objects
       collectDDatastore = Collecting Detailed Datastore Objects
       collectDDatastoreCluster = Collecting Detailed Datastore Cluster Objects
+      collectAlarms = Collecting Alarm Definitions
 '@
 }
 # Override the default (en) if it exists in lang directory
@@ -161,6 +162,8 @@ Write-CustomOut $pLang.collectDCluster
 $clusviews = Get-View -ViewType ClusterComputeResource
 Write-CustomOut $pLang.collectDDatastore
 $storageviews = Get-View -ViewType Datastore
+Write-CustomOut $pLang.collectAlarms
+$valarms = $alarmMgr.GetAlarm($null) | select value, @{N="name";E={(Get-View -Id $_).Info.Name}}
 
 # Find out which version of the API we are connecting to
 $VIVersion = ((Get-View ServiceInstance).Content.About.Version).Chars(0)

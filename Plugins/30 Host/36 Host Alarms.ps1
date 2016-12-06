@@ -3,13 +3,11 @@ $Header = "Host(s) Alarm(s): [count]"
 $Comments = "The following alarms have been registered against hosts in vCenter"
 $Display = "Table"
 $Author = "Alan Renouf, John Sneddon"
-$PluginVersion = 1.2
+$PluginVersion = 1.3
 $PluginCategory = "vSphere"
 
 # Start of Settings 
 # End of Settings 
-
-$valarms = $alarmMgr.GetAlarm($null) | select value, @{N="name";E={(Get-View -Id $_).Info.Name}}
 
 foreach ($HostsView in ($HostsViews | Where {$_.TriggeredAlarmState} | Sort-Object Name)){
    Foreach ($hostsTriggeredAlarm in $HostsView.TriggeredAlarmState){

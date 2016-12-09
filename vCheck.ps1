@@ -1012,6 +1012,10 @@ if (-not $GUIConfig) {
 			$pr | Add-Member -Type NoteProperty -Name pluginID -Value "plugin-$p"
 			$p++
 		}
+		if ($pr.Details -ne $null)
+		{
+			$emptyReport = $false
+		}
 	}
 
 	# Run Style replacement

@@ -12,11 +12,6 @@ $NumVMsPerDatastore = 5
 $ExcludedDatastores = "ExcludeMe"
 # End of Settings
 
-# Changelog
-## 1.1 : Using managed objects collections in order to avoid using Get-VM cmdlet for performance matter
-## 1.2 : ???
-## 1.3 : Add Get-vCheckSetting
-
 # Update settings where there is an override
 $NumVMsPerDatastore = Get-vCheckSetting $Title "NumVMsPerDatastore" $NumVMsPerDatastore
 $ExcludedDatastores = Get-vCheckSetting $Title "ExcludedDatastores" $ExcludedDatastores
@@ -24,3 +19,9 @@ $ExcludedDatastores = Get-vCheckSetting $Title "ExcludedDatastores" $ExcludedDat
 $StorageViews | Where-Object { $_.Name -notmatch $ExcludedDatastores } | Select Name, @{N="NumVM";E={($_.vm).Count}} | Where { $_.NumVM -gt $NumVMsPerDatastore} | Sort NumVM -Descending
 
 $Header = "Number of VMs per Datastore over $($NumVMsPerDatastore) : [count]"
+
+
+# Changelog
+## 1.1 : Using managed objects collections in order to avoid using Get-VM cmdlet for performance matter
+## 1.2 : ???
+## 1.3 : Add Get-vCheckSetting

@@ -19,20 +19,20 @@ foreach ($HostsView in ($HostsViews|?{$_.runtime.connectionstate -eq "Connected"
       if ($HWStatusDetails) {
          foreach ($HWStatusDetail in $HWStatusDetails) {
             New-Object PSObject -Property @{
-               $Details.Cluster = $HostsView | %{(Get-View $_.Parent).Name}
-               $Details.Host = $HostsView.name
-               $Details.Sensor = $HWStatusDetail.sensor
-               $Details.Status = $HWStatusDetail.status
+               Cluster = ($HostsView | %{(Get-View $_.Parent).Name})
+               Host = $HostsView.name
+               Sensor = $HWStatusDetail.sensor
+               Status = $HWStatusDetail.status
             }
          }
       }
       if ($HealthStatusDetails) {
          foreach ($HealthStatusDetail in $HealthStatusDetails) {
             New-Object PSObject -Property @{
-               $Details.Cluster = $HostsView | %{(Get-View $_.Parent).Name}
-               $Details.Host = $HostsView.name
-               $Details.Sensor = $HealthStatusDetail.sensor
-               $Details.Status = $HealthStatusDetail.status
+               Cluster = ($HostsView | %{(Get-View $_.Parent).Name})
+               Host = $HostsView.name
+               Sensor = $HealthStatusDetail.sensor
+               Status = $HealthStatusDetail.status
             }
          }
       }

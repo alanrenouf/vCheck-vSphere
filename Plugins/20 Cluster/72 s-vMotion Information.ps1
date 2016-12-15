@@ -1,5 +1,4 @@
 $Title = "s/vMotion Information"
-$Header = "s/vMotion Information (Over $vMotionAge Days Old) : $(@($Motions).count)"
 $Comments = "s/vMotions and how long they took to migrate between hosts and datastores"
 $Display = "Table"
 $Author = "Alan Renouf"
@@ -58,5 +57,7 @@ foreach($vmotion in ($vmotions | Sort-object CreatedTime | Group-Object ChainID)
 if (-not $IncludevMotions) { $Motions = $Motions | Where { $_.Type -ne "vMotion" }}
 if (-not $IncludeSvMotions) { $Motions = $Motions | Where { $_.Type -ne "SvMotion" }}
 $Motions
+
+$Header = ("s/vMotion Information (Over {0} Days Old): [count]" -f $vMotionAge)
 
 Remove-Variable Motions, EventFilterSpec, vmotions

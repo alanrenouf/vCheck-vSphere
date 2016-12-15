@@ -7,7 +7,7 @@ $PluginVersion = 1.2
 $PluginCategory = "vSphere"
 
 # Start of Settings 
-# Number of slots available in a cluster
+# Minimum number of slots available in a cluster
 $numslots = 10
 # End of Settings
 
@@ -15,22 +15,19 @@ $numslots = 10
 $numslots = Get-vCheckSetting $Title "numslots" $numslots
 
 If ($vSphere){
-   $SlotInfo = @()
    Foreach ($Cluster in ($Clusters)){
       If ($Cluster.ExtensionData.Configuration.DasConfig.Enabled -eq $true -and 
           $Cluster.ExtensionData.Configuration.DasConfig.AdmissionControlPolicy.getType() -eq [VMware.Vim.ClusterFailoverLevelAdmissionControlPolicy]){
          $SlotDetails = $Cluster.ExtensionData.RetrieveDasAdvancedRuntimeInfo()
          
-         $Details = [PSCustomObject] @{
-            Cluster = $Cluster.Name
-            TotalSlots = $SlotDetails.TotalSlots
-            UsedSlots = $SlotDetails.UsedSlots
-            AvailableSlots = $SlotDetails.UnreservedSlots
+         if ($SlotDetails.UnreservedSlots -lt $numslots) {
+            [PSCustomObject] @{
+               Cluster = $Cluster.Name
+               TotalSlots = $SlotDetails.TotalSlots
+               UsedSlots = $SlotDetails.UsedSlots
+               AvailableSlots = $SlotDetails.UnreservedSlots
+            }
          }
-         $SlotInfo += $Details
       }
    }
-   $SlotCHK = @($SlotInfo | Where { $_.AvailableSlots -lt $numslots})
 }
-
-$SlotCHK

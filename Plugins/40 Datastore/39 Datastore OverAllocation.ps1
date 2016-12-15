@@ -24,7 +24,7 @@ foreach ($storage in $filteredstorageviews)
    {
       $allocation = [math]::round(((($storage.Summary.Capacity - $storage.Summary.FreeSpace) + $storage.Summary.Uncommitted)*100)/$storage.Summary.Capacity,0)
       
-      if (($allocation-100) -gt $OverAllocation {
+      if (($allocation-100) -gt $OverAllocation) {
          New-Object -TypeName PSObject -Property @{
             "Datastore" = $storage.name
             "OverAllocation" = $overAllocation }

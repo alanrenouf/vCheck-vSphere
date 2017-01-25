@@ -74,7 +74,7 @@ Write-CustomOut $pLang.custAttr
 
 function Get-VMLastPoweredOffDate {
   param([Parameter(Mandatory=$true,ValueFromPipeline=$true)]
-        [VMware.VimAutomation.ViCore.Impl.V1.Inventory.VirtualMachineImpl] $vm)
+        [VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine] $vm)
   process {
     $Report = "" | Select-Object -Property Name,LastPoweredOffDate
      $Report.Name = $_.Name
@@ -87,7 +87,7 @@ function Get-VMLastPoweredOffDate {
 
 function Get-VMLastPoweredOnDate {
   param([Parameter(Mandatory=$true,ValueFromPipeline=$true)]
-        [VMware.VimAutomation.ViCore.Impl.V1.Inventory.VirtualMachineImpl] $vm)
+        [VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine] $vm)
 
   process {
     $Report = "" | Select-Object -Property Name,LastPoweredOnDate
@@ -194,7 +194,7 @@ if ($VIVersion -ge 5) {
 function Get-VIEventPlus {
 	 
 	param(
-		[VMware.VimAutomation.ViCore.Impl.V1.Inventory.InventoryItemImpl[]]$Entity,
+		[VMware.VimAutomation.ViCore.Types.V1.Inventory.InventoryItem[]]$Entity,
 		[string[]]$EventType,
 		[DateTime]$Start,
 		[DateTime]$Finish = (Get-Date),

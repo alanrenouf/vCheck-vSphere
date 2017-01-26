@@ -8,7 +8,7 @@ $PluginCategory = "vSphere"
 
 # Start of Settings
 # Please Specify the address (and optional port) of the vCenter server to connect to [servername(:port)]
-$Server = "MHCLAVC01"
+$Server = "192.168.0.0"
 # End of Settings
 
 # Update settings where there is an override
@@ -101,7 +101,7 @@ Write-CustomOut $pLang.custAttr
 
 function Get-VMLastPoweredOffDate {
   param([Parameter(Mandatory=$true,ValueFromPipeline=$true)]
-        [VMware.VimAutomation.ViCore.Impl.V1.Inventory.VirtualMachineImpl] $vm)
+        [VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine] $vm)
   process {
     $Report = "" | Select-Object -Property Name,LastPoweredOffDate
      $Report.Name = $_.Name
@@ -114,7 +114,7 @@ function Get-VMLastPoweredOffDate {
 
 function Get-VMLastPoweredOnDate {
   param([Parameter(Mandatory=$true,ValueFromPipeline=$true)]
-        [VMware.VimAutomation.ViCore.Impl.V1.Inventory.VirtualMachineImpl] $vm)
+        [VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine] $vm)
 
   process {
     $Report = "" | Select-Object -Property Name,LastPoweredOnDate
@@ -223,7 +223,7 @@ if ($VIVersion -ge 5) {
 function Get-VIEventPlus {
     
    param(
-      [VMware.VimAutomation.ViCore.Impl.V1.Inventory.InventoryItemImpl[]]$Entity,
+      [VMware.VimAutomation.ViCore.Types.V1.Inventory.InventoryItem[]]$Entity,
       [string[]]$EventType,
       [DateTime]$Start,
       [DateTime]$Finish = (Get-Date),

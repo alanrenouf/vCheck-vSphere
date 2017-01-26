@@ -3,7 +3,7 @@ $Header = "vSwitch and portgroup security settings"
 $Comments = "All security options for standard vSwitches should be set to REJECT.  Distributed vSwitches may require <em>ForgedTrasmits</em> in the default portgroup but should be disabled in other VM Network portgroups unless expressly required."
 $Display = "Table"
 $Author = "Justin Mercier, Sam McGeown, John Sneddon"
-$PluginVersion = 1.3
+$PluginVersion = 1.4
 $PluginCategory = "vSphere"
 
 # Start of Settings
@@ -25,7 +25,7 @@ $MacChangesPolicy = Get-vCheckSetting $Title "MacChangesPolicy" $MacChangesPolic
 
 # Check Power CLI version. Build must be at least 1012425 (5.1 Release 2) to contain Get-VDPortGroup cmdlet
 $VersionOK = $false
-if (((Get-PowerCLIVersion) -match "VMware vSphere PowerCLI (.*) build ([0-9]+)")) {
+if (((Get-PowerCLIVersion) -match "VMware (vSphere )?PowerCLI (.*) build ([0-9]+)")) {
    if ([int]($Matches[2]) -ge 1012425) {
       $VersionOK = $true
       if ([int]($Matches[2]) -ge 2548067) {
@@ -101,4 +101,5 @@ else {
 ## 1.0 : Initial Release
 ## 1.1 : Re-written for performance improvements
 ## 1.2 : Added version check (Issue #71)
-## 1.3 add Get-vCheckSetting
+## 1.3 : Add Get-vCheckSetting
+## 1.4 : Fix Version checking for PowerCLI 6.5 - vSphere is no longer in the product name (Issue #514)

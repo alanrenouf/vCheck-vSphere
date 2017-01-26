@@ -47,8 +47,7 @@ $HAIssues += $clusviews | where {$_.Name -notmatch $ClustersDoNotInclude -and ( 
 # Clusters with admission Control Disabled
 $HAIssues += $Clusters | Where-Object {$_.Name -notmatch $ClustersDoNotInclude -and $_.HAAdmissionControlEnabled -ne $ClusterHAAdmissionControlShouldBeEnabled } |
   Select-Object @{Name="Cluster";Expression={$_.Name}},@{Name="Configuration Issue";Expression={$pLang.HAACDisabled}}
-   
-   
+
 # Sort and return
 $HAIssues | Sort-Object Cluster
 

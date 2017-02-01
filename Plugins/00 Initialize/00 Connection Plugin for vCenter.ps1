@@ -141,13 +141,13 @@ New-VIProperty -Name "HWVersion" -ObjectType VirtualMachine -Value {
 } -BasedOnExtensionProperty "Config.Version" -Force | Out-Null
 
 Write-CustomOut $pLang.collectVM
-$VM = Get-VM | Sort Name
+$VM = Get-VM | Sort-Object Name
 Write-CustomOut $pLang.collectHost
-$VMH = Get-VMHost | Sort Name
+$VMH = Get-VMHost | Sort-Object Name
 Write-CustomOut $pLang.collectCluster
-$Clusters = Get-Cluster | Sort Name
+$Clusters = Get-Cluster | Sort-Object Name
 Write-CustomOut $pLang.collectDatastore
-$Datastores = Get-Datastore | Sort Name
+$Datastores = Get-Datastore | Sort-Object Name
 Write-CustomOut $pLang.collectDVM
 $FullVM = Get-View -ViewType VirtualMachine | Where {-not $_.Config.Template}
 Write-CustomOut $pLang.collectTemplate 
@@ -267,8 +267,8 @@ function Get-VIEventPlus {
          $schTskMgr = Get-View $si.Content.ScheduledTaskManager
          $eventFilter.ScheduledTask = Get-View $schTskMgr.ScheduledTask |
          where {$_.Info.Name -match $ScheduledTask} |
-         Select -First 1 |
-         Select -ExpandProperty MoRef
+         Select-Object -First 1 |
+         Select-Object -ExpandProperty MoRef
       }
       if(!$Entity){
          $Entity = @(Get-Folder -NoRecursion)

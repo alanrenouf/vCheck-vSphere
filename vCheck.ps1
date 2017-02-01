@@ -815,14 +815,14 @@ if ($job) {
 	}
 	# if no valid plugins specified, fall back to default
 	if (!$vCheckPlugins) {
-		$vCheckPlugins = Get-ChildItem -Path $PluginsFolder -filter "*.ps1" -Recurse | Sort FullName
+		$vCheckPlugins = Get-ChildItem -Path $PluginsFolder -filter "*.ps1" -Recurse | Sort-Object FullName
 	}
 } else {
 	$ToNatural = { [regex]::Replace($_, '\d+', { $args[0].Value.PadLeft(20) }) }
-	$vCheckPlugins = @(Get-ChildItem -Path $PluginsFolder -filter "*.ps1" -Recurse | where { $_.Directory -match "initialize" } | Sort $ToNatural)
+	$vCheckPlugins = @(Get-ChildItem -Path $PluginsFolder -filter "*.ps1" -Recurse | where { $_.Directory -match "initialize" } | Sort-Object $ToNatural)
 	$PluginsSubFolder = Get-ChildItem -Path $PluginsFolder | where { ($_.PSIsContainer) -and ($_.Name -notmatch "initialize") -and ($_.Name -notmatch "finish") }
-	$vCheckPlugins += $PluginsSubFolder | % { Get-ChildItem -Path $_.FullName -filter "*.ps1" | Sort $ToNatural }
-	$vCheckPlugins += Get-ChildItem -Path $PluginsFolder -filter "*.ps1" -Recurse | where { $_.Directory -match "finish" } | Sort $ToNatural
+	$vCheckPlugins += $PluginsSubFolder | % { Get-ChildItem -Path $_.FullName -filter "*.ps1" | Sort-Object $ToNatural }
+	$vCheckPlugins += Get-ChildItem -Path $PluginsFolder -filter "*.ps1" -Recurse | where { $_.Directory -match "finish" } | Sort-Object $ToNatural
 	$GlobalVariables = $ScriptPath + "\GlobalVariables.ps1"
 }
 
@@ -958,7 +958,7 @@ if (-not $GUIConfig) {
 		}
 
 		if ($ListEnabledPluginsFirst) {
-			$Plugins = $Plugins | Sort -property @{ Expression = "Enabled"; Descending = $true }
+			$Plugins = $Plugins | Sort-Object -property @{ Expression = "Enabled"; Descending = $true }
 			$Comments = "Plugins in numerical order, enabled plugins listed first"
 		}
 

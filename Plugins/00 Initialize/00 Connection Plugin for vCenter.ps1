@@ -1,6 +1,6 @@
 $Title = "Connection settings for vCenter"
 $Author = "Alan Renouf"
-$PluginVersion = 1.10
+$PluginVersion = 1.20
 $Header = "Connection Settings"
 $Comments = "Connection Plugin for connecting to vSphere"
 $Display = "None"
@@ -60,28 +60,86 @@ $Credfile = $ScriptPath + "\Windowscreds.xml"
 # 2) Module + PSSnapin (-gt 5.8R1/-lt 6.5R1)
 # 3) Module (-ge 6.5R1)
 
-$pcliCore = 'VMware.VimAutomation.Core'
-
-$pssnapinPresent = $false
-$psmodulePresent = $false
-
-if(Get-Module -Name $pcliCore -ListAvailable){
-    $psmodulePresent = $true
-    if(!(Get-Module -Name $pcliCore)){
-        Import-Module -Name $pcliCore
+function Get-CorePlatform {
+    [cmdletbinding()]
+    param()
+    #Thanks to @Lucd22 (Lucd.info) for this great function!
+    $osDetected = $false
+    try{
+        $os = Get-CimInstance -ClassName Win32_OperatingSystem
+        Write-Verbose -Message 'Windows detected'
+        $osDetected = $true
+        $osFamily = 'Windows'
+        $osName = $os.Caption
+        $osVersion = $os.Version
+        $nodeName = $os.CSName
+        $architecture = $os.OSArchitecture
+    }
+    catch{
+        Write-Verbose -Message 'Possibly Linux or Mac'
+        $uname = "$(uname)"
+        if($uname -match '^Darwin|^Linux'){
+            $osDetected = $true
+            $osFamily = $uname
+            $osName = "$(uname -v)"
+            $osVersion = "$(uname -r)"
+            $nodeName = "$(uname -n)"
+            $architecture = "$(uname -p)"
+        }
+        # Other
+        else
+        {
+            Write-Warning -Message "Kernel $($uname) not covered"
+        }
+    }
+    [ordered]@{
+        OSDetected = $osDetected
+        OSFamily = $osFamily
+        OS = $osName
+        Version = $osVersion
+        Hostname = $nodeName
+        Architecture = $architecture
     }
 }
 
-if(Get-PSSnapin -Name $pcliCore -Registered -ErrorAction SilentlyContinue){
-    $pssnapinPresent = $true
-    if(!(Get-PSSnapin -Name $pcliCore -ErrorAction SilentlyContinue)){
-        Add-PSSnapin -Name $pcliCore
+$Platform = Get-CorePlatform
+switch ($platform.OSFamily) {
+    "Darwin" { 
+        $templocation = "/tmp"
+        $Outputpath = $templocation
+        Get-Module -ListAvailable PowerCLI* | Import-Module
     }
-}
+    "Linux" { 
+        $Outputpath = $templocation
+        $templocation = "/tmp"
+        Get-Module -ListAvailable PowerCLI* | Import-Module
+    }
+    "Windows" { 
+        $templocation = "$ENV:Temp"
+        $pcliCore = 'VMware.VimAutomation.Core'
 
-if(!$pssnapinPresent -and !$psmodulePresent){
-    Write-Error "Can't find PowerCLI. Is it installed?"
-    return
+        $pssnapinPresent = $false
+        $psmodulePresent = $false
+
+        if(Get-Module -Name $pcliCore -ListAvailable){
+            $psmodulePresent = $true
+            if(!(Get-Module -Name $pcliCore)){
+                Import-Module -Name $pcliCore
+            }
+        }
+
+        if(Get-PSSnapin -Name $pcliCore -Registered -ErrorAction SilentlyContinue){
+            $pssnapinPresent = $true
+            if(!(Get-PSSnapin -Name $pcliCore -ErrorAction SilentlyContinue)){
+                Add-PSSnapin -Name $pcliCore
+            }
+        }
+
+        if(!$pssnapinPresent -and !$psmodulePresent){
+            Write-Error "Can't find PowerCLI. Is it installed?"
+            return
+        }
+    }
 }
 
 $OpenConnection = $global:DefaultVIServers | where { $_.Name -eq $VIServer }

@@ -1,9 +1,6 @@
 # Start of Settings
 # End of Settings
 
-# Init arrays
-$EVCMismatchedVMs = @()
-
 # For Each Host
 ForEach ($EVCHost in $VMH) {
 		## Get cluster EVC mode
@@ -13,11 +10,8 @@ ForEach ($EVCHost in $VMH) {
 		$myHostEVCCluster = $EVCHost.Parent.Name
 
 		## Get VMs on current host | Filter by Powered On and VM EVC not equal to host EVC | Select VM, Host and Cluster information and concatenate into array 
-		$EVCMismatchedVMs += Get-VM -Location $EVCHost | Where-Object {($_.PowerState -eq "PoweredOn") -and ($_.ExtensionData.Summary.Runtime.MinRequiredEVCModeKey -ne $myHostEVCMode)} | Select-Object Name,@{Name='VM EVC';Expression = {$_.ExtensionData.Summary.Runtime.MinRequiredEVCModeKey}},@{Name='Host';Expression = {$EVCHost.Name}},@{Name='Host EVC';Expression = {$myHostEVCMode}},@{Name='Cluster';Expression = {$myHostEVCCluster}}
+		Get-VM -Location $EVCHost | Where-Object {($_.PowerState -eq "PoweredOn") -and ($_.ExtensionData.Summary.Runtime.MinRequiredEVCModeKey -ne $myHostEVCMode)} | Select-Object Name,@{Name='VM EVC';Expression = {$_.ExtensionData.Summary.Runtime.MinRequiredEVCModeKey}},@{Name='Host';Expression = {$EVCHost.Name}},@{Name='Host EVC';Expression = {$myHostEVCMode}},@{Name='Cluster';Expression = {$myHostEVCCluster}}
 }
-
-# Display completed array
-$EVCMismatchedVMs
 
 $PluginCategory = "vSphere"
 $Title = "EVC Mismatch"

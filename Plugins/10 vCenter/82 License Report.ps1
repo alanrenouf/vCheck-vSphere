@@ -1,4 +1,3 @@
-
 # Start of Settings
 # Enable License Reporting?
 $licenseReport = $true

@@ -11,4 +11,4 @@ $PluginCategory = "vSphere"
 $ntpserver = "pool.ntp.org,pool2.ntp.org"
 # End of Settings
 
-@($VMH | Where {$_.Connectionstate -ne "Disconnected"} | Select Name, @{N="NTPServer";E={($_ | Get-VMHostNtpServer) -join ","}}, @{N="ServiceRunning";E={(Get-VmHostService -VMHost $_ | Where-Object {$_.key -eq "ntpd"}).Running}} | Where {$_.ServiceRunning -eq $false -or $_.NTPServer -ne $ntpserver})
+$VMH | Where {$_.Connectionstate -ne "Disconnected"} | Select Name, @{N="NTPServer";E={($_ | Get-VMHostNtpServer) -join ","}}, @{N="ServiceRunning";E={(Get-VmHostService -VMHost $_ | Where-Object {$_.key -eq "ntpd"}).Running}} | Where {$_.ServiceRunning -eq $false -or $_.NTPServer -ne $ntpserver}

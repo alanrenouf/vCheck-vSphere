@@ -20,9 +20,8 @@ $pLang = DATA {
 # Override the default (en) if it exists in lang directory
 Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable pLang -ErrorAction SilentlyContinue
 
-$VMFolder = @()
 $i=0;
-foreach ($eachDS in ($Datastores | Where {$_.Accessible})) {
+foreach ($eachDS in ($Datastores | Where {$_.State -eq "Available"})) {
    Write-Progress -ID 2 -Parent 1 -Activity $pLang.pluginActivity -Status ($pLang.pluginStatus -f $i, $Datastores.count, $eachDS.Name) -PercentComplete ($i*100/$Datastores.count)
    $eachDS.Name
    $FilePath = $eachDS.DatastoreBrowserPath + '\*\*delta.vmdk*'
@@ -31,7 +30,7 @@ foreach ($eachDS in ($Datastores | Where {$_.Accessible})) {
    $fileList += Get-ChildItem -Path "$FilePath" | Select Name, FolderPath, FullName
 
    $i++
-   
+
    foreach ($vmFile in $filelist | sort FolderPath) 
    {
       $vmFile.FolderPath -match '^\[([^\]]+)\] ([^/]+)' > $null
@@ -40,13 +39,12 @@ foreach ($eachDS in ($Datastores | Where {$_.Accessible})) {
       if (!$eachVM.snapshot) 
       { 
          # Only process VMs without snapshots
-         $Details = "" | Select-Object VM, Datacenter, Path
-         $Details.VM = $eachVM.Name
-         $Details.Datacenter = $eachDS.Datacenter
-         $Details.Path = $vmFile.FullName
-         $VMFolder += $Details
+         New-Object -TypeName PSObject -Property @{
+            VM = $eachVM.Name
+            Datacenter = $eachDS.Datacenter
+            Path = $vmFile.FullName
+         }
       }
    }
 }
 Write-Progress -ID 1 -Activity $pLang.pluginActivity -Status $pLang.Complete -Completed
-$VMFolder | sort VM

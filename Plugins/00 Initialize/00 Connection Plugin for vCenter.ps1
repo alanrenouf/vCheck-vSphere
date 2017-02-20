@@ -1,6 +1,6 @@
 $Title = "Connection settings for vCenter"
 $Author = "Alan Renouf"
-$PluginVersion = 1.10
+$PluginVersion = 1.20
 $Header = "Connection Settings"
 $Comments = "Connection Plugin for connecting to vSphere"
 $Display = "None"
@@ -60,28 +60,86 @@ $Credfile = $ScriptPath + "\Windowscreds.xml"
 # 2) Module + PSSnapin (-gt 5.8R1/-lt 6.5R1)
 # 3) Module (-ge 6.5R1)
 
-$pcliCore = 'VMware.VimAutomation.Core'
-
-$pssnapinPresent = $false
-$psmodulePresent = $false
-
-if(Get-Module -Name $pcliCore -ListAvailable){
-    $psmodulePresent = $true
-    if(!(Get-Module -Name $pcliCore)){
-        Import-Module -Name $pcliCore
+function Get-CorePlatform {
+    [cmdletbinding()]
+    param()
+    #Thanks to @Lucd22 (Lucd.info) for this great function!
+    $osDetected = $false
+    try{
+        $os = Get-CimInstance -ClassName Win32_OperatingSystem
+        Write-Verbose -Message 'Windows detected'
+        $osDetected = $true
+        $osFamily = 'Windows'
+        $osName = $os.Caption
+        $osVersion = $os.Version
+        $nodeName = $os.CSName
+        $architecture = $os.OSArchitecture
+    }
+    catch{
+        Write-Verbose -Message 'Possibly Linux or Mac'
+        $uname = "$(uname)"
+        if($uname -match '^Darwin|^Linux'){
+            $osDetected = $true
+            $osFamily = $uname
+            $osName = "$(uname -v)"
+            $osVersion = "$(uname -r)"
+            $nodeName = "$(uname -n)"
+            $architecture = "$(uname -p)"
+        }
+        # Other
+        else
+        {
+            Write-Warning -Message "Kernel $($uname) not covered"
+        }
+    }
+    [ordered]@{
+        OSDetected = $osDetected
+        OSFamily = $osFamily
+        OS = $osName
+        Version = $osVersion
+        Hostname = $nodeName
+        Architecture = $architecture
     }
 }
 
-if(Get-PSSnapin -Name $pcliCore -Registered -ErrorAction SilentlyContinue){
-    $pssnapinPresent = $true
-    if(!(Get-PSSnapin -Name $pcliCore -ErrorAction SilentlyContinue)){
-        Add-PSSnapin -Name $pcliCore
+$Platform = Get-CorePlatform
+switch ($platform.OSFamily) {
+    "Darwin" { 
+        $templocation = "/tmp"
+        $Outputpath = $templocation
+        Get-Module -ListAvailable PowerCLI* | Import-Module
     }
-}
+    "Linux" { 
+        $Outputpath = $templocation
+        $templocation = "/tmp"
+        Get-Module -ListAvailable PowerCLI* | Import-Module
+    }
+    "Windows" { 
+        $templocation = "$ENV:Temp"
+        $pcliCore = 'VMware.VimAutomation.Core'
 
-if(!$pssnapinPresent -and !$psmodulePresent){
-    Write-Error "Can't find PowerCLI. Is it installed?"
-    return
+        $pssnapinPresent = $false
+        $psmodulePresent = $false
+
+        if(Get-Module -Name $pcliCore -ListAvailable){
+            $psmodulePresent = $true
+            if(!(Get-Module -Name $pcliCore)){
+                Import-Module -Name $pcliCore
+            }
+        }
+
+        if(Get-PSSnapin -Name $pcliCore -Registered -ErrorAction SilentlyContinue){
+            $pssnapinPresent = $true
+            if(!(Get-PSSnapin -Name $pcliCore -ErrorAction SilentlyContinue)){
+                Add-PSSnapin -Name $pcliCore
+            }
+        }
+
+        if(!$pssnapinPresent -and !$psmodulePresent){
+            Write-Error "Can't find PowerCLI. Is it installed?"
+            return
+        }
+    }
 }
 
 $OpenConnection = $global:DefaultVIServers | where { $_.Name -eq $VIServer }
@@ -101,7 +159,7 @@ Write-CustomOut $pLang.custAttr
 
 function Get-VMLastPoweredOffDate {
   param([Parameter(Mandatory=$true,ValueFromPipeline=$true)]
-        [VMware.VimAutomation.ViCore.Impl.V1.Inventory.VirtualMachineImpl] $vm)
+        [VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine] $vm)
   process {
     $Report = "" | Select-Object -Property Name,LastPoweredOffDate
      $Report.Name = $_.Name
@@ -114,7 +172,7 @@ function Get-VMLastPoweredOffDate {
 
 function Get-VMLastPoweredOnDate {
   param([Parameter(Mandatory=$true,ValueFromPipeline=$true)]
-        [VMware.VimAutomation.ViCore.Impl.V1.Inventory.VirtualMachineImpl] $vm)
+        [VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine] $vm)
 
   process {
     $Report = "" | Select-Object -Property Name,LastPoweredOnDate
@@ -141,13 +199,13 @@ New-VIProperty -Name "HWVersion" -ObjectType VirtualMachine -Value {
 } -BasedOnExtensionProperty "Config.Version" -Force | Out-Null
 
 Write-CustomOut $pLang.collectVM
-$VM = Get-VM | Sort Name
+$VM = Get-VM | Sort-Object Name
 Write-CustomOut $pLang.collectHost
-$VMH = Get-VMHost | Sort Name
+$VMH = Get-VMHost | Sort-Object Name
 Write-CustomOut $pLang.collectCluster
-$Clusters = Get-Cluster | Sort Name
+$Clusters = Get-Cluster | Sort-Object Name
 Write-CustomOut $pLang.collectDatastore
-$Datastores = Get-Datastore | Sort Name
+$Datastores = Get-Datastore | Sort-Object Name
 Write-CustomOut $pLang.collectDVM
 $FullVM = Get-View -ViewType VirtualMachine | Where {-not $_.Config.Template}
 Write-CustomOut $pLang.collectTemplate 
@@ -223,7 +281,7 @@ if ($VIVersion -ge 5) {
 function Get-VIEventPlus {
     
    param(
-      [VMware.VimAutomation.ViCore.Impl.V1.Inventory.InventoryItemImpl[]]$Entity,
+      [VMware.VimAutomation.ViCore.Types.V1.Inventory.InventoryItem[]]$Entity,
       [string[]]$EventType,
       [DateTime]$Start,
       [DateTime]$Finish = (Get-Date),
@@ -267,8 +325,8 @@ function Get-VIEventPlus {
          $schTskMgr = Get-View $si.Content.ScheduledTaskManager
          $eventFilter.ScheduledTask = Get-View $schTskMgr.ScheduledTask |
          where {$_.Info.Name -match $ScheduledTask} |
-         Select -First 1 |
-         Select -ExpandProperty MoRef
+         Select-Object -First 1 |
+         Select-Object -ExpandProperty MoRef
       }
       if(!$Entity){
          $Entity = @(Get-Folder -NoRecursion)

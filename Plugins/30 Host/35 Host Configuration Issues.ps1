@@ -22,4 +22,4 @@ foreach ($HostsView in $HostsViews) {
    }
 }
 
-$hostcialarms | sort name
+$hostcialarms | Sort-Object name

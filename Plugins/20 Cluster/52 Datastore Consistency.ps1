@@ -18,8 +18,8 @@ if ($Clusters -ne $null)
 {
    ForEach ($Cluster in ($Clusters)) 
    {
-      $Cluster.ExtensionData.Host | %{ $h = $_; $Datastores | Where {$_.ExtensionData.Host.key -contains $h}} | 
-         Where {$_.Name -notmatch $DSDoNotInclude } | Group-Object Name | Where { $_.Count -ne $cluster.ExtensionData.Host.count } | 
-         Select @{Name="Name"; Expression={$_.Group.name}}, @{Name="Cluster";Expression={$Cluster.Name}}
+      $Cluster.ExtensionData.Host | %{ $h = $_; $Datastores | Where-Object {$_.ExtensionData.Host.key -contains $h}} | 
+         Where-Object {$_.Name -notmatch $DSDoNotInclude } | Group-Object Name | Where-Object { $_.Count -ne $cluster.ExtensionData.Host.count } | 
+         Select-Object @{Name="Name"; Expression={$_.Group.name}}, @{Name="Cluster";Expression={$Cluster.Name}}
    }
 }

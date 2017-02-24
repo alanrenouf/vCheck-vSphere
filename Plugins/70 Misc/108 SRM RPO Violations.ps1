@@ -53,13 +53,13 @@ $ActiveViolationsOnly = Get-vCheckSetting $Title "ActiveViolationsOnly" $ActiveV
 ## Begin code block obtained from: http://www.virtu-al.net/2013/06/14/reporting-on-rpo-violations-from-vsphere-replication/
 #  modified by Joel Gibson
 
-Foreach ($RPOvm in ($VMs | Where { $_.name -match $VMNameRegex })) {
-   $RPOEvents = Get-VIEventPlus -Entity $RPOvm | where { $_.EventTypeID -match "rpo" } | Where { $_.Vm.Name -eq $RPOvm.Name } | Select EventTypeId, CreatedTime, FullFormattedMessage, @{Name="VMName";Expression={$_.Vm.Name}} | Sort CreatedTime
+Foreach ($RPOvm in ($VMs | Where-Object { $_.name -match $VMNameRegex })) {
+   $RPOEvents = Get-VIEventPlus -Entity $RPOvm | Where-Object { $_.EventTypeID -match "rpo" -and $_.Vm.Name -eq $RPOvm.Name } | Select-Object EventTypeId, CreatedTime, FullFormattedMessage, @{Name="VMName";Expression={$_.Vm.Name}} | Sort-Object CreatedTime
    if ($RPOEvents) {
       $Count = 0
 
       do {
-            $details = "" | Select VMName, ViolationStart, ViolationEnd, Mins
+            $details = "" | Select-Object VMName, ViolationStart, ViolationEnd, Mins
             if ($RPOEvents[$count].EventTypeID -match "Violated") {
                If (-not $details.Start) {
                   $Details.VMName = $RPOEvents[$Count].VMName

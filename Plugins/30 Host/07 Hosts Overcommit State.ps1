@@ -57,4 +57,4 @@ Foreach ($VMHost in $VMH) {
 }
 Write-Progress -ID 2 -Parent 1 -Activity $plang.pluginActivity -Status $lang.Complete -Completed
 
-$OverCommit | Select Host, "TotalMem$Units", "TotalAssignedMem$Units", "TotalUsed$Units", "OverCommit$Units"
+$OverCommit | Select-Object Host, "TotalMem$Units", "TotalAssignedMem$Units", "TotalUsed$Units", "OverCommit$Units"

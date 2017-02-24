@@ -135,11 +135,11 @@ function Get-vCheckPlugin
 
                 foreach ($plugin in $plugins.pluginlist.plugin)
                 {
-                    $pluginObjectList | where {$_.name -eq $plugin.name -and [double]$_.version -lt [double]$plugin.version}|	
+                    $pluginObjectList | Where-Object {$_.name -eq $plugin.name -and [double]$_.version -lt [double]$plugin.version}|	
 					foreach{
 						$_.status = "New Version Available - " + $plugin.version						
 					}
-					if (!($pluginObjectList | where {$_.name -eq $plugin.name}))
+					if (!($pluginObjectList | Where-Object {$_.name -eq $plugin.name}))
                     {
                         $pluginObject = New-Object PSObject
                         $pluginObject | Add-Member -MemberType NoteProperty -Name name -value $plugin.name
@@ -162,15 +162,15 @@ function Get-vCheckPlugin
         }
 
         if ($name){
-            $pluginObjectList | where {$_.name -eq $name}
+            $pluginObjectList | Where-Object {$_.name -eq $name}
         } Else {
 			if ($category){
-				$pluginObjectList | Where {$_.Category -eq $category}
+				$pluginObjectList | Where-Object {$_.Category -eq $category}
 			} Else {
 	            if($notinstalled){
-	                $pluginObjectList | where {$_.status -eq "Not Installed"}
+	                $pluginObjectList | Where-Object {$_.status -eq "Not Installed"}
 	            } elseif($pendingupdate) {
-					$pluginObjectList | where {$_.status -like "New Version Available*"}
+					$pluginObjectList | Where-Object {$_.status -like "New Version Available*"}
 				}
 				Else {
 	                $pluginObjectList
@@ -523,7 +523,7 @@ Function Export-vCheckSettings {
 	Foreach ($plugin in (Get-ChildItem -Path $vCheckPath\Plugins\* -Include *.ps1, *.ps1.disabled -Recurse)) { 
 		$Export += Get-PluginSettings -Filename $plugin.Fullname
 	}
-	$Export | Select filename, question, var | Export-Csv -NoTypeInformation $outfile
+	$Export | Select-Object filename, question, var | Export-Csv -NoTypeInformation $outfile
 }
 
 
@@ -611,10 +611,10 @@ Function Import-vCheckSettings {
 	}
 	$Import = Import-Csv $csvfile
 	$GlobalVariables = "$vCheckPath\GlobalVariables.ps1"
-	$settings = $Import | Where {($_.filename).Split("\")[-1] -eq ($GlobalVariables).Split("\")[-1]}
+	$settings = $Import | Where-Object {($_.filename).Split("\")[-1] -eq ($GlobalVariables).Split("\")[-1]}
 	Set-PluginSettings -Filename $GlobalVariables -Settings $settings -GB
 	Foreach ($plugin in (Get-ChildItem -Path $vCheckPath\Plugins\* -Include *.ps1, *.ps1.disabled -Recurse)) { 
-		$settings = $Import | Where {($_.filename).Split("\")[-1] -eq ($plugin.Fullname).Split("\")[-1]}
+		$settings = $Import | Where-Object {($_.filename).Split("\")[-1] -eq ($plugin.Fullname).Split("\")[-1]}
 		Set-PluginSettings -Filename $plugin.Fullname -Settings $settings
 	}
 	Write-Warning "`nImport Complete!`n"
@@ -656,10 +656,10 @@ Function Import-vCheckSettingsXML {
 	}
 	$Import = [xml](Get-Content $xmlFile)
 	$GlobalVariables = "$vCheckPath\GlobalVariables.ps1"
-	$settings = $Import.vCheck.Setting | Where {($_.filename).Split("\")[-1] -eq ($GlobalVariables).Split("\")[-1]}
+	$settings = $Import.vCheck.Setting | Where-Object {($_.filename).Split("\")[-1] -eq ($GlobalVariables).Split("\")[-1]}
 	Set-PluginSettings -Filename $GlobalVariables -Settings $settings -GB
 	Foreach ($plugin in (Get-ChildItem -Path "$vCheckPath\Plugins\" -Filter "*.ps1" -Recurse)) { 
-		$settings = $Import.vCheck.Setting | Where {($_.filename).Split("\")[-1] -eq ($plugin.Fullname).Split("\")[-1]}
+		$settings = $Import.vCheck.Setting | Where-Object {($_.filename).Split("\")[-1] -eq ($plugin.Fullname).Split("\")[-1]}
 		Set-PluginSettings -Filename $plugin.Fullname -Settings $settings
 	}
 	Write-Warning "`nImport Complete!`n"
@@ -750,7 +750,7 @@ param (
 	while ( ($i -lt $end) -and ($contents[$i] -notmatch "Start of Settings") ) { $i++ }
 	
 	while ( ($i -lt $end) -and ($contents[$i] -notmatch "End of Settings")   ) { 
-		if ($contents[$i] -match "`=") { "" | select @{n='File';e={$PluginFile.fullname}},@{n='Variable';e={$contents[$i]}}; $i++ }
+		if ($contents[$i] -match "`=") { "" | Select-Object @{n='File';e={$PluginFile.fullname}},@{n='Variable';e={$contents[$i]}}; $i++ }
 		else { $i++ }
 	}
 
@@ -954,7 +954,7 @@ Function Get-vCheckLogData {
 	$ContextInfo = Select-String "Plugin Start - $Section" $vCheckFile -context 0,6
 
 	# lines 3-6 are the data we want.
-	$table = $ContextInfo.Context.PostContext | select -last 4
+	$table = $ContextInfo.Context.PostContext | Select-Object -last 4
 
 	# The table actually ends on line 7.  But line 6 looks like this:
 	# <tr><td style="text-align: right; background: #FFFFFF"><a href="#top" style="color: black">Back To Top</a>

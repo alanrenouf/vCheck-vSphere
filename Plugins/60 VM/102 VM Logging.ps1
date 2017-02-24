@@ -17,8 +17,8 @@ $KeepOld = Get-vCheckSetting $Title "KeepOld" $KeepOld
 $RotateSize = Get-vCheckSetting $Title "RotateSize" $RotateSize
 
 $VM | Foreach {
-   $VMKeepOld = $_.ExtensionData.Config.ExtraConfig | Where {$_.Key -eq "log.keepold"} | Select -ExpandProperty Value
-   $VMRotateSize = $_.ExtensionData.Config.ExtraConfig | Where {$_.Key -eq "log.rotatesize"} | Select -ExpandProperty Value
+   $VMKeepOld = $_.ExtensionData.Config.ExtraConfig | Where-Object {$_.Key -eq "log.keepold"} | Select-Object -ExpandProperty Value
+   $VMRotateSize = $_.ExtensionData.Config.ExtraConfig | Where-Object {$_.Key -eq "log.rotatesize"} | Select-Object -ExpandProperty Value
 
    If ($VMKeepOld -ne $KeepOld -Or $VMRotateSize -ne $RotateSize) {
       New-Object -TypeName PSObject -Property @{

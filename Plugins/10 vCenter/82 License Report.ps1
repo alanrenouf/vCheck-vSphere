@@ -11,11 +11,11 @@ $PluginCategory = "vSphere"
 
 $vSphereLicInfo = @()
 
-Foreach ($LicenseMan in Get-View ($ServiceInstance | Select -First 1).Content.LicenseManager) 
+Foreach ($LicenseMan in Get-View ($ServiceInstance | Select-Object -First 1).Content.LicenseManager) 
 {
-   ($LicenseMan | Select -ExpandProperty Licenses) | Select @{Name="VC";e={([Uri]$LicenseMan.Client.ServiceUrl).Host}}, `
-      Name, LicenseKey, Total, Used, @{Name="Information";e={$_.Labels | Select -ExpandProperty Value}}, `
-      @{"Name"="ExpirationDate";e={$_.Properties | Where { $_.key -eq "expirationDate" } | Select -ExpandProperty Value}}
+   ($LicenseMan | Select-Object -ExpandProperty Licenses) | Select-Object  @{Name="VC";e={([Uri]$LicenseMan.Client.ServiceUrl).Host}}, `
+      Name, LicenseKey, Total, Used, @{Name="Information";e={$_.Labels | Select-Object -ExpandProperty Value}}, `
+      @{"Name"="ExpirationDate";e={$_.Properties | Where-Object { $_.key -eq "expirationDate" } | Select-Object -ExpandProperty Value}}
 }
 
 # Changelog

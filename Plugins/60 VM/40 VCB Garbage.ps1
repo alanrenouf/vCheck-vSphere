@@ -10,4 +10,4 @@ $PluginCategory = "vSphere"
 # Start of Settings 
 # End of Settings 
 
-$FullVM | ?{$_.snapshot | %{$_.rootsnapshotlist | ?{$_.name -contains "VCB|Consolidate|veeam|NBU_SNAPSHOT"}}} | Sort Name | Select Name
+$FullVM | ?{$_.snapshot | %{$_.rootsnapshotlist | ?{$_.name -contains "VCB|Consolidate|veeam|NBU_SNAPSHOT"}}} | Sort-Object Name | Select-Object Name

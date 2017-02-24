@@ -22,10 +22,10 @@ $vCenterSessionsDoNotInclude = Get-vCheckSetting $Title "vCenterSessionsDoNotInc
 # Retrieve vCenter sessions and report any sessions that exceed the maximum session age
 
 (Get-View $ServiceInstance.Content.SessionManager).SessionList | `
-   Where {$_.LoginTime -lt (Get-Date).AddHours(-$MaxvCenterSessionAge) -AND `
+   Where-Object {$_.LoginTime -lt (Get-Date).AddHours(-$MaxvCenterSessionAge) -AND `
    $_.UserName -notmatch $vCenterSessionsDoNotInclude} | `
-   select LoginTime, UserName, FullName, @{N="IdleMinutes";e={([Math]::Round(((Get-Date)-($_.lastActiveTime).ToLocalTime()).TotalMinutes))}} | ` 
-   Where {$_.IdleMinutes -ge $MinvCenterSessionAge}
+   Select-Object LoginTime, UserName, FullName, @{N="IdleMinutes";e={([Math]::Round(((Get-Date)-($_.lastActiveTime).ToLocalTime()).TotalMinutes))}} | ` 
+   Where-Object {$_.IdleMinutes -ge $MinvCenterSessionAge}
 
 $Comments = "The following displays vCenter sessions that exceed the maximum session age ($MaxvCenterSessionAge Hour(s))."
 

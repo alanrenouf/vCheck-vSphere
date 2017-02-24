@@ -16,7 +16,7 @@ $MBFree = Get-vCheckSetting $Title "MBFree" $MBFree
 $MBDiskMinSize = Get-vCheckSetting $Title "MBDiskMinSize" $MBDiskMinSize
 
 $MyCollection = @()
-$AllVMs = $FullVM | Where {-not $_.Config.Template } | Where { $_.Runtime.PowerState -eq "poweredOn" -And ($_.Guest.toolsStatus -ne "toolsNotInstalled" -And $_.Guest.ToolsStatus -ne "toolsNotRunning")} | Select *, @{N="NumDisks";E={@($_.Guest.Disk.Length)}} | Sort-Object -Descending NumDisks
+$AllVMs = $FullVM | Where-Object {-not $_.Config.Template -and $_.Runtime.PowerState -eq "poweredOn" -And ($_.Guest.toolsStatus -ne "toolsNotInstalled" -And $_.Guest.ToolsStatus -ne "toolsNotRunning")} | Select-Object *, @{N="NumDisks";E={@($_.Guest.Disk.Length)}} | Sort-Object -Descending NumDisks
 ForEach ($VMdsk in $AllVMs){
    Foreach ($disk in $VMdsk.Guest.Disk){
       if ((([math]::Round($disk.Capacity / 1MB)) -gt $MBDiskMinSize) -and (([math]::Round($disk.FreeSpace / 1MB)) -lt $MBFree)){

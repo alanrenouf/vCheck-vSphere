@@ -22,4 +22,4 @@ foreach ($clusview in $clusviews) {
    }
 }
 
-$clualarms | sort name
+$clualarms | Sort-Object name

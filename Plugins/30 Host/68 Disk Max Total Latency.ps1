@@ -19,7 +19,7 @@ $HostsDiskLatency = @()
 foreach ($VMHost in $VMH | ?{$_.ConnectionState -eq "Connected"}) {
    if ($VMHost.Version -lt 4){continue}# not an esx 4.x host
    $HostDiskLatency = @()
-   $VHHMaxLatency = $VMHost | get-stat -stat "disk.maxTotalLatency.latest" -start ($Date).addhours(-$stattotallatency) -finish ($Date)|?{$_.value -gt $diskmaxtotallatency}|sort Timestamp -Descending
+   $VHHMaxLatency = $VMHost | get-stat -stat "disk.maxTotalLatency.latest" -start ($Date).addhours(-$stattotallatency) -finish ($Date)|?{$_.value -gt $diskmaxtotallatency}| Sort-Object Timestamp -Descending
    if ($VHHMaxLatency.Count -gt 0) {
       $Details = "" | Select-Object Host, Timestamp, milliseconds
       $Details.host = $VMHost.name

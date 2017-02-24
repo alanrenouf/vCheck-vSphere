@@ -32,20 +32,20 @@ $Info = New-Object -TypeName PSObject -Property @{
    "Number of Templates" = (@($VMTmpl).Count)
    "Number of Clusters" = (@($Clusters).Count)
    "Number of Datastores" = (@($Datastores).Count)
-   "Active VMs" = (@($FullVM | Where { $_.Runtime.PowerState -eq "poweredOn" }).Count) 
-   "In-active VMs" = (@($FullVM | Where { $_.Runtime.PowerState -eq "poweredOff" }).Count)
+   "Active VMs" = (@($FullVM | Where-Object { $_.Runtime.PowerState -eq "poweredOn" }).Count) 
+   "In-active VMs" = (@($FullVM | Where-Object { $_.Runtime.PowerState -eq "poweredOff" }).Count)
 }
 
 # Don't display DRS line if 0 days are set
 if ($DRSMigrateAge -gt 0) {
-   $Info | Add-Member Noteproperty "DRS Migrations for last $($DRSMigrateAge) Days" (@($MigrationQuery1 | Where {$_.GetType().Name -eq "DrsVmMigratedEvent"}).Count)
+   $Info | Add-Member Noteproperty "DRS Migrations for last $($DRSMigrateAge) Days" (@($MigrationQuery1 | Where-Object {$_.GetType().Name -eq "DrsVmMigratedEvent"}).Count)
 }
 
 # Adding vSphere 5 informations
 if ($VIVersion -ge 5) {
    $Info | Add-Member Noteproperty "Number of Datastore Clusters" $(@($DatastoreClustersView).Count)
    if (($MigrationQuery2) -and ($SDRSMigrateAge -gt 0)) {
-      $Info | Add-Member Noteproperty "Storage DRS Migrations for last $($SDRSMigrateAge) Days" (@($MigrationQuery2 | Where {$_.FullFormattedMessage -imatch "(Storage vMotion){1}.*(DRS){1}"}).Count)
+      $Info | Add-Member Noteproperty "Storage DRS Migrations for last $($SDRSMigrateAge) Days" (@($MigrationQuery2 | Where-Object {$_.FullFormattedMessage -imatch "(Storage vMotion){1}.*(DRS){1}"}).Count)
    }
 }
 

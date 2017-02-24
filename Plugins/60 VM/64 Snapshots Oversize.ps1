@@ -10,7 +10,7 @@ $PluginCategory = "vSphere"
 # End of Settings 
 
 $snapp = @()
-Foreach ($vmg in ($VM | Where {$_.ExtensionData.Snapshot})) {
+Foreach ($vmg in ($VM | Where-Object {$_.ExtensionData.Snapshot})) {
    $hddsize = ($vmg | Get-HardDisk | Measure-Object -sum CapacityGB).sum
    $snapInfo = $vmg | Get-Snapshot | Measure-Object -Sum SizeGB
 
@@ -28,7 +28,7 @@ Foreach ($vmg in ($VM | Where {$_.ExtensionData.Snapshot})) {
    })
  }
 
-$snapp | select VM, vmdkSizeGB, SnapSizeGB, SnapCount, @{N="OverSize %";E={$_.OverSize}} | sort "OverSize %" -Descending
+$snapp | Select-Object VM, vmdkSizeGB, SnapSizeGB, SnapCount, @{N="OverSize %";E={$_.OverSize}} | Sort-Object "OverSize %" -Descending
 
 # Changelog
 ## 1.3 : Rewritten to cleanup and compare vmdk size to only snapshot size

@@ -15,7 +15,7 @@ $unwantedHardware = "VirtualUSBController|VirtualParallelPort|VirtualSerialPort"
 $unwantedHardware = Get-vCheckSetting $Title "unwantedHardware" $unwantedHardware
 
 foreach ($vmguest in $FullVM) {
-   $vmguest.Config.Hardware.Device | where {$_.GetType().Name -match $unwantedHardware} | %{
+   $vmguest.Config.Hardware.Device | Where-Object {$_.GetType().Name -match $unwantedHardware} | %{
       New-Object -TypeName PSObject -Property @{
          Name = $vmguest.name 
          Label = $_.DeviceInfo.Label

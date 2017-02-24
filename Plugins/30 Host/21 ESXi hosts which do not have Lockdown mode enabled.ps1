@@ -9,7 +9,7 @@ $PluginCategory = "vSphere"
 # Start of Settings 
 # End of Settings 
 
-$VMH | Where {@("Connected","Maintenance") -contains $_.ConnectionState -and 
+$VMH | Where-Object {@("Connected","Maintenance") -contains $_.ConnectionState -and 
               $_.ExtensionData.Summary.Config.Product.Name -match "i" -and 
               -not $_.ExtensionData.Config.AdminDisabled} | `
-                 Select Name, @{N="LockedMode";E={$_.ExtensionData.Config.AdminDisabled}}
+                 Select-Object Name, @{N="LockedMode";E={$_.ExtensionData.Config.AdminDisabled}}

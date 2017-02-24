@@ -82,7 +82,7 @@ function Get-ReportTOC {
    $TOCHTML = "<table><tr>"
 
    $i = 0
-   foreach ($pr in ($PluginResult | Where {$_.Details})) {
+   foreach ($pr in ($PluginResult | Where-Object {$_.Details})) {
       $TOCHTML += ("<td style='padding-left: 10px'><a style='font-size: 8pt' href='#{0}'>{1}</a></td>" -f $pr.PluginID, $pr.Title)
 
       $i++

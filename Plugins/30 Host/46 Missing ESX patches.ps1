@@ -15,9 +15,9 @@ $PluginCategory = "vSphere"
 
 If (Get-PSSnapin Vmware.VumAutomation -ErrorAction SilentlyContinue) {
    foreach($esx in $VMH){
-      foreach($baseline in (Get-Compliance -Entity $esx -Detailed | where {$_.Status -eq "NotCompliant"})){
+      foreach($baseline in (Get-Compliance -Entity $esx -Detailed | Where-Object {$_.Status -eq "NotCompliant"})){
          $baseline.NotCompliantPatches |
-         select @{N="Host";E={$esx.Name}},
+         Select-Object @{N="Host";E={$esx.Name}},
          @{N="Baseline";E={$baseline.Baseline.Name}},Name,ReleaseDate,IdByVendor,
          @{N="KB";E={(Select-String "(?<url>http://[\w|\.|/]*\w{1})" -InputObject $_.Description).Matches[0].Groups['url'].Value}}
       }

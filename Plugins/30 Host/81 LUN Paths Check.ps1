@@ -14,7 +14,7 @@ $RecLUNPaths = 2
 $RecLUNPaths = Get-vCheckSetting $Title "RecLUNPaths" $RecLUNPaths
 
 $missingpaths = @() 
-foreach ($esxhost in ($HostsViews | where {$_.Runtime.ConnectionState -match "Connected|Maintenance"})) {
+foreach ($esxhost in ($HostsViews | Where-Object {$_.Runtime.ConnectionState -match "Connected|Maintenance"})) {
   #Write-Host $esxhost.Name
    $lun_array = @() # 2D array - LUN Name & Path Count
    $esxhost | %{$_.config.storageDevice.multipathInfo.lun} | %{$_.path} | ?{$_.name -like "fc.*"} | %{

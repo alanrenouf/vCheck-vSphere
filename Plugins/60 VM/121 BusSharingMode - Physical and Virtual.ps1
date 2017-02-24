@@ -11,9 +11,9 @@ $PluginCategory = "vSphere"
 
 # BusSharingMode - Physical and Virtual
 ForEach ($vm in $FullVM){
-    $scsi = $vm.Config.Hardware.Device | where {$_ -is [VMware.Vim.VirtualSCSIController] -and ($_.SharedBus -eq "physicalSharing" -or $_.SharedBus -eq "virtualSharing")}
+    $scsi = $vm.Config.Hardware.Device | Where-Object {$_ -is [VMware.Vim.VirtualSCSIController] -and ($_.SharedBus -eq "physicalSharing" -or $_.SharedBus -eq "virtualSharing")}
     if ($scsi){
-        $scsi | Select @{N="VM";E={$vm.Name}},
+        $scsi | Select-Object @{N="VM";E={$vm.Name}},
             @{N="Controller";E={$_.DeviceInfo.Label}},
             @{N="BusSharingMode";E={$_.SharedBus}}
     }

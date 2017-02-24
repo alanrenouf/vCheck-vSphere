@@ -10,4 +10,4 @@ $PluginCategory = "vSphere"
 # End of Settings 
 
 $HostsViews | Group-Object {$_.Summary.config.product.fullname} | `
-   Select @{Name="Version";Expression={$_.Name}}, Count | Sort-Object Count -Descending
+   Select-Object @{Name="Version";Expression={$_.Name}}, Count | Sort-Object Count -Descending

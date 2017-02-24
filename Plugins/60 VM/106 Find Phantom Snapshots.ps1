@@ -12,7 +12,7 @@ $PluginCategory = "vSphere"
 $OutputPhantomSnapshots = @()
 
 ForEach ($theVM in $VM){
-   ForEach ($theVMdisk in ($theVM | Get-HardDisk | Where {$_.Filename -match "-\d{6}.vmdk"})){
+   ForEach ($theVMdisk in ($theVM | Get-HardDisk | Where-Object {$_.Filename -match "-\d{6}.vmdk"})){
       # Find VM's which don't have normal Snapshots registered 
       if (!(Get-Snapshot $theVM))
       {

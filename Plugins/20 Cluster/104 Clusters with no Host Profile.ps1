@@ -10,6 +10,6 @@ $PluginCategory = "vSphere"
 # End of Settings
 
 # Get all host profiles and corresponding cluster ID (don't really care about individual hosts at this stage!)
-$HostProfiles = Get-VMHostProfile | Select Name, @{Name="ClusterID";Expression={$_.ExtensionData.Entity | ?{ $_.type -eq "ClusterComputeResource" }}}
+$HostProfiles = Get-VMHostProfile | Select-Object Name, @{Name="ClusterID";Expression={$_.ExtensionData.Entity | ?{ $_.type -eq "ClusterComputeResource" }}}
 
-$clusviews | ?{($HostProfiles | Select -expandProperty ClusterID) -notcontains $_.moref } | Sort-Object Name | Select Name
+$clusviews | ?{($HostProfiles | Select-Object -expandProperty ClusterID) -notcontains $_.moref } | Sort-Object Name | Select-Object Name

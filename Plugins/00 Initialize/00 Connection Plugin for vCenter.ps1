@@ -142,7 +142,7 @@ switch ($platform.OSFamily) {
     }
 }
 
-$OpenConnection = $global:DefaultVIServers | where { $_.Name -eq $VIServer }
+$OpenConnection = $global:DefaultVIServers | Where-Object { $_.Name -eq $VIServer }
 if($OpenConnection.IsConnected) {
    Write-CustomOut ( "{0}: {1}" -f $pLang.connReuse, $Server )
    $VIConnection = $OpenConnection
@@ -207,7 +207,7 @@ $Clusters = Get-Cluster | Sort-Object Name
 Write-CustomOut $pLang.collectDatastore
 $Datastores = Get-Datastore | Sort-Object Name
 Write-CustomOut $pLang.collectDVM
-$FullVM = Get-View -ViewType VirtualMachine | Where {-not $_.Config.Template}
+$FullVM = Get-View -ViewType VirtualMachine | Where-Object {-not $_.Config.Template}
 Write-CustomOut $pLang.collectTemplate 
 $VMTmpl = Get-Template
 Write-CustomOut $pLang.collectDVIO
@@ -221,7 +221,7 @@ $clusviews = Get-View -ViewType ClusterComputeResource
 Write-CustomOut $pLang.collectDDatastore
 $storageviews = Get-View -ViewType Datastore
 Write-CustomOut $pLang.collectAlarms
-$valarms = $alarmMgr.GetAlarm($null) | select value, @{N="name";E={(Get-View -Id $_).Info.Name}}
+$valarms = $alarmMgr.GetAlarm($null) | Select-Object value, @{N="name";E={(Get-View -Id $_).Info.Name}}
 
 # Find out which version of the API we are connecting to
 $VIVersion = ((Get-View ServiceInstance).Content.About.Version).Chars(0)
@@ -324,7 +324,7 @@ function Get-VIEventPlus {
          $si = Get-View ServiceInstance
          $schTskMgr = Get-View $si.Content.ScheduledTaskManager
          $eventFilter.ScheduledTask = Get-View $schTskMgr.ScheduledTask |
-         where {$_.Info.Name -match $ScheduledTask} |
+         Where-Object {$_.Info.Name -match $ScheduledTask} |
          Select-Object -First 1 |
          Select-Object -ExpandProperty MoRef
       }

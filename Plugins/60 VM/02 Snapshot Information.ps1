@@ -32,7 +32,7 @@ function Get-SnapshotSummary {
 				$mySnaps += $SnapshotInfo
 			}
 
-			$mySnaps | Select VM, @{N="SnapName";E={[System.Web.HttpUtility]::UrlDecode($_.Name)}}, @{N="DaysOld";E={((Get-Date) - $_.Created).Days}}, Creator, @{N="SizeGB";E={$_.SizeGB -as [int]}}, Created, Description -ErrorAction SilentlyContinue | Sort DaysOld
+			$mySnaps | Select-Object VM, @{N="SnapName";E={[System.Web.HttpUtility]::UrlDecode($_.Name)}}, @{N="DaysOld";E={((Get-Date) - $_.Created).Days}}, Creator, @{N="SizeGB";E={$_.SizeGB -as [int]}}, Created, Description -ErrorAction SilentlyContinue | Sort-Object DaysOld
 
 		} else {
 			throw 'ParameterBinderStrings\InputObjectNotBound'
@@ -79,7 +79,7 @@ function Get-SnapshotExtra ($snap){
    $dummy = $collectionImpl.RewindCollector
    $collection = $collectionImpl.ReadNextTasks($tasknumber)
    while($collection -ne $null){
-      $collection | where {$_.DescriptionId -eq "VirtualMachine.createSnapshot" -and $_.State -eq "success" -and $_.EntityName -eq $guestName} | %{
+      $collection | Where-Object {$_.DescriptionId -eq "VirtualMachine.createSnapshot" -and $_.State -eq "success" -and $_.EntityName -eq $guestName} | %{
          $row = New-Object PsObject
          $row | Add-Member -MemberType NoteProperty -Name User -Value $_.Reason.UserName
          $vm = Get-View $_.Entity
@@ -107,7 +107,7 @@ function Get-SnapshotExtra ($snap){
    $snapshotsExtra
 }
 
-$VM | Get-Snapshot | Where {$_.Created -lt (($Date).AddDays(-$SnapshotAge))} | Get-SnapshotSummary | Where {$_.SnapName -notmatch $excludeName -and $_.Description -notmatch $excludeDesc -and $_.Creator -notmatch $excludeCreator}
+$VM | Get-Snapshot | Where-Object {$_.Created -lt (($Date).AddDays(-$SnapshotAge))} | Get-SnapshotSummary | Where-Object {$_.SnapName -notmatch $excludeName -and $_.Description -notmatch $excludeDesc -and $_.Creator -notmatch $excludeCreator}
 
 $Title = "Snapshot Information"
 $Header =  "Snapshots (Over $SnapshotAge Days Old): [count]"

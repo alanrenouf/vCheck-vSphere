@@ -54,8 +54,8 @@ foreach($vmotion in ($vmotions | Sort-object CreatedTime | Group-Object ChainID)
     }
 }
 # Filter out unwanted vMotion Events
-if (-not $IncludevMotions) { $Motions = $Motions | Where { $_.Type -ne "vMotion" }}
-if (-not $IncludeSvMotions) { $Motions = $Motions | Where { $_.Type -ne "SvMotion" }}
+if (-not $IncludevMotions) { $Motions = $Motions | Where-Object { $_.Type -ne "vMotion" }}
+if (-not $IncludeSvMotions) { $Motions = $Motions | Where-Object { $_.Type -ne "SvMotion" }}
 $Motions
 
 $Header = ("s/vMotion Information (Over {0} Days Old): [count]" -f $vMotionAge)

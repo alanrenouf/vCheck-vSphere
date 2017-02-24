@@ -14,7 +14,7 @@ $MNDoNotInclude = "VM1_*|VM2_*"
 # Update settings where there is an override
 $MNDoNotInclude = Get-vCheckSetting $Title "MNDoNotInclude" $MNDoNotInclude
 
-($FullVM | Where {$_.Runtime.PowerState -eq 'poweredOn' -AND $_.Name -notmatch $MNDoNotInclude -AND $_.Guest.HostName -ne "" -AND $_.Guest.HostName -notmatch $_.Name }) |
+($FullVM | Where-Object {$_.Runtime.PowerState -eq 'poweredOn' -AND $_.Name -notmatch $MNDoNotInclude -AND $_.Guest.HostName -ne "" -AND $_.Guest.HostName -notmatch $_.Name }) |
    foreach {
       $vmguest = $_
       if ($vmguest.Parent -ne $null)

@@ -32,11 +32,11 @@ $FullVM | % {
 
 $myCol = @()
 foreach ( $gosname in $VMOSversions.Keys | sort) {
-  $MyDetails = "" | select OS, Count
+  $MyDetails = "" | Select-Object OS, Count
   $MyDetails.OS = $gosname
   $MyDetails.Count = $VMOSversions.$gosname
   $myCol += $MyDetails
 }
 
-$myCol | sort Count -desc
+$myCol | Sort-Object Count -desc
 Remove-Variable VMOSversions

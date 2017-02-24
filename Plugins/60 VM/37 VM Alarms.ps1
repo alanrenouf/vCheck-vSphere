@@ -10,7 +10,7 @@ $PluginCategory = "vSphere"
 # End of Settings 
 
 $vmsalarms = @()
-foreach ($VMView in ($FullVM | Where {$_.TriggeredAlarmState})){
+foreach ($VMView in ($FullVM | Where-Object {$_.TriggeredAlarmState})){
    Foreach ($VMsTriggeredAlarm in $VMView.TriggeredAlarmState){
       New-Object -TypeName PSObject -Property @{
          Object = $VMView.name

@@ -9,7 +9,7 @@ $PluginCategory = "vSphere"
 # Start of Settings 
 # End of Settings 
 
-$FullVM | Where {$_.runtime.PowerState -eq "PoweredOn" -and ($_.Summary.QuickStats.SwappedMemory -gt 0 -or $_.Summary.QuickStats.BalloonedMemory -gt 0)} | Select Name, @{N="SwapMB";E={$_.Summary.QuickStats.SwappedMemory}}, @{N="MemBalloonMB";E={$_.Summary.QuickStats.BalloonedMemory}}
+$FullVM | Where-Object {$_.runtime.PowerState -eq "PoweredOn" -and ($_.Summary.QuickStats.SwappedMemory -gt 0 -or $_.Summary.QuickStats.BalloonedMemory -gt 0)} | Select-Object Name, @{N="SwapMB";E={$_.Summary.QuickStats.SwappedMemory}}, @{N="MemBalloonMB";E={$_.Summary.QuickStats.BalloonedMemory}}
 
 # Changelog
 ## 1.1 : Using quick stats property in order to avoid using Get-Stat cmdlet for performance matter

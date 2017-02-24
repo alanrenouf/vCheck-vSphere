@@ -21,21 +21,21 @@ $pLang = DATA {
 Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable pLang -ErrorAction SilentlyContinue
 
 $i=0;
-foreach ($eachDS in ($Datastores | Where {$_.State -eq "Available"})) {
+foreach ($eachDS in ($Datastores | Where-Object {$_.State -eq "Available"})) {
    Write-Progress -ID 2 -Parent 1 -Activity $pLang.pluginActivity -Status ($pLang.pluginStatus -f $i, $Datastores.count, $eachDS.Name) -PercentComplete ($i*100/$Datastores.count)
    $eachDS.Name
    $FilePath = $eachDS.DatastoreBrowserPath + '\*\*delta.vmdk*'
-   $fileList = @(Get-ChildItem -Path "$FilePath" | Select Name, FolderPath, FullName)
+   $fileList = @(Get-ChildItem -Path "$FilePath" | Select-Object Name, FolderPath, FullName)
    $FilePath = $eachDS.DatastoreBrowserPath + '\*\-*-flat.vmdk'
-   $fileList += Get-ChildItem -Path "$FilePath" | Select Name, FolderPath, FullName
+   $fileList += Get-ChildItem -Path "$FilePath" | Select-Object Name, FolderPath, FullName
 
    $i++
 
-   foreach ($vmFile in $filelist | sort FolderPath) 
+   foreach ($vmFile in $filelist | Sort-Object FolderPath) 
    {
       $vmFile.FolderPath -match '^\[([^\]]+)\] ([^/]+)' > $null
       $VMName = $matches[2]
-      $eachVM = $FullVM | where {$_.Name -eq $VMName}
+      $eachVM = $FullVM | Where-Object {$_.Name -eq $VMName}
       if (!$eachVM.snapshot) 
       { 
          # Only process VMs without snapshots

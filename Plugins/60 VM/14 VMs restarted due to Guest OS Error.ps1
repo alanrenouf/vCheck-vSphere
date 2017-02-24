@@ -13,7 +13,7 @@ $HAVMresetold = 5
 # Update settings where there is an override
 $HAVMresetold = Get-vCheckSetting $Title "HAVMresetold" $HAVMresetold
 
-Get-VIEventPlus -Start ($Date).AddDays(-$HAVMresetold) -Type Info | ?{$_.FullFormattedMessage -match "reset due to a guest OS error"} |select CreatedTime,FullFormattedMessage | sort CreatedTime -Descending
+Get-VIEventPlus -Start ($Date).AddDays(-$HAVMresetold) -Type Info | ?{$_.FullFormattedMessage -match "reset due to a guest OS error"} |Select-Object CreatedTime,FullFormattedMessage | Sort-Object Sort-Object CreatedTime -Descending
 
 $Comments = ("The following VMs have been restarted by HA in the last {0} days" -f $HAVMresetold)
 

@@ -9,7 +9,7 @@ $PluginCategory = "vSphere"
 # Start of Settings 
 # End of Settings 
 
-foreach ($esxhost in ($HostsViews | where {$_.Runtime.ConnectionState -match "Connected|Maintenance"})) {
+foreach ($esxhost in ($HostsViews | Where-Object {$_.Runtime.ConnectionState -match "Connected|Maintenance"})) {
    $esxhost | %{$_.config.storageDevice.multipathInfo.lun} | %{$_.path} | ?{$_.State -eq "Dead"} | %{
       New-Object PSObject -Property @{
          VMHost = $esxhost.Name

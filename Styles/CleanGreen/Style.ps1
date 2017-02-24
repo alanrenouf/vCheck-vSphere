@@ -72,7 +72,7 @@ function Get-PluginHTML {
 #>
 function Get-ReportTOC {
    $TOCHTML = "<ul>"
-   foreach ($pr in ($PluginResult | Where {$_.Details})) {
+   foreach ($pr in ($PluginResult | Where-Object {$_.Details})) {
       $TOCHTML += ("<li><a style='font-size: 8pt' href='#{0}'>{1}</a></li>" -f $pr.PluginID, $pr.Title)
    }
    $TOCHTML += "</ul>"

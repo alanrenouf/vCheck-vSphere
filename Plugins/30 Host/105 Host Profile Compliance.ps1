@@ -34,32 +34,32 @@ foreach ($Profile in $HostProfiles) {
          $Failures = $Profile | Test-VMHostProfileCompliance -UseCache 
 
          # Find all Hosts with HP Applied and status
-         $VMHosts = @($VMH | Where {(($Profile.ExtensionData.entity | Where {$_.type -eq "HostSystem" } | Select @{n="Id";e={"HostSystem-{0}" -f $_.Value}}) | Select -expandProperty Id) -contains $_.Id}) 
+         $VMHosts = @($VMH | Where-Object {(($Profile.ExtensionData.entity | Where-Object {$_.type -eq "HostSystem" } | Select-Object @{n="Id";e={"HostSystem-{0}" -f $_.Value}}) | Select-Object -expandProperty Id) -contains $_.Id}) 
          # Filter out those with failures and select required columns
-         $VMHosts = @($VMHosts | where {($failures | Select -expandproperty VMHostID) -notcontains $_.id} | Select @{Name="VMHostProfile";Expression={$Profile.Name}}, @{Name="Host";Expression={$_.Name}}, @{Name="Compliant";Expression={$true}}, @{Name="Failures";Expression={"None"}}) 
+         $VMHosts = @($VMHosts | Where-Object {($failures | Select-Object -expandproperty VMHostID) -notcontains $_.id} | Select-Object @{Name="VMHostProfile";Expression={$Profile.Name}}, @{Name="Host";Expression={$_.Name}}, @{Name="Compliant";Expression={$true}}, @{Name="Failures";Expression={"None"}}) 
          # Add in the failures
-         $VMHosts += ($Failures | Select VMHostProfile, @{Name='Host';Expression={$_.vmhost.name}}, @{Name='Compliant';Expression={$false}}, @{Name="Failures";Expression={($_.IncomplianceElementList | Select -expandproperty Description) -join "<br />"}})
+         $VMHosts += ($Failures | Select-Object VMHostProfile, @{Name='Host';Expression={$_.vmhost.name}}, @{Name='Compliant';Expression={$false}}, @{Name="Failures";Expression={($_.IncomplianceElementList | Select-Object -expandproperty Description) -join "<br />"}})
          
          if ($ShowCompliant) {
             $VMHosts 
          }
          else {
-            $VMHosts | Where { $_.Compliant -eq $false }
+            $VMHosts | Where-Object { $_.Compliant -eq $false }
          }
       }
       else {
          # Otherwise, we don't care about the detail
-         $Profile | Select Name, @{Name="Compliant";Expression={@($_ | Test-VMHostProfileCompliance -UseCache).count -eq 0 }}
+         $Profile | Select-Object Name, @{Name="Compliant";Expression={@($_ | Test-VMHostProfileCompliance -UseCache).count -eq 0 }}
       }
    }
    else {
       # Profile is not used - just return the name and "N/A"
       if ($ShowCompliant) {
             if ($ShowDetail) {
-               $Profile | Select @{Name="VMHostProfile";Expression={$_.Name}}, @{Name="Host";Expression="None"}, @{Name="Compliant";Expression={"N/A"}}, @{Name="Failures";Expression={"N/A"}}
+               $Profile | Select-Object @{Name="VMHostProfile";Expression={$_.Name}}, @{Name="Host";Expression="None"}, @{Name="Compliant";Expression={"N/A"}}, @{Name="Failures";Expression={"N/A"}}
             }
             else {
-               $Profile | Select Name, @{Name="Compliant";Expression="N/A"}
+               $Profile | Select-Object Name, @{Name="Compliant";Expression="N/A"}
             }
       }
    }

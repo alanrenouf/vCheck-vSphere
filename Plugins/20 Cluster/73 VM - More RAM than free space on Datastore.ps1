@@ -9,6 +9,6 @@ $PluginCategory = "vSphere"
 # Start of Settings 
 # End of Settings 
 
-$VM | Where {$_.PowerState -eq "PoweredOn"} | 
-   Select Name, MemoryMB, @{"Name"="FreeSpaceMB";e={($Datastores|Where {$_.Name -eq (($Machine.ExtensionData.Config.Files.VmPathName).Split('[')[1]).Split(']')[0]}).FreeSpaceMB}} | 
-   Where {($_.FreeSpaceMB -ne $null) -and ($_.MemoryMB -gt $_.FreeSpaceMB)} | Sort Name
+$VM | Where-Object {$_.PowerState -eq "PoweredOn"} | 
+   Select-Object Name, MemoryMB, @{"Name"="FreeSpaceMB";e={($Datastores | Where-Object {$_.Name -eq (($Machine.ExtensionData.Config.Files.VmPathName).Split('[')[1]).Split(']')[0]}).FreeSpaceMB}} | 
+   Where-Object {($_.FreeSpaceMB -ne $null) -and ($_.MemoryMB -gt $_.FreeSpaceMB)} | Sort-Object Name

@@ -16,7 +16,7 @@ $IgnoreVMMedia = Get-vCheckSetting $Title "IgnoreVMMedia" $IgnoreVMMedia
 
 $FullVM | ?{$_.runtime.powerState -eq "PoweredOn" -And $_.Name -notmatch $IgnoreVMMedia} | 
    % { $VMName = $_.Name; $_.config.hardware.device | ?{($_ -is [VMware.Vim.VirtualFloppy] -or $_ -is [VMware.Vim.VirtualCdrom]) -and $_.Connectable.Connected} | 
-      Select @{Name="VMName"; Expression={ $VMName}}, 
+      Select-Object @{Name="VMName"; Expression={ $VMName}}, 
              @{Name="Device Type"; Expression={ $_.GetType().Name}},
              @{Name="Device Name"; Expression={ $_.DeviceInfo.Label}},
              @{Name="Device Backing"; Expression={ $_.DeviceInfo.Summary}}

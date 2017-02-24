@@ -15,8 +15,8 @@ $ExcludedVMs = ""
 $ExcludedVMs = Get-vCheckSetting $Title "ExcludedVMs" $ExcludedVMs
 
 $DatastoreClustersView | Foreach {$_.PodStorageDrsEntry.StorageDrsConfig.VMConfig} | `
-   Where {$_.Enabled -eq $false -or $_.Behavior -ne $null} | `
-   Select @{N="VM";E={Get-View $_.Vm | Select -ExpandProperty Name}}, Enabled, Behavior,@{N="Datastore Cluster";E={$dc.Name}} | Where { $_.VM -notmatch $ExcludedVMs }
+   Where-Object {$_.Enabled -eq $false -or $_.Behavior -ne $null} | `
+   Select-Object @{N="VM";E={Get-View $_.Vm | Select-Object -ExpandProperty Name}}, Enabled, Behavior,@{N="Datastore Cluster";E={$dc.Name}} | Where-Object { $_.VM -notmatch $ExcludedVMs }
 
 # Changelog
 ## 1.0 : Initial Version

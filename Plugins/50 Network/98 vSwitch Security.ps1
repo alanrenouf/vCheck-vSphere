@@ -90,7 +90,7 @@ if ($VersionOK) {
       }
    }
 
-   if ($results.Host) { $results | where { ($_.AllowPromiscuous -eq $AllowPromiscuousPolicy) -or ($_.ForgedTransmits -eq $ForgedTransmitsPolicy) -or ($_.MacChanges -eq $MacChangesPolicy) } | Sort-Object vSwitch,PortGroup }
+   if ($results.Host) { $results | Where-Object { ($_.AllowPromiscuous -eq $AllowPromiscuousPolicy) -or ($_.ForgedTransmits -eq $ForgedTransmitsPolicy) -or ($_.MacChanges -eq $MacChangesPolicy) } | Sort-Object vSwitch,PortGroup }
 }
 else {
    Write-Warning "PowerCLi version installed is lower than 5.1 Release 2"

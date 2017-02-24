@@ -10,6 +10,6 @@ $PluginCategory = "vSphere"
 $VCEventAge = 1
 # End of Settings 
 
-Get-VIEventPlus -Start ($Date).AddDays(-$VCEventAge ) -EventType Error | Select @{N="Host";E={$_.host.name}}, createdTime, @{N="User";E={($_.userName.split("\"))[1]}}, fullFormattedMessage
+Get-VIEventPlus -Start ($Date).AddDays(-$VCEventAge ) -EventType Error | Select-Object @{N="Host";E={$_.host.name}}, createdTime, @{N="User";E={($_.userName.split("\"))[1]}}, fullFormattedMessage
 
 $Header = ("Error Events (Last {0} Day(s)): [count]" -f $VCEventAge)

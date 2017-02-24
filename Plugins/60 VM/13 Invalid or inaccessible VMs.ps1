@@ -9,5 +9,5 @@ $PluginCategory = "vSphere"
 # Start of Settings 
 # End of Settings 
 
-$FullVM | Where {$_.Runtime.ConnectionState -eq "invalid" -or $_.Runtime.ConnectionState -eq "inaccessible"} | Sort Name | `
-    Select Name, @{Name="ConnectionState";e={$_.Runtime.ConnectionState}}, @{Name="PowerState";e={$_.Runtime.PowerState}}, @{Name="IP_Address";e={$_.Guest.IpAddress}}
+$FullVM | Where-Object {$_.Runtime.ConnectionState -eq "invalid" -or $_.Runtime.ConnectionState -eq "inaccessible"} | Sort-Object Name | `
+    Select-Object Name, @{Name="ConnectionState";e={$_.Runtime.ConnectionState}}, @{Name="PowerState";e={$_.Runtime.PowerState}}, @{Name="IP_Address";e={$_.Guest.IpAddress}}

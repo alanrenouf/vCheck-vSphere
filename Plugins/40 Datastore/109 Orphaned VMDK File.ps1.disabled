@@ -49,7 +49,7 @@ $report = @()
 $arrUsedDisks = $FullVM | % {$_.Layout} | % {$_.Disk} | % {$_.DiskFile}
 
 #Write-CustomOut "..filtering list to exclude datastores that match this regex pattern: $excludeDatastoreRegex"
-$arrDS = $storageviews | Sort-Object -property Name | Where {$_.name -notmatch $excludeDatastoreRegex }
+$arrDS = $storageviews | Sort-Object -property Name | Where-Object {$_.name -notmatch $excludeDatastoreRegex }
 
 foreach ($strDatastore in $arrDS) {
    # Write-CustomOut "..$($strDatastore.Name) Orphaned Disks:"

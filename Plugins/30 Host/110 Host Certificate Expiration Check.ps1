@@ -90,6 +90,6 @@ namespace PKI {
 # Plugin to report on upcoming host certificate expirations
 
 # Check for Host Certificates 
-$VMH | Where {$_.ConnectionState -eq "Connected" -or $_.ConnectionState -eq "Maintenance"} | Foreach { Test-WebServerSSL -URL $_.Name | Select OriginalURi, Issuer, @{N="Expires";E={$_.Certificate.NotAfter} }, @{N="DaysTillExpire";E={(New-TimeSpan -Start (Get-Date) -End ($_.Certificate.NotAfter)).Days} }|? {$_.DaysTillExpire -le $WarningDays}}
+$VMH | Where-Object {$_.ConnectionState -eq "Connected" -or $_.ConnectionState -eq "Maintenance"} | Foreach { Test-WebServerSSL -URL $_.Name | Select-Object OriginalURi, Issuer, @{N="Expires";E={$_.Certificate.NotAfter} }, @{N="DaysTillExpire";E={(New-TimeSpan -Start (Get-Date) -End ($_.Certificate.NotAfter)).Days} }|? {$_.DaysTillExpire -le $WarningDays}}
 
 $Header = ("Hosts with upcoming Certificate Expirations: {0} Days" -f $WarningDays)

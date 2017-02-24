@@ -358,7 +358,7 @@ Function Get-HTMLTable {
 	# If only one column, fix up the table header
 	if (($content | Get-Member -MemberType Properties).count -eq 1)
 	{
-		$XMLTable.table.tr[0].th = (($content | Get-Member -MemberType Properties) | Select -ExpandProperty Name -First 1).ToString()
+		$XMLTable.table.tr[0].th = (($content | Get-Member -MemberType Properties) | Select-Object -ExpandProperty Name -First 1).ToString()
 	}
 	
 	# If format rules are specified
@@ -447,7 +447,7 @@ Function Get-HTMLList {
 		# If only one column, fix up the table header
 		if (($content | Get-Member -MemberType Properties).count -eq 1)
 		{
-			$XMLTable.table.tr[0].th = (($content | Get-Member -MemberType Properties) | Select -ExpandProperty Name -First 1).ToString()
+			$XMLTable.table.tr[0].th = (($content | Get-Member -MemberType Properties) | Select-Object -ExpandProperty Name -First 1).ToString()
 		}
 		
 		return (Format-HTMLEntities ([string]($XMLTable.OuterXml)))
@@ -788,7 +788,7 @@ if ($job) {
 		foreach ($PluginPath in ($jobConfig.vCheck.plugins.path -split ";")) {
 			if (Test-Path $PluginPath) {
 				$PluginPaths += (Get-Item $PluginPath).Fullname
-				$PluginPaths += Get-Childitem $PluginPath -Recurse | ?{ $_.PSIsContainer } | Select -ExpandProperty FullName
+				$PluginPaths += Get-Childitem $PluginPath -Recurse | ?{ $_.PSIsContainer } | Select-Object -ExpandProperty FullName
 			} else {
 				$PluginPaths += $ScriptPath + "\Plugins"
 				Write-Warning ($lang.pluginpathInvalid -f $PluginPath, ($ScriptPath + "\Plugins"))
@@ -819,10 +819,10 @@ if ($job) {
 	}
 } else {
 	$ToNatural = { [regex]::Replace($_, '\d+', { $args[0].Value.PadLeft(20) }) }
-	$vCheckPlugins = @(Get-ChildItem -Path $PluginsFolder -filter "*.ps1" -Recurse | where { $_.Directory -match "initialize" } | Sort-Object $ToNatural)
-	$PluginsSubFolder = Get-ChildItem -Path $PluginsFolder | where { ($_.PSIsContainer) -and ($_.Name -notmatch "initialize") -and ($_.Name -notmatch "finish") }
+	$vCheckPlugins = @(Get-ChildItem -Path $PluginsFolder -filter "*.ps1" -Recurse | Where-Object { $_.Directory -match "initialize" } | Sort-Object $ToNatural)
+	$PluginsSubFolder = Get-ChildItem -Path $PluginsFolder | Where-Object { ($_.PSIsContainer) -and ($_.Name -notmatch "initialize") -and ($_.Name -notmatch "finish") }
 	$vCheckPlugins += $PluginsSubFolder | % { Get-ChildItem -Path $_.FullName -filter "*.ps1" | Sort-Object $ToNatural }
-	$vCheckPlugins += Get-ChildItem -Path $PluginsFolder -filter "*.ps1" -Recurse | where { $_.Directory -match "finish" } | Sort-Object $ToNatural
+	$vCheckPlugins += Get-ChildItem -Path $PluginsFolder -filter "*.ps1" -Recurse | Where-Object { $_.Directory -match "finish" } | Sort-Object $ToNatural
 	$GlobalVariables = $ScriptPath + "\GlobalVariables.ps1"
 }
 
@@ -953,7 +953,7 @@ if (-not $GUIConfig) {
 		foreach ($Plugin in (Get-ChildItem $PluginsFolder -Include *.ps1, *.ps1.disabled -Recurse)) {
 			$Plugins += New-Object PSObject -Property @{
 				"Name" = (Get-PluginID  $Plugin.FullName).Title;
-				"Enabled" = (($vCheckPlugins | Select -ExpandProperty FullName) -Contains $plugin.FullName)
+				"Enabled" = (($vCheckPlugins | Select-Object -ExpandProperty FullName) -Contains $plugin.FullName)
 			}
 		}
 
@@ -982,7 +982,7 @@ if (-not $GUIConfig) {
 			"Title" = $lang.repTTRTitle;
 			"Author" = "vCheck";
 			"Version" = $vCheckVersion;
-			"Details" = ($PluginResult | Where { $_.TimeToRun -gt $PluginSeconds } | Select Title, TimeToRun | Sort-Object TimeToRun -Descending);
+			"Details" = ($PluginResult | Where-Object { $_.TimeToRun -gt $PluginSeconds } | Select-Object Title, TimeToRun | Sort-Object TimeToRun -Descending);
 			"Display" = "List";
 			"TableFormat" = $null;
 			"Header" = ($lang.repTime -f [math]::round(($Finished - $Date).TotalMinutes, 2), ($Finished.ToLongDateString()), ($Finished.ToLongTimeString()));

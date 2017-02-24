@@ -12,7 +12,7 @@ $vSwitchLeft = 5
 # Update settings where there is an override
 $vSwitchLeft = Get-vCheckSetting $Title "vSwitchLeft" $vSwitchLeft
 
-$VMH | Get-VirtualSwitch -Standard | Sort NumPortsAvailable | Where {$_.NumPortsAvailable -lt $($vSwitchLeft)} | Select VMHost, Name, NumPortsAvailable
+$VMH | Get-VirtualSwitch -Standard | Sort-Object NumPortsAvailable | Where-Object {$_.NumPortsAvailable -lt $($vSwitchLeft)} | Select-Object VMHost, Name, NumPortsAvailable
 
 $Header = "Standard vSwitch with less than $vSwitchLeft Port(s) Free: [count]"
 $Comments = "The following standard vSwitches have less than $vSwitchLeft left"

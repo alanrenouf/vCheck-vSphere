@@ -19,7 +19,7 @@ $limitResourceCPUClusNonHA = Get-vCheckSetting $Title "limitResourceCPUClusNonHA
 $limitResourceMEMClusNonHA = Get-vCheckSetting $Title "limitResourceMEMClusNonHA" $limitResourceMEMClusNonHA
 
 $capacityinfo = @()
-foreach ($cluv in ($clusviews | Where {$_.Summary.NumHosts -gt 0 } | Sort Name)) {
+foreach ($cluv in ($clusviews | Where-Object {$_.Summary.NumHosts -gt 0 } | Sort-Object Name)) {
    
    if ( $cluv.Configuration.DasConfig.Enabled -eq $true ) {
       $DasRealCpuCapacity = $cluv.Summary.EffectiveCpu - (($cluv.Summary.EffectiveCpu * $cluv.Configuration.DasConfig.FailoverLevel)/$cluv.Summary.NumHosts)
@@ -29,7 +29,7 @@ foreach ($cluv in ($clusviews | Where {$_.Summary.NumHosts -gt 0 } | Sort Name))
       $DasRealMemCapacity = $cluv.Summary.EffectiveMemory * $limitResourceMEMClusNonHA
    }
    
-   $cluvmlist = $VM | where { $cluv.Host -contains $_.VMHost.Id  }
+   $cluvmlist = $VM | Where-Object { $cluv.Host -contains $_.VMHost.Id  }
 
    #CPU
    $CluCpuUsage = (get-view $cluv.ResourcePool).Summary.runtime.cpu.OverallUsage
@@ -74,4 +74,4 @@ foreach ($cluv in ($clusviews | Where {$_.Summary.NumHosts -gt 0 } | Sort Name))
    $capacityinfo += $clucapacity
 }
 
-$capacityinfo | Sort Datacenter, ClusterName
+$capacityinfo | Sort-Object Datacenter, ClusterName

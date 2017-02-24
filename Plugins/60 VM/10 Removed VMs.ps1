@@ -12,7 +12,7 @@ $VMsNewRemovedAge = 5
 # Update settings where there is an override
 $VMsNewRemovedAge = Get-vCheckSetting $Title "VMsNewRemovedAge" $VMsNewRemovedAge
 
-Get-VIEventPlus -Start ((get-date).adddays(-$VMsNewRemovedAge)) -EventType "VmRemovedEvent" | Select @{Name="VMName";Expression={$_.vm.name}}, CreatedTime, UserName, fullFormattedMessage
+Get-VIEventPlus -Start ((get-date).adddays(-$VMsNewRemovedAge)) -EventType "VmRemovedEvent" | Select-Object @{Name="VMName";Expression={$_.vm.name}}, CreatedTime, UserName, fullFormattedMessage
 
 $Header = ("VMs Removed (Last {0} Day(s)): [count]" -f $VMsNewRemovedAge)
 $Comments = "The following VMs have been removed/deleted over the last {0} days" -f $VMsNewRemovedAge

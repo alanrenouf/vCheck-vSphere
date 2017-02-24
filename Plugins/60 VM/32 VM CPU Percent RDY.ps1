@@ -24,10 +24,10 @@ Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable pLa
 $PercCPUReady = Get-vCheckSetting $Title "PercCPUReady" $PercCPUReady
 
 $i=0
-ForEach ($v in ($VM | Where {$_.PowerState -eq "PoweredOn"})){
+ForEach ($v in ($VM | Where-Object {$_.PowerState -eq "PoweredOn"})){
    Write-Progress -ID 2 -Parent 1 -Activity $plang.pluginActivity -Status $v.Name -PercentComplete ((100*$i)/$VM.Count)
    For ($cpunum = 0; $cpunum -lt $v.NumCpu; $cpunum++){
-      $PercReady = [Math]::Round((($v | Get-Stat -ErrorAction SilentlyContinue -Stat Cpu.Ready.Summation -Realtime | Where {$_.Instance -eq $cpunum} | Measure-Object -Property Value -Average).Average)/200,1)
+      $PercReady = [Math]::Round((($v | Get-Stat -ErrorAction SilentlyContinue -Stat Cpu.Ready.Summation -Realtime | Where-Object {$_.Instance -eq $cpunum} | Measure-Object -Property Value -Average).Average)/200,1)
       
       if ($_.PercReady -gt $PercCPUReady)
       {

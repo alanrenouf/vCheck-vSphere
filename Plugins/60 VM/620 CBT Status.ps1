@@ -14,7 +14,7 @@ $CBTEnabled = $false
 # Update settings where there is an override
 $CBTEnabled = Get-vCheckSetting $Title "CBTEnabled" $CBTEnabled
 
-$FullVm | Where-object {$_.Config.ChangeTrackingEnabled -eq $CBTEnabled} | Select-Object Name, @{Name="Change Block Tracking";Expression={if ($_.Config.ChangeTrackingEnabled) { "enabled" } else { "disabled" }}} | Sort Name
+$FullVm | Where-object {$_.Config.ChangeTrackingEnabled -eq $CBTEnabled} | Select-Object Name, @{Name="Change Block Tracking";Expression={if ($_.Config.ChangeTrackingEnabled) { "enabled" } else { "disabled" }}} | Sort-Object Name
 
 # Change Log
 ## 1.1 : Added Get-vCheckSetting

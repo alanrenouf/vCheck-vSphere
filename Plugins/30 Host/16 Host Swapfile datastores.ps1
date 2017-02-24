@@ -11,7 +11,7 @@ $PluginCategory = "vSphere"
 
 foreach ($clusview in $clusviews) {
    if ($clusview.ConfigurationEx.VmSwapPlacement -eq "hostLocal") {
-      $CluNodes = $VMH | where {$clusview.Host -contains $_.Id }
+      $CluNodes = $VMH | Where-Object {$clusview.Host -contains $_.Id }
       foreach ($CluNode in $CluNodes) {
          if ($CluNode.VMSwapfileDatastore.Name -eq $null){
             if ($CluNode.ExtensionData.Config.LocalSwapDatastore.Value) {

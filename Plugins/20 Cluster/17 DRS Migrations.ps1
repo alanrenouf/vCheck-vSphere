@@ -33,8 +33,8 @@ if (-not $MigrationQuery1)
    }
 }
 
-$DRSMigrations = @($MigrationQuery1 | Where {$_.Gettype().Name -eq "DrsVmMigratedEvent"} | Select createdTime, fullFormattedMessage)
-$SDRSMigrations = @($MigrationQuery2 | Where {$_.FullFormattedMessage -imatch "(Storage vMotion){1}.*(DRS){1}"} | Select createdTime, fullFormattedMessage)
+$DRSMigrations = @($MigrationQuery1 | Where-Object {$_.Gettype().Name -eq "DrsVmMigratedEvent"} | Select-Object createdTime, fullFormattedMessage)
+$SDRSMigrations = @($MigrationQuery2 | Where-Object {$_.FullFormattedMessage -imatch "(Storage vMotion){1}.*(DRS){1}"} | Select-Object createdTime, fullFormattedMessage)
 
 $DRSMigrations
 $SDRSMigrations

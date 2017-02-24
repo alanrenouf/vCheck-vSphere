@@ -10,8 +10,8 @@ $PluginCategory = "vSphere"
 # End of Settings
 
 $DatastoreClustersView | `
-   Where {$_.PodStorageDrsEntry.StorageDrsConfig.PodConfig.Enabled -ne $true -or $_.PodStorageDrsEntry.StorageDrsConfig.PodConfig.DefaultVmBehavior -ne "automated"} | `
-   Select Name, @{N="sDRS Enabled";E={$_.PodStorageDrsEntry.StorageDrsConfig.PodConfig.Enabled}}, @{N="sDRS Automation Level";E={$_.PodStorageDrsEntry.StorageDrsConfig.PodConfig.DefaultVmBehavior}}
+   Where-Object {$_.PodStorageDrsEntry.StorageDrsConfig.PodConfig.Enabled -ne $true -or $_.PodStorageDrsEntry.StorageDrsConfig.PodConfig.DefaultVmBehavior -ne "automated"} | `
+   Select-Object Name, @{N="sDRS Enabled";E={$_.PodStorageDrsEntry.StorageDrsConfig.PodConfig.Enabled}}, @{N="sDRS Automation Level";E={$_.PodStorageDrsEntry.StorageDrsConfig.PodConfig.DefaultVmBehavior}}
 
 # Changelog
 ## 1.0 : Initial Version

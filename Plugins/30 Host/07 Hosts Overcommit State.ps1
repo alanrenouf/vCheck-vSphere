@@ -29,7 +29,7 @@ $VMHCount = $VMH | Measure
 Foreach ($VMHost in $VMH) {
    Write-Progress -ID 2 -Parent 1 -Activity $plang.pluginActivity -Status $VMHost.Name -PercentComplete ((100*$i)/$VMHCount.Count)
    if ($VMMem) { Clear-Variable VMMem }
-   $VM | ?{$_.VMHost.Name -eq $VMHost.Name -and $_.PowerState -ne "PoweredOff"} | Foreach {
+   $VM | Where-Object {$_.VMHost.Name -eq $VMHost.Name -and $_.PowerState -ne "PoweredOff"} | Foreach-Object {
       [INT]$VMMem += $_.MemoryMB
    }
 

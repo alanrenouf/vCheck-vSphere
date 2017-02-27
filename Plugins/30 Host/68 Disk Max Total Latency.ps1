@@ -16,10 +16,10 @@ $diskmaxtotallatency = Get-vCheckSetting $Title "diskmaxtotallatency" $diskmaxto
 $stattotallatency = Get-vCheckSetting $Title "stattotallatency" $stattotallatency
 
 $HostsDiskLatency = @()
-foreach ($VMHost in $VMH | ?{$_.ConnectionState -eq "Connected"}) {
+foreach ($VMHost in $VMH | Where-Object {$_.ConnectionState -eq "Connected"}) {
    if ($VMHost.Version -lt 4){continue}# not an esx 4.x host
    $HostDiskLatency = @()
-   $VHHMaxLatency = $VMHost | get-stat -stat "disk.maxTotalLatency.latest" -start ($Date).addhours(-$stattotallatency) -finish ($Date)|?{$_.value -gt $diskmaxtotallatency}| Sort-Object Timestamp -Descending
+   $VHHMaxLatency = $VMHost | get-stat -stat "disk.maxTotalLatency.latest" -start ($Date).addhours(-$stattotallatency) -finish ($Date)|Where-Object {$_.value -gt $diskmaxtotallatency}| Sort-Object Timestamp -Descending
    if ($VHHMaxLatency.Count -gt 0) {
       $Details = "" | Select-Object Host, Timestamp, milliseconds
       $Details.host = $VMHost.name

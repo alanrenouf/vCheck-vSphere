@@ -331,7 +331,7 @@ function Get-VIEventPlus {
       if(!$Entity){
          $Entity = @(Get-Folder -NoRecursion)
       }
-      $entity | %{
+      $entity | Foreach-Object {
          $eventFilter.entity.entity = $_.ExtensionData.MoRef
          $eventCollector = Get-View ($eventMgr.CreateCollectorForEvents($eventFilter))
          $eventsBuffer = $eventCollector.ReadNextEvents($eventnumber)

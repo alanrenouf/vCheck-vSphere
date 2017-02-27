@@ -136,7 +136,7 @@ function Get-vCheckPlugin
                 foreach ($plugin in $plugins.pluginlist.plugin)
                 {
                     $pluginObjectList | Where-Object {$_.name -eq $plugin.name -and [double]$_.version -lt [double]$plugin.version}|	
-					foreach{
+					Foreach-Object {
 						$_.status = "New Version Available - " + $plugin.version						
 					}
 					if (!($pluginObjectList | Where-Object {$_.name -eq $plugin.name}))

@@ -17,7 +17,7 @@ $missingpaths = @()
 foreach ($esxhost in ($HostsViews | Where-Object {$_.Runtime.ConnectionState -match "Connected|Maintenance"})) {
   #Write-Host $esxhost.Name
    $lun_array = @() # 2D array - LUN Name & Path Count
-   $esxhost | %{$_.config.storageDevice.multipathInfo.lun} | %{$_.path} | ?{$_.name -like "fc.*"} | %{
+   $esxhost | Foreach-Object {$_.config.storageDevice.multipathInfo.lun} | Foreach-Object {$_.path} | Where-Object {$_.name -like "fc.*"} | Foreach-Object {
       $short_path_array = $_.name.split('-')
       $short_path = $short_path_array[2]
       $found = $false

@@ -42,7 +42,7 @@ foreach ($VMHost in ($HostsViews)){
       $Warnings = (Get-Log -VMHost ($VMHost.Name) -Key vmkernel -ErrorAction SilentlyContinue).Entries | Where-Object {$_ -match "warning"}
       if ($Warnings -ne $null) {
          $VMKernelWarning = @()
-         $Warnings | Foreach {
+         $Warnings | Foreach-Object {
             if ($simpleWarning) {
                $Details = "" | Select-Object VMHost, Message
                $Details.VMHost = $VMHost.Name

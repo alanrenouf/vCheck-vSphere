@@ -14,7 +14,7 @@ foreach ($VMView in ($FullVM | Where-Object {$_.TriggeredAlarmState})){
    Foreach ($VMsTriggeredAlarm in $VMView.TriggeredAlarmState){
       New-Object -TypeName PSObject -Property @{
          Object = $VMView.name
-         Alarm = ($valarms |?{$_.value -eq ($VMsTriggeredAlarm.alarm.value)}).name
+         Alarm = ($valarms |Where-Object {$_.value -eq ($VMsTriggeredAlarm.alarm.value)}).name
          Status = $VMsTriggeredAlarm.OverallStatus
          Time = $VMsTriggeredAlarm.time
       }

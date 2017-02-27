@@ -13,7 +13,7 @@ $eventAge = 5
 # Update settings where there is an override
 $eventAge = Get-vCheckSetting $Title "eventAge" $eventAge
 
-Get-VIEventPlus -Start ($Date).AddDays(-$eventAge) -Type Info | Where-Object {$_.FullFormattedMessage -match "Map disk region"} | Foreach {$_.vm}| Select-Object name |Sort-Object -unique
+Get-VIEventPlus -Start ($Date).AddDays(-$eventAge) -Type Info | Where-Object {$_.FullFormattedMessage -match "Map disk region"} | Foreach-Object {$_.vm}| Select-Object name |Sort-Object -unique
 
 $Header = ("Map disk region event (Last {0} Day(s)): [count]" -f $eventAge)
 

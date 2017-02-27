@@ -9,17 +9,17 @@ $PluginCategory = "vSphere"
 # Start of Settings 
 # End of Settings 
 
-foreach ($HostsView in ($HostsViews|?{$_.runtime.connectionstate -eq "Connected"})) {
+foreach ($HostsView in ($HostsViews|Where-Object {$_.runtime.connectionstate -eq "Connected"})) {
    $HealthStatus = ((Get-View ($HostsView).ConfigManager.HealthStatusSystem).runtime)
    $HWStatus = $HealthStatus.HardwareStatusInfo
    if ($HWStatus) {
-      $HWStatusProp = $HWStatus|gm|?{$_.membertype -eq "property"}
-      $HWStatusDetails = $HWStatusProp|%{$HWStatus.($_.name)}|?{$_.status.key -inotmatch "green" -band $_.status.key -inotmatch "unknown"}| Select-Object @{N="sensor";E={$_.name}},@{N="status";E={$_.status.key}}
-      $HealthStatusDetails = ($HealthStatus.SystemHealthInfo).NumericSensorInfo|?{$_.HealthState.key -inotmatch "green" -band $_.HealthState.key -inotmatch "unknown"}|Select-Object @{N="sensor";E={$_.name}},@{N="status";E={$_.HealthState.key}}
+      $HWStatusProp = $HWStatus|gm|Where-Object {$_.membertype -eq "property"}
+      $HWStatusDetails = $HWStatusProp|Foreach-Object {$HWStatus.($_.name)}|Where-Object {$_.status.key -inotmatch "green" -band $_.status.key -inotmatch "unknown"}| Select-Object @{N="sensor";E={$_.name}},@{N="status";E={$_.status.key}}
+      $HealthStatusDetails = ($HealthStatus.SystemHealthInfo).NumericSensorInfo|Where-Object {$_.HealthState.key -inotmatch "green" -band $_.HealthState.key -inotmatch "unknown"}|Select-Object @{N="sensor";E={$_.name}},@{N="status";E={$_.HealthState.key}}
       if ($HWStatusDetails) {
          foreach ($HWStatusDetail in $HWStatusDetails) {
             New-Object PSObject -Property @{
-               Cluster = ($HostsView | %{(Get-View $_.Parent).Name})
+               Cluster = ($HostsView | Foreach-Object {(Get-View $_.Parent).Name})
                Host = $HostsView.name
                Sensor = $HWStatusDetail.sensor
                Status = $HWStatusDetail.status
@@ -29,7 +29,7 @@ foreach ($HostsView in ($HostsViews|?{$_.runtime.connectionstate -eq "Connected"
       if ($HealthStatusDetails) {
          foreach ($HealthStatusDetail in $HealthStatusDetails) {
             New-Object PSObject -Property @{
-               Cluster = ($HostsView | %{(Get-View $_.Parent).Name})
+               Cluster = ($HostsView | Foreach-Object {(Get-View $_.Parent).Name})
                Host = $HostsView.name
                Sensor = $HealthStatusDetail.sensor
                Status = $HealthStatusDetail.status

@@ -10,5 +10,5 @@ $PluginCategory = "vSphere"
 # End of Settings 
 
 $htabHostVersion = @{}
-$HostsViews | %{$htabHostVersion.Add($_.MoRef,$_.config.product.version)}
-$FullVM | ?{$htabHostVersion[$_.runtime.host].Split('.')[0] -ge 5 -and $_.runtime.consolidationNeeded} | Sort-Object -Property Name | Select-Object Name,@{N="Consolidation needed";E={$_.Runtime.consolidationNeeded}}
+$HostsViews | Foreach-Object {$htabHostVersion.Add($_.MoRef,$_.config.product.version)}
+$FullVM | Where-Object {$htabHostVersion[$_.runtime.host].Split('.')[0] -ge 5 -and $_.runtime.consolidationNeeded} | Sort-Object -Property Name | Select-Object Name,@{N="Consolidation needed";E={$_.Runtime.consolidationNeeded}}

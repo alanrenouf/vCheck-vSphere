@@ -28,11 +28,11 @@ if ($ShowVMAffinity)     { $Types += "VMAffinity"}
 if ($ShowVMAntiAffinity) { $Types += "VMAntiAffinity"}
 if ($ShowHostAffinity)   { $Types += "VMHostAffinity"}
 
-$Clusters | Foreach {
+$Clusters | Foreach-Object {
    Get-DrsRule -Cluster $_ -Type $Types | Where-Object { $_.Name -notmatch $excludeName } | 
    Select-Object Cluster, Enabled, Name, Type, @{N="VM";E={(Get-View $_.VMIDS | Select-Object -ExpandProperty Name) -join "<br />"}},
      @{N="Rule Host";E={(Get-View $_.AffineHostIds | Select-Object -ExpandProperty Name) -join "<br />" }},
-     @{N="Running on";E={(Get-View (Get-View $_.VMIDS | %{$_.Runtime.Host}) | Select-Object ExpandProperty Name) -join "<br />"}}
+     @{N="Running on";E={(Get-View (Get-View $_.VMIDS | Foreach-Object {$_.Runtime.Host}) | Select-Object ExpandProperty Name) -join "<br />"}}
 }
 
 $Comments = ("Contains all DRS rules defined in this vCenter - {0}" -f ($types -join ","))

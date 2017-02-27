@@ -79,7 +79,7 @@ function Get-SnapshotExtra ($snap){
    $dummy = $collectionImpl.RewindCollector
    $collection = $collectionImpl.ReadNextTasks($tasknumber)
    while($collection -ne $null){
-      $collection | Where-Object {$_.DescriptionId -eq "VirtualMachine.createSnapshot" -and $_.State -eq "success" -and $_.EntityName -eq $guestName} | %{
+      $collection | Where-Object {$_.DescriptionId -eq "VirtualMachine.createSnapshot" -and $_.State -eq "success" -and $_.EntityName -eq $guestName} | Foreach-Object {
          $row = New-Object PsObject
          $row | Add-Member -MemberType NoteProperty -Name User -Value $_.Reason.UserName
          $vm = Get-View $_.Entity

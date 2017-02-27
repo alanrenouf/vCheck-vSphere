@@ -16,8 +16,8 @@ $ShowOnlyStartupNICS = Get-vCheckSetting $Title "ShowOnlyStartupNICS" $ShowOnlyS
 
 $VMsNetworkNotConnected = @()
 # Check only on powered on VMs
-foreach ($myVM in $FullVM | ?{$_.runtime.powerState -eq "PoweredOn"}) {
-    foreach ($myCard in $myVM.config.hardware.device | ?{$_ -is [VMware.Vim.VirtualEthernetCard] -and -Not $_.connectable.connected}) {
+foreach ($myVM in $FullVM | Where-Object {$_.runtime.powerState -eq "PoweredOn"}) {
+    foreach ($myCard in $myVM.config.hardware.device | Where-Object {$_ -is [VMware.Vim.VirtualEthernetCard] -and -Not $_.connectable.connected}) {
       if ($ShowOnlyStartupNICS -and $myCard.connectable.StartConnected) {
          # The network card is not connected. Warn user
          New-Object -TypeName PSObject -Property @{

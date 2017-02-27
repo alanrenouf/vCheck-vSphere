@@ -16,7 +16,7 @@ $RotateSize = 1000000
 $KeepOld = Get-vCheckSetting $Title "KeepOld" $KeepOld
 $RotateSize = Get-vCheckSetting $Title "RotateSize" $RotateSize
 
-$VM | Foreach {
+$VM | Foreach-Object {
    $VMKeepOld = $_.ExtensionData.Config.ExtraConfig | Where-Object {$_.Key -eq "log.keepold"} | Select-Object -ExpandProperty Value
    $VMRotateSize = $_.ExtensionData.Config.ExtraConfig | Where-Object {$_.Key -eq "log.rotatesize"} | Select-Object -ExpandProperty Value
 

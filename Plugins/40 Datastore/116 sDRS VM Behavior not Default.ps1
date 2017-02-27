@@ -14,7 +14,7 @@ $ExcludedVMs = ""
 # Update settings where there is an override
 $ExcludedVMs = Get-vCheckSetting $Title "ExcludedVMs" $ExcludedVMs
 
-$DatastoreClustersView | Foreach {$_.PodStorageDrsEntry.StorageDrsConfig.VMConfig} | `
+$DatastoreClustersView | Foreach-Object {$_.PodStorageDrsEntry.StorageDrsConfig.VMConfig} | `
    Where-Object {$_.Enabled -eq $false -or $_.Behavior -ne $null} | `
    Select-Object @{N="VM";E={Get-View $_.Vm | Select-Object -ExpandProperty Name}}, Enabled, Behavior,@{N="Datastore Cluster";E={$dc.Name}} | Where-Object { $_.VM -notmatch $ExcludedVMs }
 

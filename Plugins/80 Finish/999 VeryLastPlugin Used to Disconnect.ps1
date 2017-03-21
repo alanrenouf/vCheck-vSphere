@@ -3,8 +3,10 @@
  
 # Everything in this script will run at the end of vCheck
 If ($VIConnection) {
-  $VIConnection | Disconnect-VIServer -Confirm:$false
+  $VIConnection | Disconnect-VIServer -Confirm:$false | Out-Null
 }
+
+Write-Output ""
 
 $Title = "Disconnecting from vCenter"
 $Header = "Disconnects from vCenter"

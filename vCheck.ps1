@@ -1023,7 +1023,7 @@ if (-not $GUIConfig) {
 
 	# Set the output filename 
 	if (-not (Test-Path -PathType Container $Outputpath)) { New-Item $Outputpath -type directory | Out-Null }
-	$Filename = ("{0}\{1}_vCheck_{2}.htm" -f $Outputpath, $Server, (Get-Date -Format "yyyyMMdd_HHmm"))
+	$Filename = ("{0}\{1}_vCheck_{2}.htm" -f $Outputpath, $VIServer, (Get-Date -Format "yyyyMMdd_HHmm"))
 
 	# Always generate the report with embedded images
 	$embedReport = $MyReport

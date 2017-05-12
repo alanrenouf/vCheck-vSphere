@@ -21,7 +21,7 @@ foreach ($storage in $filteredstorageviews)
 	}
 }
 
-$voverallocation	
+$voverallocation | Sort-Object -property overallocation -descending
 
 $Title = "Datastore OverAllocation"
 $Header = "Datastore OverAllocation Over $OverAllocation%: $(@($voverallocation).Count)"

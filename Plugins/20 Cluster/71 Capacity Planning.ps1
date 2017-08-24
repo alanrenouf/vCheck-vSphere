@@ -1,3 +1,12 @@
+$Title = "QuickStats Capacity Planning"
+$Header = "QuickStats Capacity Planning"
+$Comments = "The following gives brief capacity information for each cluster based on QuickStats CPU/Mem usage and counting for HA failover requirements"
+$Display = "Table"
+$Author = "Raphael Schitz, Frederic Martin"
+$PluginVersion = 1.7
+$PluginCategory = "vSphere"
+
+
 # Start of Settings 
 # Max CPU usage for non HA cluster
 $limitResourceCPUClusNonHA = 0.6
@@ -5,8 +14,12 @@ $limitResourceCPUClusNonHA = 0.6
 $limitResourceMEMClusNonHA = 0.6
 # End of Settings
 
+# Update settings where there is an override
+$limitResourceCPUClusNonHA = Get-vCheckSetting $Title "limitResourceCPUClusNonHA" $limitResourceCPUClusNonHA
+$limitResourceMEMClusNonHA = Get-vCheckSetting $Title "limitResourceMEMClusNonHA" $limitResourceMEMClusNonHA
+
 $capacityinfo = @()
-foreach ($cluv in ($clusviews | Where {$_.Summary.NumHosts -gt 0 } | Sort Name)) {
+foreach ($cluv in ($clusviews | Where-Object {$_.Summary.NumHosts -gt 0 } | Sort-Object Name)) {
    
    if ( $cluv.Configuration.DasConfig.Enabled -eq $true ) {
       $DasRealCpuCapacity = $cluv.Summary.EffectiveCpu - (($cluv.Summary.EffectiveCpu * $cluv.Configuration.DasConfig.FailoverLevel)/$cluv.Summary.NumHosts)
@@ -16,7 +29,7 @@ foreach ($cluv in ($clusviews | Where {$_.Summary.NumHosts -gt 0 } | Sort Name))
       $DasRealMemCapacity = $cluv.Summary.EffectiveMemory * $limitResourceMEMClusNonHA
    }
    
-   $cluvmlist = $VM | where { $cluv.Host -contains $_.VMHost.Id  }
+   $cluvmlist = $VM | Where-Object { $cluv.Host -contains $_.VMHost.Id  }
 
    #CPU
    $CluCpuUsage = (get-view $cluv.ResourcePool).Summary.runtime.cpu.OverallUsage
@@ -61,12 +74,4 @@ foreach ($cluv in ($clusviews | Where {$_.Summary.NumHosts -gt 0 } | Sort Name))
    $capacityinfo += $clucapacity
 }
 
-$capacityinfo | Sort Datacenter, ClusterName
-
-$Title = "QuickStats Capacity Planning"
-$Header = "QuickStats Capacity Planning"
-$Comments = "The following gives brief capacity information for each cluster based on QuickStats CPU/Mem usage and counting for HA failover requirements"
-$Display = "Table"
-$Author = "Raphael Schitz, Frederic Martin"
-$PluginVersion = 1.7
-$PluginCategory = "vSphere"
+$capacityinfo | Sort-Object Datacenter, ClusterName

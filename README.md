@@ -1,13 +1,27 @@
 <a name="Title">
+
 # vCheck Daily Report for vSphere
+[![stars badge]][stars]
+[![forks badge]][forks]
+[![issues badge]][issues]
+
+[stars badge]:https://img.shields.io/github/stars/alanrenouf/vCheck-vSphere.svg
+[forks badge]:https://img.shields.io/github/forks/alanrenouf/vCheck-vSphere.svg
+[issues badge]:https://img.shields.io/github/issues/alanrenouf/vCheck-vSphere.svg
+
+[stars]:https://github.com/alanrenouf/vCheck-vSphere/stargazers
+[forks]:https://github.com/alanrenouf/vCheck-vSphere/network
+[issues]:https://github.com/alanrenouf/vCheck-vSphere/issues
+
 [Join the VMware Code and #vCheck channel on slack and ask questions here!](https://code.vmware.com/slack/)
 
-![Alt text](http://www.virtu-al.net/wp-content/uploads/2014/02/vCheck619.jpg "vCheck Sample")
+![Alt text](https://vcheck.report/samples/vCheck-vSphere_Screenshot.PNG "vCheck Sample")
 
 |Navigation|
 |-----------------|
 |[About](#About)|
 |[Features](#Features)|
+|[Installing](#Installing)|
 |[Enhancements](#Enhancements)|
 |[Release Notes](#ReleaseNotes)|
 |[Contributing](#Contributing)|
@@ -17,6 +31,7 @@
 |[More Info](#More)|
 
 <a name="About">
+
 # About
 [*Back to top*](#Title)
 
@@ -30,6 +45,7 @@ This script is not to be confused with an Audit script, although the reporting f
 
 
 <a name="Features">
+
 # What is checked for in the vSphere version ?
 [*Back to top*](#Title)
 
@@ -87,7 +103,13 @@ The following items are included as part of the vCheck vSphere download, they ar
 - Inaccessible VMs
 - Much, Much more.......
 
+# Installing
+[*Back to top*](#Title)
+
+Copy the vCheck files to the desired location. Run the script `vCheckUtils.ps1` and call the function `Schedule-vCheck`. Answer the prompts to configure the scheduled job.
+
 <a name="Enhancements">
+
 # Enhancements
 [*Back to top*](#Title)
 
@@ -100,6 +122,7 @@ The following items are included as part of the vCheck vSphere download, they ar
 In the meantime, don't hesitate to pop over to the [#vCheck channel on slack](https://code.vmware.com/slack/) and join in on active conversations about anything you see- or don't see- here!
 
 <a name="ReleaseNotes">
+
 # Release Notes
 [*Back to top*](#Title)
 
@@ -140,12 +163,14 @@ In the meantime, don't hesitate to pop over to the [#vCheck channel on slack](ht
 * 4.0 - HTML Tidy up, comments added for each item and the ability to enable/disable comments.
 
 <a name="Contributing">
+
 # Contributing
 [*Back to top*](#Title)
 
 See out [Contributions](CONTRIBUTING.md) guidelines
 
 <a name="Plugins">
+
 # Plugins
 [*Back to top*](#Title)
 
@@ -247,6 +272,7 @@ $TableFormat = @{"PercentFree" = @(@{ "-le 25" = "Row,class|warning"; }, @{ "-le
 Here we see the rules that apply to two different columns, with rules applied to the values in a fashion similar to Example 1.
 
 <a name="Styles">
+
 # Styles
 [*Back to top*](#Title)
 
@@ -271,6 +297,7 @@ Additionally, if the style is to define colours to be used by charts, the follow
 To include image resources, you may call Add-ReportResource, specifying CID and data. As these are not referenced by table formatting rules, this will need to be called with the `-Used $true` parameter.
 
 <a name="JobsSettings">
+
 # Jobs & Settings
 [*Back to top*](#Title)
 
@@ -341,6 +368,7 @@ PS E:\scripts\vCheck-vSphere> Import-vCheckSettings -csvfile E:\MyvCheckSettings
 If new settings or plugins have been added to the new build you will be asked to answer the questions, similar to running the initial config. During the import, the initial config is disabled, so once the import is complete you are ready to run your new build.
 
 <a name="More">
+
 # More Info
 [*Back to top*](#Title)
 

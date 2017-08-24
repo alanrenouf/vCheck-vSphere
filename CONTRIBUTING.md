@@ -87,11 +87,9 @@ We are in the process of adding/consolidating more detailed documentation around
 
 We are in the process of adding/consolidating more detailed documentation around this. In the meantime, you can review the documentation that we do have inside the [README.md](README.md) file for the repo.
 
-## Gitter & Waffle
+## Slack
 
-We are using [![Join the chat at https://gitter.im/alanrenouf/vCheck-vSphere](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/alanrenouf/vCheck-vSphere?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) for general discussion around the vCheck utility. This is a good place for general questions or minor issues that someone might be able to answer, on the spot. If something cannot be resolved in the chat, it may warrant the submission of an Issue.
-
-We are also using Waffle.io to help track and resolve issues. You can visit the the dashboard [![Stories in Ready](http://badge.waffle.io/alanrenouf/vCheck-vSphere.png)](http://waffle.io/alanrenouf/vCheck-vSphere) to view or submit issues (you can also still use the GitHub web interface to submit/view issues).
+To join in discussions or ask questions, join the #vCheck channel on [VMware Code Slack Team](https://code.vmware.com/slack/).
 
 
 ## Style guidelines

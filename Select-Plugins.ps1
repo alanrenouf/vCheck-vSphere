@@ -54,7 +54,7 @@ If ($PluginPath -notmatch 'plugins$') {
   $PluginPath += "\Plugins"
 }
 $plugins = Get-ChildItem -Path $PluginPath -Include *.ps1, *.ps1.disabled -Recurse |
-   Sort {[int]($_.Name -replace '\D')} |
+   Sort-Object {[int]($_.Name -replace '\D')} |
    Select FullName, Name, 
           @{Label="Plugin";expression={$_.Name -replace '(.*)\.ps1(?:\.disabled|)$', '$1'}},
           @{Label="Enabled";expression={$_.Name -notmatch '.*\.disabled$'}}

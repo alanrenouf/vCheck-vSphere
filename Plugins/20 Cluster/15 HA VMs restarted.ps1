@@ -1,23 +1,18 @@
-# Start of Settings 
+$Title = "HA VMs restarted"
+$Display = "Table"
+$Author = "Alan Renouf"
+$PluginVersion = 1.3
+$PluginCategory = "vSphere"
+
+# Start of Settings
 # HA VM restart day(s) number
 $HAVMrestartold = 5
 # End of Settings
 
-$EventFilterSpec = New-Object VMware.Vim.EventFilterSpec
-$EventFilterSpec.Category = "warning"
-$EventFilterSpec.eventTypeId = "com.vmware.vc.ha.VmRestartedByHAEvent"
-$EventFilterSpec.Time = New-Object VMware.Vim.EventFilterSpecByTime
-$EventFilterSpec.Time.beginTime = (Get-Date).AddDays(-$HAVMrestartold)
+# Update settings where there is an override
+$HAVMrestartold = Get-vCheckSetting $Title "HAVMrestartold" $HAVMrestartold
 
-$HAVMrestartlist = @((get-view (get-view ServiceInstance -Property Content.EventManager).Content.EventManager).QueryEvents($EventFilterSpec) | select CreatedTime,FullFormattedMessage |sort CreatedTime -Descending)
-$HAVMrestartlist
+Get-VIEventPlus -EventType "com.vmware.vc.ha.VmRestartedByHAEvent" -Start ($Date).AddDays(-$HAVMrestartold) | Select-Object CreatedTime, FullFormattedMessage | Sort-Object CreatedTime -Descending
 
-$Title = "HA VMs restarted"
-$Header = ("HA: VM restart (Last {0} Day(s)) : {1}" -f $HAVMrestartold, @($HAVMrestartlist).count)
-$Comments = "The following VMs have been restarted by HA in the last $HAVMresetold days"
-$Display = "Table"
-$Author = "Alan Renouf"
-$PluginVersion = 1.1
-$PluginCategory = "vSphere"
-
-Remove-Variable HAVMrestartlist, EventFilterSpec
+$Header = ("HA: VM restart (Last {0} Day(s)) : [count]" -f $HAVMrestartold)
+$Comments = ("The following VMs have been restarted by HA in the last {0} days" -f $HAVMresetold)

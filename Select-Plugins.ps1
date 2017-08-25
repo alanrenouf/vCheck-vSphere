@@ -1,27 +1,43 @@
-# Select-Plugins.ps1
+<#
+.NOTES
+  Select-Plugins.ps1
 
-# selectively enable / disable vCheck Plugins
+  selectively enable / disable vCheck Plugins
 
-# presents a list of plugins whose names match *.ps1 or *.ps1.disabled
-# 
-# disabled plugins will be renamed as appropriate to <pluginname>.ps1.disabled
-# enabled plugins will be renamed as appropriate to <plugin name>.ps1
+  presents a list of plugins whose names match *.ps1 or *.ps1.disabled
 
-# To use, run from the vCheck directory
-#     or, if you wish to be perverse, copy to the plugins directory and rename to 
-#         "ZZ Select Plugins for Next Run.ps1" and run vCheck as normal.
+  disabled plugins will be renamed as appropriate to <pluginname>.ps1.disabled
+  enabled plugins will be renamed as appropriate to <plugin name>.ps1
 
-# Great for testing plugins.  When done, untick it...
+  To use, run from the vCheck directory or, if you wish to be perverse, copy to the plugins 
+  directory and rename to "ZZ Select Plugins for Next Run.ps1" and run vCheck as normal.
 
-# If run as a plugin, it will affect the next vCheck run, not the current one,
-#   as vCheck has already collected its list of plugins when it is invoked
-#   so make it the very last plugin executed to avoid counter-intuitive behaviour
+  Great for testing plugins.  When done, untick it...
 
-# based on code from Select-GraphicalFilteredObject.ps1 in
-#  "Windows Powershell Cookbook" by Lee Holmes.
-#  Copyright 2007 Lee Holmes.
-#  Published by O'Reilly ISBN 978-0-596-528492
-# and used under the 'free use' provisions specified on Preface page xxv
+  If run as a plugin, it will affect the next vCheck run, not the current one,
+  as vCheck has already collected its list of plugins when it is invoked
+  so make it the very last plugin executed to avoid counter-intuitive behaviour
+
+  based on code from Select-GraphicalFilteredObject.ps1 in
+  "Windows Powershell Cookbook" by Lee Holmes.
+  Copyright 2007 Lee Holmes.
+  Published by O'Reilly ISBN 978-0-596-528492
+  and used under the 'free use' provisions specified on Preface page xxv
+
+  Changelog
+  ============================
+  2.2 - Kevin Kirkpatrick
+    [X] Add cmdletbinding/param
+    [X] Move comments into proper comment based help block so it can be reviewed via standard
+    PS help system (EX: C:\PS>.\Get-Help Select-Plugins.ps1 -ShowWindow)
+    [X] Remove Write-Host; converted to Write-Warning
+
+  2.1 - Phil Randal
+    [X] Added Select All/Deselect All buttons - Changed sort to numeric
+#>
+
+[cmdletbinding()]
+param()
 
 $Title = "Plugin Selection Plugin"
 $Author = "Phil Randal"
@@ -33,15 +49,12 @@ $Display = "None"
 # Start of Settings
 # End of Settings
 
-# Changelog
-## 2.1 : Added Select All/Deselect All buttons - Changed sort to numeric
-
 $PluginPath = (Split-Path ((Get-Variable MyInvocation).Value).MyCommand.Path)
 If ($PluginPath -notmatch 'plugins$') {
   $PluginPath += "\Plugins"
 }
 $plugins = Get-ChildItem -Path $PluginPath -Include *.ps1, *.ps1.disabled -Recurse |
-   Sort {[int]($_.Name -replace '\D')} |
+   Sort-Object {[int]($_.Name -replace '\D')} |
    Select FullName, Name, 
           @{Label="Plugin";expression={$_.Name -replace '(.*)\.ps1(?:\.disabled|)$', '$1'}},
           @{Label="Enabled";expression={$_.Name -notmatch '.*\.disabled$'}}
@@ -139,7 +152,7 @@ if($result -eq "OK") {
     $newname = $plugin.Plugin + $(If ($listbox.GetItemChecked($i)) {'.ps1'} else {'.ps1.disabled'})
     If ($newname -ne $oldname) {
       If (Test-Path (($plugin.FullName | Split-Path) + "\" + $newname)) {
-        Write-Host "Attempting to rename ""$oldname"" to ""$newname"", which already exists - please delete or rename the superfluous file and try again"
+        Write-Warning "Attempting to rename ""$oldname"" to ""$newname"", which already exists - please delete or rename the superfluous file and try again"
       } Else {
         Rename-Item (($plugin.FullName | Split-Path) + "\" + $oldname) $newname
       }

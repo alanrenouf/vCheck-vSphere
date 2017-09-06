@@ -103,10 +103,13 @@ The following items are included as part of the vCheck vSphere download, they ar
 - Inaccessible VMs
 - Much, Much more.......
 
+<a name="Installing">
+  
 # Installing
 [*Back to top*](#Title)
 
-Copy the vCheck files to the desired location. Run the script `vCheckUtils.ps1` and call the function `Schedule-vCheck`. Answer the prompts to configure the scheduled job.
+Copy  the vCheck files to the desired location. Run the script 'vCheck.ps1' -Config to do initial configuration of the script. 
+<!--Copy the vCheck files to the desired location. Run the script `vCheckUtils.ps1` and call the function `Schedule-vCheck`. Answer the prompts to configure the scheduled job.-->
 
 <a name="Enhancements">
 

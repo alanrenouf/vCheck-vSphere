@@ -9,15 +9,7 @@ $PluginCategory = "vSphere"
 # Start of Settings
 # End of Settings
 
-# Setup plugin-specific language table
-$pLang = DATA {
-   ConvertFrom-StringData @' 
-      pluginActivity = Searching Datastores
-      pluginStatus = [{0} of {1}] {2}
-      Complete = Complete
-'@
-}
-# Override the default (en) if it exists in lang directory
+# Internationalization
 Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable pLang -ErrorAction SilentlyContinue
 
 $i=0;

@@ -99,14 +99,6 @@ else {
    New-Object PSObject -Property @{"Message"="PowerCLi version installed is lower than 5.1 Release 2, please update to use this plugin"}
 }
 
-$Title = "vSwitch Security"
-$Header = "vSwitch and portgroup security settings"
-$Comments = "All security options for standard vSwitches should be set to REJECT.  Distributed vSwitches may require <em>ForgedTrasmits</em> in the default portgroup but should be disabled in other VM Network portgroups unless expressly required."
-$Display = "Table"
-$Author = "Justin Mercier, Sam McGeown, John Sneddon, Ben Hocker"
-$PluginVersion = 1.3
-$PluginCategory = "vSphere"
-
 # Changelog
 ## 1.0 : Initial Release
 ## 1.1 : Re-written for performance improvements

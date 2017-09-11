@@ -1,4 +1,4 @@
-# culture="en-US"
+# culture="it-IT"
 ConvertFrom-StringData @' 
     setupMsg01  = 
     setupMsg02  = Benvenuto su vCheck by Virtu-Al http://virtu-al.net

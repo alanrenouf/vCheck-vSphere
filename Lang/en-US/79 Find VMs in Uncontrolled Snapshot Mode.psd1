@@ -1,6 +1,6 @@
-# culture="de-DE"
+# culture="en-US"
 ConvertFrom-StringData @' 
-    pluginActivity = Suche Datastores
-    pluginStatus = [{0} von {1}] {2}
-    Complete = Beendet
+    pluginActivity = searching Datastores
+    pluginStatus = [{0} of {1}] {2}
+    Complete = finished
 '@

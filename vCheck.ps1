@@ -68,14 +68,17 @@ param (
 	[string]$job
 )
 
-$vCheckVersion = "6.23"
+$vCheckVersion = "6.24"
 $Date = Get-Date
 
 #region Internationalization
 ################################################################################
 #                             Internationalization                             #
 ################################################################################
+# Default language en-US
+Import-LocalizedData -BaseDirectory ($ScriptPath + '\lang') -BindingVariable lang -UICulture en-US -ErrorAction SilentlyContinue
 
+# Override the default (en-US) if it exists in lang directory
 Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable lang -ErrorAction SilentlyContinue
 
 #endregion Internationalization

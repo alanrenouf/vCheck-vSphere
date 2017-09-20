@@ -1,3 +1,15 @@
+#region Internationalization
+################################################################################
+#                             Internationalization                             #
+################################################################################
+# Default language en-US
+Import-LocalizedData -BaseDirectory ($ScriptPath + '\lang') -BindingVariable pLang -UICulture en-US -ErrorAction SilentlyContinue
+
+# Override the default (en-US) if it exists in lang directory
+Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable pLang -ErrorAction SilentlyContinue
+
+#endregion Internationalization
+
 $Title = "VMs in uncontrolled snapshot mode"
 $Header = "VMs in uncontrolled snapshot mode: [count]"
 $Comments = "The following VMs are in snapshot mode, but vCenter isn't aware of it. See http://kb.vmware.com/kb/1002310"
@@ -8,9 +20,6 @@ $PluginCategory = "vSphere"
 
 # Start of Settings
 # End of Settings
-
-# Internationalization
-Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable pLang -ErrorAction SilentlyContinue
 
 $i=0;
 foreach ($eachDS in ($Datastores | Where-Object {$_.State -eq "Available"})) {

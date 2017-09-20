@@ -71,6 +71,10 @@ param (
 $vCheckVersion = "6.23"
 $Date = Get-Date
 
+# Setup all paths required for script to run
+$ScriptPath = (Split-Path ((Get-Variable MyInvocation).Value).MyCommand.Path)
+$PluginsFolder = $ScriptPath + "\Plugins\"
+
 #region Internationalization
 ################################################################################
 #                             Internationalization                             #
@@ -766,9 +770,6 @@ function Get-ConfigScripts {
 ################################################################################
 #                                Initialization                                #
 ################################################################################
-# Setup all paths required for script to run
-$ScriptPath = (Split-Path ((Get-Variable MyInvocation).Value).MyCommand.Path)
-$PluginsFolder = $ScriptPath + "\Plugins\"
 
 # if we have the job parameter set, get the paths from the config file.
 if ($job) {

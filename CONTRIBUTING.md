@@ -87,6 +87,19 @@ We are in the process of adding/consolidating more detailed documentation around
 
 We are in the process of adding/consolidating more detailed documentation around this. In the meantime, you can review the documentation that we do have inside the [README.md](README.md) file for the repo.
 
+## Internation Language Support
+
+To add support for a specific language to the vCheck, you will have to do the following:
+
+* Create a folder under the Lang folder. The folder shall have the language code of the language for which you are adding support.
+* Language strings are loaded from the data files (.psd1). The name of the data file shall correspond with the name of the .ps1 file where the language strings are loaded.
+* Language strings are loaded from the main vCheck.ps1 script and from several plugins
+* When a data file for a specific plugin is not found, the script logic will revert to en-US
+* Use the Use-Culture.ps1 script to test the language you added or updated
+
+The ultimate goal is to remove all language strings from the .ps1 files to data files, or .psd1 files.
+The initial examples did this for the main script (vCheck.ps1) and the plugin 79 (79 Find VMs in Uncontrolled Snapshot Mode.ps1).
+
 ## Slack
 
 To join in discussions or ask questions, join the #vCheck channel on [VMware Code Slack Team](https://code.vmware.com/slack/).

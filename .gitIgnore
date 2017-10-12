@@ -1,2 +1,4 @@
 # Ignore Windowscreds.xml
 Windowscreds.xml
+# Ignore vCentercreds.xml
+vCentercreds.xml

@@ -26,7 +26,7 @@ else
    $MigrationQuery2 = Get-VIEventPlus -Start ($Date).AddDays(-$SDRSMigrateAge) -Type Info
 }
 
-$Info = New-Object -TypeName PSObject -Property @{
+$Info = New-Object -TypeName PSObject -Property ([ordered]@{
    "Number of Hosts" = (@($VMH).Count)
    "Number of VMs" = (@($VM).Count)
    "Number of Templates" = (@($VMTmpl).Count)
@@ -34,7 +34,7 @@ $Info = New-Object -TypeName PSObject -Property @{
    "Number of Datastores" = (@($Datastores).Count)
    "Active VMs" = (@($FullVM | Where-Object { $_.Runtime.PowerState -eq "poweredOn" }).Count) 
    "In-active VMs" = (@($FullVM | Where-Object { $_.Runtime.PowerState -eq "poweredOff" }).Count)
-}
+})
 
 # Don't display DRS line if 0 days are set
 if ($DRSMigrateAge -gt 0) {

@@ -110,8 +110,8 @@ switch ($platform.OSFamily) {
         Get-Module -ListAvailable PowerCLI* | Import-Module
     }
     "Linux" { 
-        $Outputpath = $templocation
         $templocation = "/tmp"
+        $Outputpath = $templocation
         Get-Module -ListAvailable PowerCLI* | Import-Module
     }
     "Windows" { 

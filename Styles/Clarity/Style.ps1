@@ -81,22 +81,24 @@ function Get-PluginHTML {
    Generate table of contents
 #>
 function Get-ReportTOC {
-   $TOCHTML = @"
-   <nav class="sidenav">
-      <section class="sidenav-content">
-      <section class="nav-group">
-      <ul class="nav-list">
+   if ($ShowTOC) {
+      $TOCHTML = @"
+      <nav class="sidenav">
+         <section class="sidenav-content">
+         <section class="nav-group">
+         <ul class="nav-list">
 "@
 
-   foreach ($pr in ($PluginResult | Where-Object {$_.Details})) {
-      $TOCHTML += ("<li><a class='nav-link' href='#{0}'>{1}</a></li>" -f $pr.PluginID, $pr.Title)
-   }
-   $TOCHTML += "</ul>
+      foreach ($pr in ($PluginResult | Where-Object {$_.Details})) {
+         $TOCHTML += ("<li><a class='nav-link' href='#{0}'>{1}</a></li>" -f $pr.PluginID, $pr.Title)
+      }
+      $TOCHTML += "</ul>
+      </section>
    </section>
-</section>
-</nav>"
+   </nav>"
 
-   return $TOCHTML
+      return $TOCHTML
+   }
 }
 #endregion
 

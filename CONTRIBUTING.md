@@ -31,7 +31,7 @@ If the changes are related to an existing GitHub issue, please reference the iss
 One of the easiest ways to contribute to a PowerShell project is by helping to write and edit documentation. 
 All of our documentation hosted on GitHub is written using [GitHub Flavored Markdown](https://help.github.com/articles/github-flavored-markdown/) 
 
-*We are at lest working on shifting things over to GFM, for 'core' documentation. Some things may still live on the GitHub wiki, but using GFM allows the documentation to exist in the repo, so you always have a local copy to reference ;)*
+*We are at least working on shifting things over to GFM, for 'core' documentation. Some things may still live on the GitHub wiki, but using GFM allows the documentation to exist in the repo, so you always have a local copy to reference ;)*
 
 To [edit an existing file](https://help.github.com/articles/editing-files-in-another-user-s-repository/), simply navigate to it and click the "Edit" button. 
 GitHub will automatically create your own fork of our repository where you can make your changes. 
@@ -87,11 +87,22 @@ We are in the process of adding/consolidating more detailed documentation around
 
 We are in the process of adding/consolidating more detailed documentation around this. In the meantime, you can review the documentation that we do have inside the [README.md](README.md) file for the repo.
 
-## Gitter & Waffle
+## Internation Language Support
 
-We are using [![Join the chat at https://gitter.im/alanrenouf/vCheck-vSphere](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/alanrenouf/vCheck-vSphere?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) for general discussion around the vCheck utility. This is a good place for general questions or minor issues that someone might be able to answer, on the spot. If something cannot be resolved in the chat, it may warrant the submission of an Issue.
+To add support for a specific language to the vCheck, you will have to do the following:
 
-We are also using Waffle.io to help track and resolve issues. You can visit the the dashboard [![Stories in Ready](http://badge.waffle.io/alanrenouf/vCheck-vSphere.png)](http://waffle.io/alanrenouf/vCheck-vSphere) to view or submit issues (you can also still use the GitHub web interface to submit/view issues).
+* Create a folder under the Lang folder. The folder shall have the language code of the language for which you are adding support.
+* Language strings are loaded from the data files (.psd1). The name of the data file shall correspond with the name of the .ps1 file where the language strings are loaded.
+* Language strings are loaded from the main vCheck.ps1 script and from several plugins
+* When a data file for a specific plugin is not found, the script logic will revert to en-US
+* Use the Use-Culture.ps1 script to test the language you added or updated
+
+The ultimate goal is to remove all language strings from the .ps1 files to data files, or .psd1 files.
+The initial examples did this for the main script (vCheck.ps1) and the plugin 79 (79 Find VMs in Uncontrolled Snapshot Mode.ps1).
+
+## Slack
+
+To join in discussions or ask questions, join the #vCheck channel on [VMware Code Slack Team](https://code.vmware.com/slack/).
 
 
 ## Style guidelines
@@ -100,7 +111,7 @@ When contributing to this repository, please follow the following guidelines:
 
 * For all indentation, use 4 spaces instead of tab stops
 * Make sure all files are encoding using UTF-8. 
-* When writing Markdown, if a paragraph includes more than one setence, end each sentence with a newline.
+* When writing Markdown, if a paragraph includes more than one sentence, end each sentence with a newline.
 GitHub will still render the sentences as a single paragraph, but the readability of `git diff` will be greatly improved. 
 
 

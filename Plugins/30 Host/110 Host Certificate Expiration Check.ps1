@@ -1,7 +1,17 @@
+$Title = "Hosts with Upcoming Certificate Expiration"
+$Comments = "The following hosts have certificates that will expire soon and will need to be replaced."
+$Display = "Table"
+$Author = ""
+$PluginVersion = 1.1
+$PluginCategory = "vSphere"
+
 # Start of Settings
 # How many days to warn before cert expiration (Default 60)
 $WarningDays = 60
 # End of Settings
+
+# Update settings where there is an override
+$WarningDays = Get-vCheckSetting $Title "WarningDays" $WarningDays
 
 # Changelog
 ## 1.1 : Added filter for connected Hosts only
@@ -80,13 +90,6 @@ namespace PKI {
 # Plugin to report on upcoming host certificate expirations
 
 # Check for Host Certificates 
-$report = $VMH | Where {$_.ConnectionState -eq "Connected" -or $_.ConnectionState -eq "Maintenance"} | Foreach { Test-WebServerSSL -URL $_.Name | Select OriginalURi, Issuer, @{N="Expires";E={$_.Certificate.NotAfter} }, @{N="DaysTillExpire";E={(New-TimeSpan -Start (Get-Date) -End ($_.Certificate.NotAfter)).Days} }|? {$_.DaysTillExpire -le $WarningDays}}
-$report
+$VMH | Where-Object {$_.ConnectionState -eq "Connected" -or $_.ConnectionState -eq "Maintenance"} | Foreach-Object { Test-WebServerSSL -URL $_.Name | Select-Object OriginalURi, Issuer, @{N="Expires";E={$_.Certificate.NotAfter} }, @{N="DaysTillExpire";E={(New-TimeSpan -Start (Get-Date) -End ($_.Certificate.NotAfter)).Days} }|? {$_.DaysTillExpire -le $WarningDays}}
 
-$Title = "Hosts with Upcoming Certificate Expiration"
-$Header = "Hosts with upcoming Certificate Expirations: $WarningDays Days"
-$Comments = "The following hosts have certificates that will expire soon and will need to be replaced."
-$Display = "Table"
-$Author = ""
-$PluginVersion = 1.1
-$PluginCategory = "vSphere"
+$Header = ("Hosts with upcoming Certificate Expirations: {0} Days" -f $WarningDays)

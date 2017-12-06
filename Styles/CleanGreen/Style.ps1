@@ -11,9 +11,18 @@ $ChartSize = "200x200"
 Add-ReportResource "Header-vCheck" ($StylePath + "\Header.jpg") -Used $true
 
 # Hash table of key/value replacements
-$StyleReplace = @{"_HEADER_" = ("'$reportHeader'");
-                  "_CONTENT_" = "Get-ReportContentHTML";
-                  "_TOC_" = "Get-ReportTOC"}
+if ($GUIConfig) {
+    $StyleReplace = @{"_HEADER_" = ("'$reportHeader'");
+                      "_SCRIPT_" = "Get-ConfigScripts";
+                      "_CONTENT_" = "Get-ReportContentHTML";
+                      "_CONFIGEXPORT_" = ("'<div style=""text-align:center;""><button type=""button"" onclick=""createCSV()"">Export Settings</button></div>'")
+                      "_TOC_" = ("''")}
+} else {
+    $StyleReplace = @{"_HEADER_" = ("'$reportHeader'");
+                      "_CONTENT_" = "Get-ReportContentHTML";
+                      "_CONFIGEXPORT_" = ("''")
+                      "_TOC_" = "Get-ReportTOC"}
+}
 
 #region Function Defniitions
 <#
@@ -49,7 +58,7 @@ function Get-ReportContentHTML {
 function Get-PluginHTML {
    param ($PluginResult)
 
-   $FinalHTML = $PluginHTML -replace "_TITLE_", $PluginResult.Title
+   $FinalHTML = $PluginHTML -replace "_TITLE_", $PluginResult.Header
    $FinalHTML = $FinalHTML -replace "_COMMENTS_", $PluginResult.Comments
    $FinalHTML = $FinalHTML -replace "_PLUGINCONTENT_", $PluginResult.Details
    $FinalHTML = $FinalHTML -replace "_PLUGINID_", $PluginResult.PluginID
@@ -62,13 +71,15 @@ function Get-PluginHTML {
    Generate table of contents
 #>
 function Get-ReportTOC {
-   $TOCHTML = "<ul>"
-   foreach ($pr in ($PluginResult | Where {$_.Details})) {
-      $TOCHTML += ("<li><a style='font-size: 8pt' href='#{0}'>{1}</a></li>" -f $pr.PluginID, $pr.Title)
+   if ($ShowTOC) {
+      $TOCHTML = "<ul>"
+      foreach ($pr in ($PluginResult | Where-Object {$_.Details})) {
+            $TOCHTML += ("<li><a style='font-size: 8pt' href='#{0}'>{1}</a></li>" -f $pr.PluginID, $pr.Title)
+      }
+      $TOCHTML += "</ul>"
+
+      return $TOCHTML
    }
-   $TOCHTML += "</ul>"
-   
-   return $TOCHTML
 }
 #endregion
 
@@ -104,11 +115,18 @@ $ReportHTML = @"
                font-family: Tahoma, sans-serif;
                font-size: 8pt;
          }
+         input {
+            float:right;
+            clear:both;
+         }
          .pluginContent td { padding: 5px; }
 
          .warning { background: #FFFBAA !important }
 			.critical { background: #FFDDDD !important }
       </style>
+      <script>
+        _SCRIPT_
+      </script>
 	</head>
 	<body style="padding: 0 10px; margin: 0px; font-family:Arial, Helvetica, sans-serif; ">
       <a name="top" />
@@ -123,6 +141,7 @@ $ReportHTML = @"
       <table width='100%'><tr><td style='vertical-align: middle; text-indent: 10px; font-family: Tahoma, sans-serif; font-weight: bold; font-size: 12pt; color: #000000;'>_HEADER_</td></tr></table>
       <div>_TOC_</div>
       _CONTENT_
+      _CONFIGEXPORT_
    <!-- CustomHTMLClose -->
    <div style='height: 10px; font-size: 10px;'>&nbsp;</div>
    <table width='100%'><tr><td style='font-size:9pt; height: 25px; text-align: center; vertical-align: middle; color: #000000;'>vCheck v$($vCheckVersion) by <a href='http://virtu-al.net' sytle='color: white;'>Alan Renouf</a> generated on $($ENV:Computername) on $($Date.ToLongDateString()) at $($Date.ToLongTimeString())</td></tr></table>

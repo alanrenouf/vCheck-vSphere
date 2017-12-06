@@ -5,14 +5,19 @@ $diskformat = "thick"
 $DatastoreIgnore = "local"
 # End of Settings
 
-$vmdiskformat = $VM | Get-HardDisk | where {($_.storageformat -match $diskformat) -and ($_.Filename -notmatch $DatastoreIgnore)} | select @{N="VM";E={$_.parent.name}}, @{N="DiskName";E={$_.name}}, @{N="Format";E={$_.storageformat}}, @{N="FileName";E={$_.filename}}
-$vmdiskformat
+# Update settings where there is an override
+$diskformat = Get-vCheckSetting $Title "diskformat" $diskformat
+$DatastoreIgnore = Get-vCheckSetting $Title "DatastoreIgnore" $DatastoreIgnore
+
+$VM | Get-HardDisk | Where-Object {($_.storageformat -match $diskformat) -and ($_.Filename -notmatch $DatastoreIgnore)} | Select-Object @{N="VM";E={$_.parent.name}}, @{N="DiskName";E={$_.name}}, @{N="Format";E={$_.storageformat}}, @{N="FileName";E={$_.filename}}
 
 $Title = "Find VMs with thick or thin provisioned vmdk"
-$Header = "VMs with $diskformat provisioned vmdk(s): $(@($vmdiskformat).count)"
+$Header = "VMs with $diskformat provisioned vmdk(s): [count]"
 $Comments = "The following VMs have have $diskformat provisioned vmdk(s)"
 $Display = "Table"
 $Author = "David Chung"
-$PluginVersion = 1.2
-
+$PluginVersion = 1.3
 $PluginCategory = "vSphere"
+
+# Change Log
+## 1.3 : Added Get-vCheckSetting

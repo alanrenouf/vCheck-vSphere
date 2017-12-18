@@ -826,7 +826,7 @@ if (!(Test-Path ($StylePath))) {
 # Import the Style
 . ("$($StylePath)\Style.ps1")
 
-
+# Run Setup
 if ($SetupSetting -or $config -or $GUIConfig) {	
 	#Clear-Host
 	
@@ -880,179 +880,186 @@ if (-not $GUIConfig) {
 	#                                 Script logic                                 #
 	################################################################################
 	# Start generating the report
-	$PluginResult = @()
-
-	Write-Warning -Message $lang.pluginBegin
-
-	# Loop over all enabled plugins
-	$p = 0
-	$vCheckPlugins | Foreach {
-		$TableFormat = $null
-		$PluginInfo = Get-PluginID $_.Fullname
-		$p++
-		Write-CustomOut ($lang.pluginStart -f $PluginInfo["Title"], $PluginInfo["Author"], $PluginInfo["Version"], $p, $vCheckPlugins.count)
-		$pluginStatus = ($lang.pluginStatus -f $p, $vCheckPlugins.count, $_.Name)
-		Write-Progress -ID 1 -Activity $lang.pluginActivity -Status $pluginStatus -PercentComplete (100 * $p/($vCheckPlugins.count))
-		$TTR = [math]::round((Measure-Command { $Details = @(. $_.FullName)}).TotalSeconds, 2)
-
-		Write-CustomOut ($lang.pluginEnd -f $PluginInfo["Title"], $PluginInfo["Author"], $PluginInfo["Version"], $p, $vCheckPlugins.count)
-		# Do a replacement for [count] for number of items returned in $header
-		$Header = $Header -replace "\[count\]", $Details.count
-
-		$PluginResult += New-Object PSObject -Property @{
-			"Title" = $Title;
-			"Author" = $PluginInfo["Author"];
-			"Version" = $PluginInfo["Version"];
-			"Details" = $Details;
-			"Display" = $Display;
-			"TableFormat" = $TableFormat;
-			"Header" = $Header;
-			"Comments" = $Comments;
-			"TimeToRun" = $TTR;
-		}
+	if ( $Servers.Split(",")[1] ) {
+		$Servers = $Servers.Split(",")
 	}
-	Write-Progress -ID 1 -Activity $lang.pluginActivity -Status $lang.Complete -Completed
+	ForEach ( $Server in $Servers ) {
+		# Re-Import the Global Variabls in case any of the email settings, etc. have variables such as $Server embedded.
+		. $GlobalVariables
+		$PluginResult = @()
 
-	# Add report on plugins
-	if ($reportOnPlugins) {
-		$Comments = "Plugins in numerical order"
-		$Plugins = @()
-		foreach ($Plugin in (Get-ChildItem $PluginsFolder -Include *.ps1, *.ps1.disabled -Recurse)) {
-			$Plugins += New-Object PSObject -Property @{
-				"Name" = (Get-PluginID  $Plugin.FullName).Title;
-				"Enabled" = (($vCheckPlugins | Select-Object -ExpandProperty FullName) -Contains $plugin.FullName)
-			}
-		}
+		Write-Warning -Message $lang.pluginBegin
 
-		if ($ListEnabledPluginsFirst) {
-			$Plugins = $Plugins | Sort-Object -property @{ Expression = "Enabled"; Descending = $true }
-			$Comments = "Plugins in numerical order, enabled plugins listed first"
-		}
-
-		$PluginResult += New-Object PSObject -Property @{
-			"Title" = $lang.repPRTitle;
-			"Author" = "vCheck";
-			"Version" = $vCheckVersion;
-			"Details" = $Plugins;
-			"Display" = "Table";
-			"TableFormat" = $null;
-			"Header" = $lang.repPRTitle;
-			"Comments" = $Comments;
-			"TimeToRun" = 0;
-		}
-	}
-
-	# Add Time to Run detail for plugins - if specified in GlobalVariables.ps1
-	if ($TimeToRun) {
-		$Finished = Get-Date
-		$PluginResult += New-Object PSObject -Property @{
-			"Title" = $lang.repTTRTitle;
-			"Author" = "vCheck";
-			"Version" = $vCheckVersion;
-			"Details" = ($PluginResult | Where-Object { $_.TimeToRun -gt $PluginSeconds } | Select-Object Title, TimeToRun | Sort-Object TimeToRun -Descending);
-			"Display" = "List";
-			"TableFormat" = $null;
-			"Header" = ($lang.repTime -f [math]::round(($Finished - $Date).TotalMinutes, 2), ($Finished.ToLongDateString()), ($Finished.ToLongTimeString()));
-			"Comments" = ($lang.slowPlugins -f $PluginSeconds);
-			"TimeToRun" = 0;
-		}
-	}
-
-	#endregion scriptlogic
-
-	#region output
-	################################################################################
-	#                                    Output                                    #
-	################################################################################
-	# Loop over plugin results and generate HTML from style
-	$emptyReport = $true
-	$p = 1
-	Foreach ($pr in $PluginResult) {
-		If ($pr.Details) {
-			$emptyReport = $false
-			switch ($pr.Display) {
-				"List"  { $pr.Details = Get-HTMLList $pr.Details }
-				"Table" { $pr.Details = Get-HTMLTable $pr.Details $pr.TableFormat }
-				"Chart" { $pr.Details = Get-HTMLChart "plugin$($p)" $pr.Details }
-				default { $pr.Details = $null }
-			}
-			$pr | Add-Member -Type NoteProperty -Name pluginID -Value "plugin-$p"
+		# Loop over all enabled plugins
+		$p = 0
+		$vCheckPlugins | Foreach {
+			$TableFormat = $null
+			$PluginInfo = Get-PluginID $_.Fullname
 			$p++
+			Write-CustomOut ($lang.pluginStart -f $PluginInfo["Title"], $PluginInfo["Author"], $PluginInfo["Version"], $p, $vCheckPlugins.count)
+			$pluginStatus = ($lang.pluginStatus -f $p, $vCheckPlugins.count, $_.Name)
+			Write-Progress -ID 1 -Activity $lang.pluginActivity -Status $pluginStatus -PercentComplete (100 * $p/($vCheckPlugins.count))
+			$TTR = [math]::round((Measure-Command { $Details = @(. $_.FullName)}).TotalSeconds, 2)
+
+			Write-CustomOut ($lang.pluginEnd -f $PluginInfo["Title"], $PluginInfo["Author"], $PluginInfo["Version"], $p, $vCheckPlugins.count)
+			# Do a replacement for [count] for number of items returned in $header
+			$Header = $Header -replace "\[count\]", $Details.count
+
+			$PluginResult += New-Object PSObject -Property @{
+				"Title" = $Title;
+				"Author" = $PluginInfo["Author"];
+				"Version" = $PluginInfo["Version"];
+				"Details" = $Details;
+				"Display" = $Display;
+				"TableFormat" = $TableFormat;
+				"Header" = $Header;
+				"Comments" = $Comments;
+				"TimeToRun" = $TTR;
+			}
 		}
-		if ($pr.Details -ne $null)
-		{
-			$emptyReport = $false
-		}
-	}
+		Write-Progress -ID 1 -Activity $lang.pluginActivity -Status $lang.Complete -Completed
 
-	# Run Style replacement
-	$MyReport = Get-ReportHTML
-
-	# Set the output filename 
-	if (-not (Test-Path -PathType Container $Outputpath)) { New-Item $Outputpath -type directory | Out-Null }
-	$Filename = ("{0}\{1}_vCheck_{2}.htm" -f $Outputpath, $VIServer, (Get-Date -Format "yyyyMMdd_HHmm"))
-
-	# Always generate the report with embedded images
-	$embedReport = $MyReport
-	# Loop over all CIDs and replace them
-	Foreach ($cid in $global:ReportResources.Keys) {
-		$embedReport = $embedReport -replace ("cid:{0}" -f $cid), (Get-ReportResource $cid -ReturnType "embed")
-	}
-	$embedReport | Out-File -encoding ASCII -filepath $Filename
-
-	# Display to screen
-	if ($DisplayToScreen -and (!($emptyReport -and !$DisplayReportEvenIfEmpty))) {
-		Write-CustomOut $lang.HTMLdisp
-		Invoke-Item $Filename
-	}
-
-	# Generate email
-	if ($SendEmail -and (!($emptyReport -and !$EmailReportEvenIfEmpty))) {
-		Write-CustomOut $lang.emailSend
-		$msg = New-Object System.Net.Mail.MailMessage ($EmailFrom, $EmailTo)
-		# If CC address specified, add
-		If ($EmailCc -ne "") {
-			$msg.CC.Add($EmailCc)
-		}
-		$msg.subject = $EmailSubject
-
-		# if send attachment, just send plaintext email with HTML report attached
-		If ($SendAttachment) {
-			$msg.Body = $lang.emailAtch
-			$attachment = new-object System.Net.Mail.Attachment $Filename
-			$msg.Attachments.Add($attachment)
-		}
-		# Otherwise send the HTML email
-		else {
-			$msg.IsBodyHtml = $true;
-			$html = [System.Net.Mail.AlternateView]::CreateAlternateViewFromString($MyReport, $null, 'text/html')
-			$msg.AlternateViews.Add($html)
-
-			# Loop over all CIDs and replace them
-			Foreach ($cid in $global:ReportResources.Keys) {
-				if ($global:ReportResources[$cid].Uses -gt 0) {
-					$lr = (Get-ReportResource $cid -ReturnType "linkedresource")
-					$html.LinkedResources.Add($lr);
+		# Add report on plugins
+		if ($reportOnPlugins) {
+			$Comments = "Plugins in numerical order"
+			$Plugins = @()
+			foreach ($Plugin in (Get-ChildItem $PluginsFolder -Include *.ps1, *.ps1.disabled -Recurse)) {
+				$Plugins += New-Object PSObject -Property @{
+					"Name" = (Get-PluginID  $Plugin.FullName).Title;
+					"Enabled" = (($vCheckPlugins | Select-Object -ExpandProperty FullName) -Contains $plugin.FullName)
 				}
 			}
-		}
-		# Send the email
-		$smtpClient = New-Object System.Net.Mail.SmtpClient
 
-		# Find the VI Server and port from the global settings file
-		$smtpClient.Host = ($SMTPSRV -Split ":")[0]
-		if (($SMTPSRV -split ":")[1]) {
-			$smtpClient.Port = ($SMTPSRV -split ":")[1]
+			if ($ListEnabledPluginsFirst) {
+				$Plugins = $Plugins | Sort-Object -property @{ Expression = "Enabled"; Descending = $true }
+				$Comments = "Plugins in numerical order, enabled plugins listed first"
+			}
+
+			$PluginResult += New-Object PSObject -Property @{
+				"Title" = $lang.repPRTitle;
+				"Author" = "vCheck";
+				"Version" = $vCheckVersion;
+				"Details" = $Plugins;
+				"Display" = "Table";
+				"TableFormat" = $null;
+				"Header" = $lang.repPRTitle;
+				"Comments" = $Comments;
+				"TimeToRun" = 0;
+			}
 		}
 
-		if ($EmailSSL -eq $true) {
-			$smtpClient.EnableSsl = $true
+		# Add Time to Run detail for plugins - if specified in GlobalVariables.ps1
+		if ($TimeToRun) {
+			$Finished = Get-Date
+			$PluginResult += New-Object PSObject -Property @{
+				"Title" = $lang.repTTRTitle;
+				"Author" = "vCheck";
+				"Version" = $vCheckVersion;
+				"Details" = ($PluginResult | Where-Object { $_.TimeToRun -gt $PluginSeconds } | Select-Object Title, TimeToRun | Sort-Object TimeToRun -Descending);
+				"Display" = "List";
+				"TableFormat" = $null;
+				"Header" = ($lang.repTime -f [math]::round(($Finished - $Date).TotalMinutes, 2), ($Finished.ToLongDateString()), ($Finished.ToLongTimeString()));
+				"Comments" = ($lang.slowPlugins -f $PluginSeconds);
+				"TimeToRun" = 0;
+			}
 		}
-		$smtpClient.UseDefaultCredentials = $true;
-		$smtpClient.Send($msg)
-		If ($SendAttachment) { $attachment.Dispose() }
-		$msg.Dispose()
-	}
+
+		#endregion scriptlogic
+
+		#region output
+		################################################################################
+		#                                    Output                                    #
+		################################################################################
+		# Loop over plugin results and generate HTML from style
+		$emptyReport = $true
+		$p = 1
+		Foreach ($pr in $PluginResult) {
+			If ($pr.Details) {
+				$emptyReport = $false
+				switch ($pr.Display) {
+					"List"  { $pr.Details = Get-HTMLList $pr.Details }
+					"Table" { $pr.Details = Get-HTMLTable $pr.Details $pr.TableFormat }
+					"Chart" { $pr.Details = Get-HTMLChart "plugin$($p)" $pr.Details }
+					default { $pr.Details = $null }
+				}
+				$pr | Add-Member -Type NoteProperty -Name pluginID -Value "plugin-$p"
+				$p++
+			}
+			if ($pr.Details -ne $null)
+			{
+				$emptyReport = $false
+			}
+		}
+
+		# Run Style replacement
+		$MyReport = Get-ReportHTML
+
+		# Set the output filename 
+		if (-not (Test-Path -PathType Container $Outputpath)) { New-Item $Outputpath -type directory | Out-Null }
+		$Filename = ("{0}\{1}_vCheck_{2}.htm" -f $Outputpath, $VIServer, (Get-Date -Format "yyyyMMdd_HHmm"))
+
+		# Always generate the report with embedded images
+		$embedReport = $MyReport
+		# Loop over all CIDs and replace them
+		Foreach ($cid in $global:ReportResources.Keys) {
+			$embedReport = $embedReport -replace ("cid:{0}" -f $cid), (Get-ReportResource $cid -ReturnType "embed")
+		}
+		$embedReport | Out-File -encoding ASCII -filepath $Filename
+
+		# Display to screen
+		if ($DisplayToScreen -and (!($emptyReport -and !$DisplayReportEvenIfEmpty))) {
+			Write-CustomOut $lang.HTMLdisp
+			Invoke-Item $Filename
+		}
+
+		# Generate email
+		if ($SendEmail -and (!($emptyReport -and !$EmailReportEvenIfEmpty))) {
+			Write-CustomOut $lang.emailSend
+			$msg = New-Object System.Net.Mail.MailMessage ($EmailFrom, $EmailTo)
+			# If CC address specified, add
+			If ($EmailCc -ne "") {
+				$msg.CC.Add($EmailCc)
+			}
+			$msg.subject = $EmailSubject
+
+			# if send attachment, just send plaintext email with HTML report attached
+			If ($SendAttachment) {
+				$msg.Body = $lang.emailAtch
+				$attachment = new-object System.Net.Mail.Attachment $Filename
+				$msg.Attachments.Add($attachment)
+			}
+			# Otherwise send the HTML email
+			else {
+				$msg.IsBodyHtml = $true;
+				$html = [System.Net.Mail.AlternateView]::CreateAlternateViewFromString($MyReport, $null, 'text/html')
+				$msg.AlternateViews.Add($html)
+
+				# Loop over all CIDs and replace them
+				Foreach ($cid in $global:ReportResources.Keys) {
+					if ($global:ReportResources[$cid].Uses -gt 0) {
+						$lr = (Get-ReportResource $cid -ReturnType "linkedresource")
+						$html.LinkedResources.Add($lr);
+					}
+				}
+			}
+			# Send the email
+			$smtpClient = New-Object System.Net.Mail.SmtpClient
+
+			# Find the VI Server and port from the global settings file
+			$smtpClient.Host = ($SMTPSRV -Split ":")[0]
+			if (($SMTPSRV -split ":")[1]) {
+				$smtpClient.Port = ($SMTPSRV -split ":")[1]
+			}
+
+			if ($EmailSSL -eq $true) {
+				$smtpClient.EnableSsl = $true
+			}
+			$smtpClient.UseDefaultCredentials = $true;
+			$smtpClient.Send($msg)
+			If ($SendAttachment) { $attachment.Dispose() }
+			$msg.Dispose()
+		}
+	} #ForEach $Server
 
 	# Run EndScript once everything else is complete
 	if (Test-Path ($ScriptPath + "\EndScript.ps1")) {

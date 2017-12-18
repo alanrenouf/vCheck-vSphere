@@ -1,3 +1,11 @@
+$Title = "VMs by Operating System"
+$Header = "VMs by Operating System : [count]"
+$Comments = "The following Operating Systems are in use in this vCenter"
+$Display = "Table"
+$Author = "Raymond"
+$Version = 1.3
+$PluginCategory = "vSphere"
+
 # Start of Settings
 # End of Settings
 
@@ -24,23 +32,11 @@ $FullVM | % {
 
 $myCol = @()
 foreach ( $gosname in $VMOSversions.Keys | sort) {
-  $MyDetails = "" | select OS, Count
+  $MyDetails = "" | Select-Object OS, Count
   $MyDetails.OS = $gosname
   $MyDetails.Count = $VMOSversions.$gosname
   $myCol += $MyDetails
 }
 
-$vVMOSversions = $myCol | sort Count -desc
-If (($vVMOSversions | Measure-Object).count -gt 0) {
-  $Header = "VMs by Operating System : $($vVMOSversions.count)"
-  $vVMOSversions
-}
-$vVMOSversions = $null
-
-
-$Title = "VMs by Operating System"
-$Comments = "The following Operating Systems are in use in this vCenter"
-$Display = "Table"
-$Author = "Raymond"
-$Version = 1.3
-$PluginCategory = "vSphere"
+$myCol | Sort-Object Count -desc
+Remove-Variable VMOSversions

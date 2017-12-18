@@ -1,39 +1,51 @@
+#region Internationalization
+################################################################################
+#                             Internationalization                             #
+################################################################################
+# Default language en-US
+Import-LocalizedData -BaseDirectory ($ScriptPath + '\lang') -BindingVariable pLang -UICulture en-US -ErrorAction SilentlyContinue
+
+# Override the default (en-US) if it exists in lang directory
+Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable pLang -ErrorAction SilentlyContinue
+
+#endregion Internationalization
+
+$Title = "VMs in uncontrolled snapshot mode"
+$Header = "VMs in uncontrolled snapshot mode: [count]"
+$Comments = "The following VMs are in snapshot mode, but vCenter isn't aware of it. See http://kb.vmware.com/kb/1002310"
+$Display = "Table"
+$Author = "Rick Glover, Matthias Koehler, Dan Rowe"
+$PluginVersion = 1.5
+$PluginCategory = "vSphere"
+
 # Start of Settings
 # End of Settings
 
-$VMFolder = @()
-foreach ($eachVM in $FullVM) {
-  if (!$eachVM.snapshot) { # Only process VMs without snapshots
-    $eachVM.Summary.Config.VmPathName -match '^\[([^\]]+)\] ([^/]+)' > $null
-    $Datastore = $matches[1]
-    $VMPath = $matches[2]
-    $DC = Get-Datacenter -VM $eachVM.Name
-    if ($DC.ParentFolder.Parent) { #Check if Datacenter has a parent folder
-      $DCPath = $DC.ParentFolder.Name
-    }
-    else {
-      $DCPath = ''
-    }
-    $gciloc = (Get-ChildItem vmstores: | Select -first 1).Name
-    $fileList = Get-ChildItem "vmstores:\$gciloc\$DCPath\$DC\$Datastore\$VMPath"
-    foreach ($file in $fileList) {
-      if ($file.Name -like '*delta.vmdk*' -or $file -like '-*-flat.vmdk') { 
-        $Details = "" | Select-Object VM, Datacenter, Path
-        $Details.VM = $eachVM.Name
-        $Details.Datacenter = $DC.Name
-        $Details.Path = $Datastore + '/' + $VMPath + '/' + $file.Name
-        $VMFolder += $Details
-        break
-      }
-    }
-  }
-}
-$VMFolder
+$i=0;
+foreach ($eachDS in ($Datastores | Where-Object {$_.State -eq "Available"})) {
+   Write-Progress -ID 2 -Parent 1 -Activity $pLang.pluginActivity -Status ($pLang.pluginStatus -f $i, $Datastores.count, $eachDS.Name) -PercentComplete ($i*100/$Datastores.count)
+   $eachDS.Name
+   $FilePath = $eachDS.DatastoreBrowserPath + '\*\*delta.vmdk*'
+   $fileList = @(Get-ChildItem -Path "$FilePath" | Select-Object Name, FolderPath, FullName)
+   $FilePath = $eachDS.DatastoreBrowserPath + '\*\-*-flat.vmdk'
+   $fileList += Get-ChildItem -Path "$FilePath" | Select-Object Name, FolderPath, FullName
 
-$Title = "VMs in uncontrolled snapshot mode"
-$Header = "VMs in uncontrolled snapshot mode: $(@($Result).Count)"
-$Comments = "The following VMs are in snapshot mode, but vCenter isn't aware of it. See http://kb.vmware.com/kb/1002310"
-$Display = "Table"
-$Author = "Rick Glover, Matthias Koehler"
-$PluginVersion = 1.3
-$PluginCategory = "vSphere"
+   $i++
+
+   foreach ($vmFile in $filelist | Sort-Object FolderPath) 
+   {
+      $vmFile.FolderPath -match '^\[([^\]]+)\] ([^/]+)' > $null
+      $VMName = $matches[2]
+      $eachVM = $FullVM | Where-Object {$_.Name -eq $VMName}
+      if (!$eachVM.snapshot) 
+      { 
+         # Only process VMs without snapshots
+         New-Object -TypeName PSObject -Property @{
+            VM = $eachVM.Name
+            Datacenter = $eachDS.Datacenter
+            Path = $vmFile.FullName
+         }
+      }
+   }
+}
+Write-Progress -ID 1 -Activity $pLang.pluginActivity -Status $pLang.Complete -Completed

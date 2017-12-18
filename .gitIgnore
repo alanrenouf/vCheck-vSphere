@@ -1,2 +1,5 @@
 # Ignore Windowscreds.xml
 Windowscreds.xml
+.vs/ProjectSettings.json
+.vs/slnx.sqlite
+.vs/vCheck-vSphere/v15/.suo

@@ -7,8 +7,6 @@ $Display = "None"
 $PluginCategory = "vSphere"
 
 # Start of Settings
-# Please Specify the address (and optional port) of the vCenter server to connect to [servername(:port)]
-$Server = "vcsa.local.lab"
 # End of Settings
 
 # Update settings where there is an override
@@ -437,10 +435,10 @@ PS> Get-Datastore | Get-HttpDatastoreItem -Credential $cred -Recurse
     [cmdletbinding()]
     param(
         [VMware.VimAutomation.ViCore.Types.V1.VIServer]$Server = $global:DefaultVIServer,
-        [parameter(Mandatory=$true,ValueFromPipelineByPropertyName,ParameterSetName=’Datastore’)]
+        [parameter(Mandatory=$true,ValueFromPipelineByPropertyName,ParameterSetName='Datastore')]
         [Alias('Name')]
         [string]$Datastore,
-        [parameter(Mandatory=$true,ParameterSetName=’Path’)]
+        [parameter(Mandatory=$true,ParameterSetName='Path')]
         [string]$Path = '',
         [PSCredential]$Credential,
         [Switch]$Recurse = $false,
@@ -545,9 +543,12 @@ PS> Get-Datastore | Get-HttpDatastoreItem -Credential $cred -Recurse
                         $tSize = $_.Groups['Filesize'].Value
                         if($Unit.IsPresent){
                             $friendly = $tSize | Get-FriendlyUnit
-                            $obj.Add('Size',[Math]::Round($friendly.Value,0))                            $obj.Add('Unit',$friendly.Unit)                        }
+                            $obj.Add('Size',[Math]::Round($friendly.Value,0))
+                            $obj.Add('Unit',$friendly.Unit)
+                        }
                         else{
-                            $obj.Add('Size',$tSize)                        }
+                            $obj.Add('Size',$tSize)
+                        }
                     }
                     else{
                         $obj.Add('Size','')

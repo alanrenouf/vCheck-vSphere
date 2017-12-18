@@ -41,6 +41,8 @@ $ListEnabledPluginsFirst = $true
 $TimeToRun = $true
 # Report on plugins that take longer than the following amount of seconds
 $PluginSeconds = 30
+# Please Specify the address (and optional port) of the vCenter server(s) to connect to [servername(:port)] (separate multiple vCenters with comma)
+$Servers = ""
 # End of Settings
 
 # End of Global Variables

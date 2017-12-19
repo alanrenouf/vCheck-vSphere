@@ -68,50 +68,21 @@ param (
 	[string]$job
 )
 
-$vCheckVersion = "6.23"
+$vCheckVersion = "6.24"
 $Date = Get-Date
+
+# Setup all paths required for script to run
+$ScriptPath = (Split-Path ((Get-Variable MyInvocation).Value).MyCommand.Path)
+$PluginsFolder = $ScriptPath + "\Plugins\"
 
 #region Internationalization
 ################################################################################
 #                             Internationalization                             #
 ################################################################################
-$lang = DATA {
-	ConvertFrom-StringData @' 
-      setupMsg01  = 
-      setupMsg02  = Welcome to vCheck by Virtu-Al http://virtu-al.net
-      setupMsg03  = =================================================
-      setupMsg04  = This is the first time you have run this script or you have re-enabled the setup wizard.
-      setupMsg05  =
-      setupMsg06  = To re-run this wizard in the future please use vCheck.ps1 -Config
-      setupMsg07  = To get usage information, please use Get-Help vCheck.ps1
-      setupMsg08  =
-      setupMsg09  = Please complete the following questions or hit Enter to accept the current setting
-      setupMsg10  = After completing this wizard the vCheck report will be displayed on the screen.
-      setupMsg11  =
-      configMsg01 = After you have exported the new settings from the configuration interface,
-      configMsg02  = import the settings CSV file using Import-vCheckSettings -csvfile C:\\path\\to\\vCheckSettings.csv
-      configMsg03  = NOTE: If vCheckSettings.csv is stored in the vCheck folder, simply run Import-vCheckSettings
-      resFileWarn = Image File not found for {0}!
-      pluginInvalid = Plugin does not exist: {0}
-      pluginpathInvalid = Plugin path "{0}" is invalid, defaulting to {1}
-      gvInvalid   = Global Variables path invalid in job specification, defaulting to {0}
-      varUndefined = Variable `${0} is not defined in GlobalVariables.ps1
-      pluginActivity = Evaluating plugins
-      pluginStatus = [{0} of {1}] {2}
-      Complete = Complete
-      pluginBegin = \nBegin Plugin Processing
-      pluginStart  = ..start calculating {0} by {1} v{2} [{3} of {4}]
-      pluginEnd    = ..finished calculating {0} by {1} v{2} [{3} of {4}]
-      repTime     = This report took {0} minutes to run all checks, completing on {1} at {2}
-      repPRTitle = Plugin Report
-      repTTRTitle = Time to Run
-      slowPlugins = The following plugins took longer than {0} seconds to run, there may be a way to optimize these or remove them if not needed
-      emailSend   = ..Sending Email
-      emailAtch   = vCheck attached to this email
-      HTMLdisp    = ..Displaying HTML results
-'@
-}
+# Default language en-US
+Import-LocalizedData -BaseDirectory ($ScriptPath + '\lang') -BindingVariable lang -UICulture en-US -ErrorAction SilentlyContinue
 
+# Override the default (en-US) if it exists in lang directory
 Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable lang -ErrorAction SilentlyContinue
 
 #endregion Internationalization
@@ -766,10 +737,6 @@ function Get-ConfigScripts {
 ################################################################################
 #                                Initialization                                #
 ################################################################################
-# Setup all paths required for script to run
-$ScriptPath = (Split-Path ((Get-Variable MyInvocation).Value).MyCommand.Path)
-$PluginsFolder = $ScriptPath + "\Plugins\"
-
 # if we have the job parameter set, get the paths from the config file.
 if ($job) {
 	[xml]$jobConfig = Get-Content $job
@@ -1023,7 +990,7 @@ if (-not $GUIConfig) {
 
 	# Set the output filename 
 	if (-not (Test-Path -PathType Container $Outputpath)) { New-Item $Outputpath -type directory | Out-Null }
-	$Filename = ("{0}\{1}_vCheck_{2}.htm" -f $Outputpath, $Server, (Get-Date -Format "yyyyMMdd_HHmm"))
+	$Filename = ("{0}\{1}_vCheck_{2}.htm" -f $Outputpath, $VIServer, (Get-Date -Format "yyyyMMdd_HHmm"))
 
 	# Always generate the report with embedded images
 	$embedReport = $MyReport

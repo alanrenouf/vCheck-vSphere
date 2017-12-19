@@ -71,13 +71,15 @@ function Get-PluginHTML {
    Generate table of contents
 #>
 function Get-ReportTOC {
-   $TOCHTML = "<ul>"
-   foreach ($pr in ($PluginResult | Where-Object {$_.Details})) {
-      $TOCHTML += ("<li><a style='font-size: 8pt' href='#{0}'>{1}</a></li>" -f $pr.PluginID, $pr.Title)
+   if ($ShowTOC) {
+      $TOCHTML = "<ul>"
+      foreach ($pr in ($PluginResult | Where-Object {$_.Details})) {
+            $TOCHTML += ("<li><a style='font-size: 8pt' href='#{0}'>{1}</a></li>" -f $pr.PluginID, $pr.Title)
+      }
+      $TOCHTML += "</ul>"
+
+      return $TOCHTML
    }
-   $TOCHTML += "</ul>"
-   
-   return $TOCHTML
 }
 #endregion
 

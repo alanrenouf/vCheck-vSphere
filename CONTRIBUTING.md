@@ -31,7 +31,7 @@ If the changes are related to an existing GitHub issue, please reference the iss
 One of the easiest ways to contribute to a PowerShell project is by helping to write and edit documentation. 
 All of our documentation hosted on GitHub is written using [GitHub Flavored Markdown](https://help.github.com/articles/github-flavored-markdown/) 
 
-*We are at lest working on shifting things over to GFM, for 'core' documentation. Some things may still live on the GitHub wiki, but using GFM allows the documentation to exist in the repo, so you always have a local copy to reference ;)*
+*We are at least working on shifting things over to GFM, for 'core' documentation. Some things may still live on the GitHub wiki, but using GFM allows the documentation to exist in the repo, so you always have a local copy to reference ;)*
 
 To [edit an existing file](https://help.github.com/articles/editing-files-in-another-user-s-repository/), simply navigate to it and click the "Edit" button. 
 GitHub will automatically create your own fork of our repository where you can make your changes. 
@@ -111,7 +111,7 @@ When contributing to this repository, please follow the following guidelines:
 
 * For all indentation, use 4 spaces instead of tab stops
 * Make sure all files are encoding using UTF-8. 
-* When writing Markdown, if a paragraph includes more than one setence, end each sentence with a newline.
+* When writing Markdown, if a paragraph includes more than one sentence, end each sentence with a newline.
 GitHub will still render the sentences as a single paragraph, but the readability of `git diff` will be greatly improved. 
 
 

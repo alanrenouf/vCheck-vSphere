@@ -24,7 +24,7 @@ $PluginCategory = "vSphere"
 $i=0;
 foreach ($eachDS in ($Datastores | Where-Object {$_.State -eq "Available"})) {
    Write-Progress -ID 2 -Parent 1 -Activity $pLang.pluginActivity -Status ($pLang.pluginStatus -f $i, $Datastores.count, $eachDS.Name) -PercentComplete ($i*100/$Datastores.count)
-   $eachDS.Name
+   
    $FilePath = $eachDS.DatastoreBrowserPath + '\*\*delta.vmdk*'
    $fileList = @(Get-ChildItem -Path "$FilePath" | Select-Object Name, FolderPath, FullName)
    $FilePath = $eachDS.DatastoreBrowserPath + '\*\-*-flat.vmdk'

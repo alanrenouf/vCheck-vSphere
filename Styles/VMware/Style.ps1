@@ -79,26 +79,28 @@ function Get-PluginHTML {
    Generate table of contents
 #>
 function Get-ReportTOC {
-   $TOCHTML = "<table><tr>"
+   if ($ShowTOC) {
+      $TOCHTML = "<table><tr>"
 
-   $i = 0
-   foreach ($pr in ($PluginResult | Where-Object {$_.Details})) {
-      $TOCHTML += ("<td style='padding-left: 10px'><a style='font-size: 8pt' href='#{0}'>{1}</a></td>" -f $pr.PluginID, $pr.Title)
+      $i = 0
+      foreach ($pr in ($PluginResult | Where-Object {$_.Details})) {
+            $TOCHTML += ("<td style='padding-left: 10px'><a style='font-size: 8pt' href='#{0}'>{1}</a></td>" -f $pr.PluginID, $pr.Title)
 
-      $i++
-      # We have hit the end of the line
-      if ($i%$ToCColumns -eq 0) {
-         $TOCHTML +="</tr><tr>"
+            $i++
+            # We have hit the end of the line
+            if ($i%$ToCColumns -eq 0) {
+            $TOCHTML +="</tr><tr>"
+            }
       }
-   }
-   # If the row is unfinished, need to pad it out with a cell
-   if ($i%$ToCColumns -gt 0) {
-      $TOCHTML += ("<td colspan='{0}'>&nbsp;</td>" -f ($ToCColumns-($i%$ToCColumns)))
-   }
+      # If the row is unfinished, need to pad it out with a cell
+      if ($i%$ToCColumns -gt 0) {
+            $TOCHTML += ("<td colspan='{0}'>&nbsp;</td>" -f ($ToCColumns-($i%$ToCColumns)))
+      }
 
-   $TOCHTML += "</tr></table>"
+      $TOCHTML += "</tr></table>"
 
-   return $TOCHTML
+      return $TOCHTML
+   }
 }
 #endregion
 

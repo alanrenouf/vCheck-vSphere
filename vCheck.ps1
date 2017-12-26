@@ -30,7 +30,7 @@
 .NOTES 
    File Name  : vCheck.ps1 
    Author     : Alan Renouf - @alanrenouf
-   Version    : 6.24
+   Version    : 6.25
 
    Thanks to all who have commented on my blog to help improve this project
    all beta testers and previous contributors to this script.
@@ -68,7 +68,7 @@ param (
 	[string]$job
 )
 
-$vCheckVersion = "6.24"
+$vCheckVersion = "6.25"
 $Date = Get-Date
 
 # Setup all paths required for script to run

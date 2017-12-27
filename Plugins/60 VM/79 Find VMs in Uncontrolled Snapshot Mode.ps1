@@ -19,10 +19,11 @@ $PluginVersion = 1.5
 $PluginCategory = "vSphere"
 
 # Start of Settings
+$ExcludeDS = "ExcludeMe"
 # End of Settings
 
 $i=0;
-foreach ($eachDS in ($Datastores | Where-Object {$_.State -eq "Available"})) {
+foreach ($eachDS in ($Datastores | Where-Object {$_.Name -notmatch $ExcludeDS} | Where-Object {$_.State -eq "Available"})) {
    Write-Progress -ID 2 -Parent 1 -Activity $pLang.pluginActivity -Status ($pLang.pluginStatus -f $i, $Datastores.count, $eachDS.Name) -PercentComplete ($i*100/$Datastores.count)
    
    $FilePath = $eachDS.DatastoreBrowserPath + '\*\*delta.vmdk*'

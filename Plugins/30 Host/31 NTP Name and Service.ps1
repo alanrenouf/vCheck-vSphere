@@ -11,7 +11,7 @@ $PluginCategory = "vSphere"
 $ntpserver = "pool.ntp.org,pool2.ntp.org"
 # End of Settings
 
-$VMH | Where-Object {$_.Connectionstate -eq "Connected"} | Select-Object Name, @{N="NTPServer";E={($_ | Get-VMHostNtpServer) -join ","}}, @{N="ServiceRunning";E={(Get-VmHostService -VMHost $_ | Where-Object {$_.key -eq "ntpd"}).Running}} | Where-Object {$_.ServiceRunning -eq $false -or $_.NTPServer -ne $ntpserver}
+$VMH | Where-Object {$_.ConnectionState -match "Connected|Maintenance"} | Select-Object Name, @{N="NTPServer";E={($_ | Get-VMHostNtpServer) -join ","}}, @{N="ServiceRunning";E={(Get-VmHostService -VMHost $_ | Where-Object {$_.key -eq "ntpd"}).Running}} | Where-Object {$_.ServiceRunning -eq $false -or $_.NTPServer -ne $ntpserver}
 
 # Changelog
 ## 1.3 : Only check Connected hosts since Disconnected and Not Responding produce empty data

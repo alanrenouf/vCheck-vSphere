@@ -2,8 +2,8 @@ $Title = "Snapshots Oversize"
 $Header = "Snapshots Oversize"
 $Comments = "VMware snapshots which are kept for a long period of time may cause issues, filling up datastores and also may impact performance of the virtual machine."
 $Display = "Table"
-$Author = "Raphael Schitz, Shawn Masterson"
-$PluginVersion = 1.4
+$Author = "Raphael Schitz, Shawn Masterson, Bill Wall"
+$PluginVersion = 1.5
 $PluginCategory = "vSphere"
 
 # Start of Settings
@@ -34,3 +34,4 @@ $snapp | Select-Object VM, vmdkSizeGB, SnapSizeGB, SnapCount, @{N="OverSize %";E
 # Changelog
 ## 1.3 : Rewritten to cleanup and compare vmdk size to only snapshot size
 ## 1.4 : Code refactor
+## 1.5 : Added exclude VM setting

@@ -10,7 +10,7 @@ $MBFree = 1024
 # VM Disk space left, set the amount you would like to report on MBDiskMinSize
 $MBDiskMinSize = 1024
 # Exclude VMs by name
-$MBExcludeVMs = "Guest Introspection|McAfee MOVE AV"
+$MBExcludeVMs = "Guest Introspection|ExcludeMe"
 # End of Settings
 
 # Update settings where there is an override

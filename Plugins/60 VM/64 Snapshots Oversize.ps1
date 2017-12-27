@@ -6,11 +6,12 @@ $Author = "Raphael Schitz, Shawn Masterson"
 $PluginVersion = 1.4
 $PluginCategory = "vSphere"
 
-# Start of Settings 
+# Start of Settings
+$ExcludeVMs = "Guest Introspection|ExcludeMe"
 # End of Settings 
 
 $snapp = @()
-Foreach ($vmg in ($VM | Where-Object {$_.ExtensionData.Snapshot})) {
+Foreach ($vmg in ($VM | Where-Object {$_.Name -notmatch $ExcludeVMs} | Where-Object {$_.ExtensionData.Snapshot})) {
    $hddsize = ($vmg | Get-HardDisk | Measure-Object -sum CapacityGB).sum
    $snapInfo = $vmg | Get-Snapshot | Measure-Object -Sum SizeGB
 

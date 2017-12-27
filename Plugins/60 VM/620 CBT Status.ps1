@@ -23,9 +23,10 @@ else
 
 $Title = "VM - Display all VMs with CBT unexpected status"
 $Display = "Table"
-$Author = "Cyril Epiney"
+$Author = "Cyril Epiney, Bill Wall"
 $PluginVersion = 1.2
 $PluginCategory = "vSphere"
 
 # Change Log
 ## 1.1 : Added Get-vCheckSetting
+## 1.2 : Added Exclude VM setting

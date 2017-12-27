@@ -1,8 +1,8 @@
 $Title = "Host Multipath Policy"
 $Comments = "See the Storage/SAN section of the <a href='https://www.vmware.com/resources/compatibility/search.php?deviceCategory=san' target='_blank'>VMware Compatibility Guide</a> or your array/storage vendor's documentation for the supported/recommended policy."
 $Display = "Table"
-$Author = "Doug Taliaferro"
-$PluginVersion = 1.0
+$Author = "Doug Taliaferro, Bill Wall"
+$PluginVersion = 1.1
 $PluginCategory = "vSphere"
 
 # Start of Settings
@@ -27,3 +27,7 @@ Foreach ($esxhost in ($HostsViews | Where-Object {$_.Runtime.ConnectionState -ma
 $lunResults
 
 $Header = "Hosts/LUNs not using Multipath Policy '$($MultipathPolicy)' : [count]"
+
+
+# Changelog
+## 1.1 : Added check for Maintenance mode VMHs.

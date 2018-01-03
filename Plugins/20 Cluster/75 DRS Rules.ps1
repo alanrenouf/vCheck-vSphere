@@ -1,8 +1,8 @@
 $Title = "DRS Rules"
 $Header = "DRS Rules"
 $Display = "Table"
-$Author = "John Sneddon"
-$PluginVersion = 1.2
+$Author = "John Sneddon, Bill Wall"
+$PluginVersion = 1.3
 $PluginCategory = "vSphere"
 
 # Start of Settings 
@@ -14,6 +14,8 @@ $ShowVMAntiAffinity = $true
 $ShowHostAffinity = $true
 # Set DRS Rule name exception (regex)
 $excludeName = "ExcludeMe"
+# Display all results including valid rules? (Previous functionality is $true)
+$ShowValidDRSRules = $true
 # End of Settings
 
 # Update settings where there is an override
@@ -28,14 +30,60 @@ if ($ShowVMAffinity)     { $Types += "VMAffinity"}
 if ($ShowVMAntiAffinity) { $Types += "VMAntiAffinity"}
 if ($ShowHostAffinity)   { $Types += "VMHostAffinity"}
 
-$Clusters | Foreach-Object {
-   Get-DrsRule -Cluster $_ -Type $Types | Where-Object { $_.Name -notmatch $excludeName } | 
-   Select-Object Cluster, Enabled, Name, Type, @{N="VM";E={(Get-View $_.VMIDS | Select-Object -ExpandProperty Name) -join "<br />"}},
-     @{N="Rule Host";E={(Get-View $_.AffineHostIds | Select-Object -ExpandProperty Name) -join "<br />" }},
-     @{N="Running on";E={(Get-View (Get-View $_.VMIDS | Foreach-Object {$_.Runtime.Host}) | Select-Object ExpandProperty Name) -join "<br />"}}
+# For each cluster
+ForEach ($DRSCluster in $Clusters) {
+	## Get the rules and apply exclusion filter
+	$myDRSRules = Get-DrsRule -Cluster $DRSCluster -Type $Types | Where { $_.Name -notmatch $excludeName }
+	## For each rule
+	ForEach ($myDRSRule in $myDRSRules) {
+		### Reset variables
+		$myVMs = $null
+		$myHosts = $null
+		$myRunningHost = $null
+		$DRSRuleValid = $false
+		#### Get rule type
+		$myDRSRuleType = $myDRSRule.Type
+		#### If the rule has VMs defined
+		If ($myDRSRule.VMIDS) {
+			##### Get VM view
+			$myVMView = Get-View $myDRSRule.VMIDS
+			##### Get VM names
+			$myVMs = $myVMView | Select -ExpandProperty Name
+			##### Get Host currently running VM
+			$myRunningHost = (Get-View ($myVMView | %{$_.Runtime.Host}) | Select -ExpandProperty Name)
+		}
+		#### If a host affinity rule
+		If ($myDRSRuleType -eq "VMHostAffinity") {
+			##### If hosts are defined
+			If ($myDRSRule.AffineHostIds) {
+				###### Get host names
+				$myHosts = (Get-View $myDRSRule.AffineHostIds | Select -ExpandProperty Name)
+			}
+			##### If VMs and Hosts are defined
+			If (($myVMs) -and ($myHosts)) {
+				###### Host affinity rule is valid
+				$DRSRuleValid = $true
+			}
+		} elseif (($myDRSRuleType -ne "VMHostAffinity") -and (($myDRSRule.VMIDS).Count -gt 1)) { #### else, if a different type of rule (VMAffinity,VMAntiAffinity) and more than one VM is defined
+			##### VMAffinity/VMAntiAffinity rule is valid
+			$DRSRuleValid = $true
+		}
+		#### Add to output array
+		$DRSRules += @($myDRSRule | Select Cluster, Enabled, @{Name="Valid";Expression={$DRSRuleValid}}, Name, Type,
+									@{Name="VM";Expression={$myVMs -join "<br />"}},
+									@{Name="Rule Host";Expression={$myHosts -join "<br />"}},
+									@{Name="Current Host";Expression={$myRunningHost -join "<br />"}})
+	}
 }
 
-$Comments = ("Contains all DRS rules defined in this vCenter - {0}" -f ($types -join ","))
+# If showing all rules, display all rules, else, display only invalid rules 
+If ($ShowValidDRSRules) {@($DRSRules)} else {@($DRSRules | Where-Object {$_.Valid -eq $false})}
+
+If ($ShowValidDRSRules) {
+   $Comments = ("Contains all DRS rules defined in this vCenter - {0}" -f ($types -join ","))
+} else {
+   $Comments = ("Displays invalid DRS rules defined in this vCenter - {0}" -f ($types -join ","))
+}
 
 # Add pretty icons
 Add-ReportResource -cid "Error" -Type "SystemIcons" -ResourceData "Error"
@@ -49,4 +97,5 @@ $TableFormat = @{"Enabled" = @(@{ "-eq `$true"     = "Cell,cid|OK|16x16"; },
 # Changelog
 ## 1.0 : Initial Version
 ## 1.1 : Add filter option (Pull #391 - @mtehonica)
-## 1.2 : Update to Get-vCheckSetting 
+## 1.2 : Update to Get-vCheckSetting
+## 1.3 : Added rule validation (@thebillness)

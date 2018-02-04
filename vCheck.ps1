@@ -625,7 +625,11 @@ function Get-ReportResource {
 			if (Test-Path $data[1] -ErrorAction SilentlyContinue) {
 				if ($ReturnType -eq "embed") {
 					# return a MIME/Base64 combo for embedding in HTML
-					$imgData = Get-Content ($data[1]) -Encoding Byte
+					if (((Get-Command get-content).Parameters).Keys -contains "AsByteStream") {
+						$imgData = Get-Content ($data[1]) -AsByteStream
+					} else {
+						$imgData = Get-Content ($data[1]) -Encoding Byte
+					}
 					$type = $data[1].substring($data[1].LastIndexOf(".") + 1)
 					return ("data:image/{0};base64,{1}" -f $type, [System.Convert]::ToBase64String($imgData))
 				}

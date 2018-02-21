@@ -29,12 +29,12 @@ foreach ($Snapshot in ($VM | Get-Snapshot | Where-Object { $_.Created -lt (Get-D
 
     $Output += [PSCustomObject]@{
         VM = $Snapshot.VM
-        SnapName = [System.Web.HttpUtility]::UrlDecode($Snapshot.Name)
+        SnapName = [System.Web.HttpUtility]::HtmlEncode($Snapshot.Name)
         DaysOld = ((Get-Date) - $Snapshot.Created).Days
         Creator = $SnapshotCreator
         SizeGB = $Snapshot.SizeGB.ToString("f1")
         Created = $Snapshot.Created.DateTime
-        Description = [System.Web.HttpUtility]::UrlDecode($Snapshot.Description)
+        Description = [System.Web.HttpUtility]::HtmlEncode($Snapshot.Description)
     }
 }
 

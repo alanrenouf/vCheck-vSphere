@@ -3,10 +3,10 @@
 #                             Internationalization                             #
 ################################################################################
 # Default language en-US
-Import-LocalizedData -BaseDirectory ($ScriptPath + '\lang') -BindingVariable pLang -UICulture en-US -ErrorAction SilentlyContinue
+Import-LocalizedData -BaseDirectory ($ScriptPath + '\Lang') -BindingVariable pLang -UICulture en-US -ErrorAction SilentlyContinue
 
 # Override the default (en-US) if it exists in lang directory
-Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable pLang -ErrorAction SilentlyContinue
+Import-LocalizedData -BaseDirectory ($ScriptPath + "\Lang") -BindingVariable pLang -ErrorAction SilentlyContinue
 
 #endregion Internationalization
 

@@ -20,7 +20,7 @@ ConvertFrom-StringData @'
 	gvInvalid   = Sökvägen för Globala Variabler är felaktig i job specifikationen, sätter sökvägen till {0}
 	varUndefined = Variabel '${0} är inte definerad i GlobalVariables.ps1
 	pluginActivity = Evaluerar plugins
-	pluginStatus = [{0} av {1}} {2}
+	pluginStatus = [{0} av {1}] {2}
 	Complete = Slutförd
 	pluginBegin = \nBegin Plugin körs
 	pluginStart  = ..startar beräkning {0} av {1} v{2} [{3} av {4}]

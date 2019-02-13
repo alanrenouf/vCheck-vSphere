@@ -18,7 +18,7 @@ ConvertFrom-StringData @'
 	pluginInvalid = Plugin hittades inte: {0}!
 	pluginpathInvalid = Sökvägen för pluginen "{0}" är felaktig, sätter default till {1}
 	gvInvalid   = Sökvägen för Globala Variabler är felaktig i job specifikationen, sätter sökvägen till {0}
-	varUndefined = Variabel '${0} är inte definerad i GlobalVariables.ps1
+	varUndefined = Variabel `${0} är inte definerad i GlobalVariables.ps1
 	pluginActivity = Evaluerar plugins
 	pluginStatus = [{0} av {1}] {2}
 	Complete = Slutförd

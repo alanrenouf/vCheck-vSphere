@@ -69,7 +69,7 @@ foreach ($cluv in ($clusviews | Where-Object {$_.Summary.NumHosts -gt 0 } | Sort
       "Estimated Num VM Left (CPU)" = $CpuVmLeft
       "Estimated Num VM Left (MEM)" = $MemVmLeft
       "vCPU/pCPU ratio" =  $vCPUpCPUratio
-      "VM/VMHost ratio" = $VMVMHostRatio
+      "VMHost/VM ratio" = $VMVMHostRatio
    }
    
    $capacityinfo += $clucapacity

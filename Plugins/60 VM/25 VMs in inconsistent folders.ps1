@@ -16,7 +16,7 @@ $DatastoreIgnore = Get-vCheckSetting $Title "DatastoreIgnore" $DatastoreIgnore
 Foreach ($CHKVM in $FullVM){
    $Folder = ((($CHKVM.Summary.Config.VmPathName).Split(']')[1]).Split('/'))[0].TrimStart(' ')
    $Path = ($CHKVM.Summary.Config.VmPathName).Split('/')[0]
-   If (($CHKVM.Name-ne $Folder) -and ($Path -notmatch $DatastoreIgnore)){
+   If (($CHKVM.Name-ne $Folder) -and ($DatastoreIgnore -eq "" -or $Path -notmatch $DatastoreIgnore)){
       New-Object -TypeName PSObject -Property @{
          "VM" = $CHKVM.Name
          "Path" = $Path }

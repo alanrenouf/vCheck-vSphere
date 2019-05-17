@@ -14,7 +14,7 @@ $MCRDoNotInclude = ""
 # Update settings where there is an override
 $MCRDoNotInclude = Get-vCheckSetting $Title "MCRDoNotInclude" $MCRDoNotInclude
 
-$FullVM | Where-Object {$_.Name -notmatch $MCRDoNotInclude -and ($_.config.cpuallocation.Reservation -ne "0" -or $_.config.memoryallocation.Reservation -ne "0")} | Select-Object Name, @{Name="CPUReservationMhz";E={$_.config.cpuallocation.Reservation}}, @{Name="MemReservationMB";E={$_.config.memoryallocation.Reservation}}
+$FullVM | Where-Object {($MCRDoNotInclude -eq "" -or $_.Name -notmatch $MCRDoNotInclude) -and ($_.config.cpuallocation.Reservation -ne "0" -or $_.config.memoryallocation.Reservation -ne "0")} | Select-Object Name, @{Name="CPUReservationMhz";E={$_.config.cpuallocation.Reservation}}, @{Name="MemReservationMB";E={$_.config.memoryallocation.Reservation}}
 
 # Change Log
 ## 1.0 : Initial Release

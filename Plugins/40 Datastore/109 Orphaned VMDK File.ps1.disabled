@@ -49,7 +49,7 @@ $report = @()
 $arrUsedDisks = $FullVM | % {$_.Layout} | % {$_.Disk} | % {$_.DiskFile}
 
 #Write-CustomOut "..filtering list to exclude datastores that match this regex pattern: $excludeDatastoreRegex"
-$arrDS = $storageviews | Sort-Object -property Name | Where-Object {$_.name -notmatch $excludeDatastoreRegex }
+$arrDS = $storageviews | Sort-Object -property Name | Where-Object {($excludeDatastoreRegex -eq "" -or $_.name -notmatch $excludeDatastoreRegex) }
 
 foreach ($strDatastore in $arrDS) {
    # Write-CustomOut "..$($strDatastore.Name) Orphaned Disks:"
@@ -68,7 +68,7 @@ foreach ($strDatastore in $arrDS) {
 
    foreach ($folder in $searchResult)
    {
-      if ($folder.FolderPath -notmatch $excludeVMPathRegex)
+      if (($excludeVMPathRegex -eq "" -or $folder.FolderPath -notmatch $excludeVMPathRegex))
       {
          foreach ($fileResult in $folder.File)
          {
@@ -97,7 +97,7 @@ foreach ($strDatastore in $arrDS) {
                } # end of if (-not ($arrUsedDisks -contains ($folder.FolderPath + $fileResult.Path)))
             } # end of if ($fileResult.Path)
          } # end of foreach ($fileResult in $folder.File)
-      } # end of if ($folder.FolderPath -notmatch $excludeVMPathRegex)
+      } # end of if ($excludeVMPathRegex -eq "" -or $folder.FolderPath -notmatch $excludeVMPathRegex)
    } # end of foreach ($folder in $searchResult)
 } # end of foreach ($strDatastore in $arrDS)
 

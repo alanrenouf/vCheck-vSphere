@@ -16,7 +16,7 @@ $ExcludedDatastores = ""
 $OverAllocation = Get-vCheckSetting $Title "OverAllocation" $OverAllocation
 $ExcludedDatastores = Get-vCheckSetting $Title "ExcludedDatastores" $ExcludedDatastores
 
-$filteredstorageviews = $storageviews | Where-Object { $_.Name -notmatch $ExcludedDatastores }
+$filteredstorageviews = $storageviews | Where-Object { ($ExcludedDatastores -eq "" -or $_.Name -notmatch $ExcludedDatastores) }
 
 foreach ($storage in $filteredstorageviews)
 {

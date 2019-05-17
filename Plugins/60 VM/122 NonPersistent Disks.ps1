@@ -16,7 +16,7 @@ $NPExcludeVM = Get-vCheckSetting $Title "NPExcludeVM" $NPExcludeVM
 
 # NonPersistent Disks
 $diskModes = [VMware.Vim.VirtualDiskMode]::independent_nonpersistent,[VMware.Vim.VirtualDiskMode]::nonpersistent
-ForEach($npvm in $FullVM | Where-Object {$_.Name -notmatch $NPExcludeVM}){
+ForEach($npvm in $FullVM | Where-Object {$NPExcludeVM -eq "" -or $_.Name -notmatch $NPExcludeVM}){
    $npvm.Config.Hardware.Device |
    Where-Object {$_ -is [VMware.Vim.VirtualDisk] -and $diskModes -contains $_.Backing.DiskMode} |
    Select-Object @{N="VM";E={$npvm.Name}},

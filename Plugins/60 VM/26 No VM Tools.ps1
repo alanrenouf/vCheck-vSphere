@@ -14,7 +14,7 @@ $VMTDoNotInclude = ""
 # Update settings where there is an override
 $VMTDoNotInclude = Get-vCheckSetting $Title "VMTDoNotInclude" $VMTDoNotInclude
 
-$FullVM | Where-Object {$_.Name -notmatch $VMTDoNotInclude -and $_.Runtime.Powerstate -eq "poweredOn" -And ($_.Guest.toolsStatus -eq "toolsNotInstalled" -Or $_.Guest.ToolsStatus -eq "toolsNotRunning")} | Select-Object Name, @{N="Status";E={$_.Guest.ToolsStatus}}
+$FullVM | Where-Object {($VMTDoNotInclude -eq "" -or $_.Name -notmatch $VMTDoNotInclude) -and $_.Runtime.Powerstate -eq "poweredOn" -And ($_.Guest.toolsStatus -eq "toolsNotInstalled" -Or $_.Guest.ToolsStatus -eq "toolsNotRunning")} | Select-Object Name, @{N="Status";E={$_.Guest.ToolsStatus}}
 
 # Change Log
 ## 1.2 : Added Get-vCheckSetting

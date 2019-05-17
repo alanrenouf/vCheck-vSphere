@@ -37,7 +37,7 @@ Import-LocalizedData -BaseDirectory ($ScriptPath + "\Lang") -BindingVariable pLa
 
 # Clusters with HA disabled
 $HAIssues = @()
-$HAIssues += $Clusters | Where-Object {$_.Name -notmatch $ClustersDoNotInclude -and $_.HAEnabled -ne $CLusterHAShouldBeEnabled } |
+$HAIssues += $Clusters | Where-Object {($ClustersDoNotInclude -eq "" -or $_.Name -notmatch $ClustersDoNotInclude) -and $_.HAEnabled -ne $CLusterHAShouldBeEnabled } |
   Select-Object @{Name="Cluster";Expression={$_.Name}},@{Name="Configuration Issue";Expression={$pLang.HADisabled}}
 
 # Clusters with host monitoring disabled 

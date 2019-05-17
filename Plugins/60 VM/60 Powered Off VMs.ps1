@@ -24,9 +24,9 @@ $PoweredOffDays = Get-vCheckSetting $Title "PoweredOffDays" $PoweredOffDays
 $VM | Where-Object {$_.ExtensionData.Config.ManagedBy.ExtensionKey -ne 'com.vmware.vcDr' -and 
                 $_.PowerState -eq "PoweredOff" -and 
                 $_.LastPoweredOffDate -lt $date.AddDays(-$PoweredOffDays) -and
-                $_.Name -notmatch $IgnoredVMs -and 
-                $_.Folder.Name -notmatch $IgnoredVMFolder -and
-                $_.ExtensionData.Config.Files.VmPathName -notmatch $IgnoredVMpath} |
+                ($IgnoredVMs -eq "" -or $_.Name -notmatch $IgnoredVMs) -and 
+                ($IgnoredVMFolder -eq "" -or $_.Folder.Name -notmatch $IgnoredVMFolder) -and
+                ($IgnoredVMpath -eq "" -or $_.ExtensionData.Config.Files.VmPathName -notmatch $IgnoredVMpath)} |
   Select-Object -Property Name, LastPoweredOffDate, @{l = 'Folder'; e = {$_.Folder.Name}}, Notes |
   Sort-Object -Property LastPoweredOffDate
 

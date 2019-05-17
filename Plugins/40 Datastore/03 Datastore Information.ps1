@@ -16,7 +16,7 @@ $DatastoreIgnore = "local"
 $DatastoreSpace = Get-vCheckSetting $Title "DatastoreSpace" $DatastoreSpace
 $DatastoreIgnore = Get-vCheckSetting $Title "DatastoreIgnore" $DatastoreIgnore
 
-$Datastores | Where-Object {$_.Name -notmatch $DatastoreIgnore} | Select-Object Name, Type, @{N="CapacityGB";E={[math]::Round($_.CapacityGB,2)}}, @{N="FreeSpaceGB";E={[math]::Round($_.FreeSpaceGB,2)}}, PercentFree| Sort-Object PercentFree | Where-Object { $_.PercentFree -lt $DatastoreSpace }
+$Datastores | Where-Object {($DatastoreIgnore -eq "" -or $_.Name -notmatch $DatastoreIgnore)} | Select-Object Name, Type, @{N="CapacityGB";E={[math]::Round($_.CapacityGB,2)}}, @{N="FreeSpaceGB";E={[math]::Round($_.FreeSpaceGB,2)}}, PercentFree| Sort-Object PercentFree | Where-Object { $_.PercentFree -lt $DatastoreSpace }
 
 $Header = "Datastores (Less than $DatastoreSpace% Free) : [count]"
 

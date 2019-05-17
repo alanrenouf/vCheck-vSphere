@@ -14,7 +14,7 @@ $IgnoreVMMedia = ""
 # Update settings where there is an override
 $IgnoreVMMedia = Get-vCheckSetting $Title "IgnoreVMMedia" $IgnoreVMMedia
 
-$FullVM | Where-Object {$_.runtime.powerState -eq "PoweredOn" -And $_.Name -notmatch $IgnoreVMMedia} | 
+$FullVM | Where-Object {$_.runtime.powerState -eq "PoweredOn" -And ($IgnoreVMMedia -eq "" -or $_.Name -notmatch $IgnoreVMMedia)} | 
    % { $VMName = $_.Name; $_.config.hardware.device | Where-Object {($_ -is [VMware.Vim.VirtualFloppy] -or $_ -is [VMware.Vim.VirtualCdrom]) -and $_.Connectable.Connected} | 
       Select-Object @{Name="VMName"; Expression={ $VMName}}, 
              @{Name="Device Type"; Expression={ $_.GetType().Name}},

@@ -16,7 +16,7 @@ $ExcludedDatastores = "ExcludeMe"
 $NumVMsPerDatastore = Get-vCheckSetting $Title "NumVMsPerDatastore" $NumVMsPerDatastore
 $ExcludedDatastores = Get-vCheckSetting $Title "ExcludedDatastores" $ExcludedDatastores
 
-$StorageViews | Where-Object { $_.Name -notmatch $ExcludedDatastores } | Select-Object Name, @{N="NumVM";E={($_.vm).Count}} | Where-Object { $_.NumVM -gt $NumVMsPerDatastore} | Sort-Object NumVM -Descending
+$StorageViews | Where-Object { ($ExcludedDatastores -eq "" -or $_.Name -notmatch $ExcludedDatastores) } | Select-Object Name, @{N="NumVM";E={($_.vm).Count}} | Where-Object { $_.NumVM -gt $NumVMsPerDatastore} | Sort-Object NumVM -Descending
 
 $Header = "Number of VMs per Datastore over $($NumVMsPerDatastore) : [count]"
 

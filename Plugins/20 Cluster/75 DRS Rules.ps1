@@ -29,7 +29,7 @@ if ($ShowVMAntiAffinity) { $Types += "VMAntiAffinity"}
 if ($ShowHostAffinity)   { $Types += "VMHostAffinity"}
 
 $Clusters | Foreach-Object {
-   Get-DrsRule -Cluster $_ -Type $Types | Where-Object { $_.Name -notmatch $excludeName } | 
+   Get-DrsRule -Cluster $_ -Type $Types | Where-Object { ($excludeName -eq "" -or $_.Name -notmatch $excludeName) } | 
    Select-Object Cluster, Enabled, Name, Type, @{N="VM";E={(Get-View $_.VMIDS | Select-Object -ExpandProperty Name) -join "<br />"}},
      @{N="Rule Host";E={(Get-View $_.AffineHostIds | Select-Object -ExpandProperty Name) -join "<br />" }},
      @{N="Running on";E={(Get-View (Get-View $_.VMIDS | Foreach-Object {$_.Runtime.Host}) | Select-Object ExpandProperty Name) -join "<br />"}}

@@ -19,7 +19,7 @@ if ($Clusters -ne $null)
    ForEach ($Cluster in ($Clusters)) 
    {
       $Cluster.ExtensionData.Host | Foreach-Object { $h = $_; $Datastores | Where-Object {$_.ExtensionData.Host.key -contains $h}} | 
-         Where-Object {$_.Name -notmatch $DSDoNotInclude } | Group-Object Name | Where-Object { $_.Count -ne $cluster.ExtensionData.Host.count } | 
+         Where-Object {($DSDoNotInclude -eq "" -or $_.Name -notmatch $DSDoNotInclude) } | Group-Object Name | Where-Object { $_.Count -ne $cluster.ExtensionData.Host.count } | 
          Select-Object @{Name="Name"; Expression={$_.Group.name}}, @{Name="Cluster";Expression={$Cluster.Name}}
    }
 }

@@ -16,7 +16,7 @@ $VMTMaxReturn = 30
 $VMTDoNotInclude = Get-vCheckSetting $Title "VMTDoNotInclude" $VMTDoNotInclude
 $VMTMaxReturn = Get-vCheckSetting $Title "VMTMaxReturn" $VMTMaxReturn
 
-$FullVM | Where-Object {$_.Name -notmatch $VMTDoNotInclude -and ($_.Runtime.Powerstate -eq "poweredOn" -And $_.Guest.toolsStatus -eq "toolsOld")} | `
+$FullVM | Where-Object {($VMTDoNotInclude -eq "" -or $_.Name -notmatch $VMTDoNotInclude) -and ($_.Runtime.Powerstate -eq "poweredOn" -And $_.Guest.toolsStatus -eq "toolsOld")} | `
    Select-Object Name, @{N="Version";E={$_.Guest.ToolsVersion}}, @{N="Status";E={$_.Guest.ToolsStatus}} | Sort-Object Name | Select-Object -First $VMTMaxReturn
 
 $Comments = ("The following VMs are running an older version of Tools than is available on its Host (Max Shown: {0} Exceptions: {1})" -f $VMTMaxReturn, $VMTDoNotInclude)

@@ -10,7 +10,7 @@ $ExcludeCreator = "^(ExcludeMe|ExcludeMeToo)$"
 Add-Type -AssemblyName System.Web
 $Output = @()
 
-foreach ($Snapshot in ($VM | Get-Snapshot | Where-Object { $_.Created -lt (Get-Date).AddDays(- $SnapshotAge) -and $_.Name -notmatch $ExcludeName })) {
+foreach ($Snapshot in ($VM | Get-Snapshot | Where-Object { $_.Created -lt (Get-Date).AddDays(- $SnapshotAge) -and ($ExcludeName -eq "" -or $_.Name -notmatch $ExcludeName) })) {
 
     # This little +/-1 minute time span is a small buffer in case of time differences between the vCenter and the reporting server. This might cause wrong
     # results in the uncommon case of two different people creating a snapshot for the same VM within two minutes. In this scenario the wrong creator will be
@@ -20,7 +20,7 @@ foreach ($Snapshot in ($VM | Get-Snapshot | Where-Object { $_.Created -lt (Get-D
 
     if ($SnapshotEvent -eq $null) {
         $SnapshotCreator = "Unknown"
-    } elseif ($SnapshotEvent.UserName -match $ExcludeCreator) {
+    } elseif (($ExcludeCreator -ne "" -and $SnapshotEvent.UserName -match $ExcludeCreator)) {
         # This is the earliest point where I can neglect snapshots from certain creators
         continue
     } else {

@@ -17,7 +17,7 @@ $vmIgnore = "vShield*|dsva*"
 $HWVers = Get-vCheckSetting $Title "HWVers" $HWVers
 $vmIgnore = Get-vCheckSetting $Title "vmIgnore" $vmIgnore
 
-$VM | Where-Object {$_.Name -notmatch $vmIgnore -and [INT]($_.HWVersion)-lt $HWVers} | Select-Object Name, HWVersion
+$VM | Where-Object {($vmIgnore -eq "" -or $_.Name -notmatch $vmIgnore) -and [INT]($_.HWVersion)-lt $HWVers} | Select-Object Name, HWVersion
 
 # Change Log
 ## 1.3 : Added Get-vCheckSetting

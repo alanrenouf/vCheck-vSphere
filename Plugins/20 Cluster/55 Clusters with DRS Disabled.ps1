@@ -15,6 +15,6 @@ $ClustersDoNotInclude = "VM1_*|VM2_*"
 $ClustersDoNotInclude = Get-vCheckSetting $Title "ClustersDoNotInclude" $ClustersDoNotInclude
 
 @( $Clusters |
-   Where-Object {$_.Name -notmatch $ClustersDoNotInclude -and -not $_.DRSEnabled} |
+   Where-Object {($ClustersDoNotInclude -eq "" -or $_.Name -notmatch $ClustersDoNotInclude) -and -not $_.DRSEnabled} |
    Select-Object -Property Name,DRSEnabled
 )

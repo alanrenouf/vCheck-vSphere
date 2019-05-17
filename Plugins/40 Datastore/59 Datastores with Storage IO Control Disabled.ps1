@@ -13,7 +13,7 @@ $DatastoreIgnore = "local"
 # Update settings where there is an override
 $DatastoreIgnore = Get-vCheckSetting $Title "DatastoreIgnore" $DatastoreIgnore
 
-$Datastores | Where-Object {$_.Name -notmatch $DatastoreIgnore -and -not $_.StorageIOControlEnabled} | `
+$Datastores | Where-Object {($DatastoreIgnore -eq "" -or $_.Name -notmatch $DatastoreIgnore) -and -not $_.StorageIOControlEnabled} | `
    Sort-Object -Property Name | `
    Select-Object -Property Name,StorageIOControlEnabled
 

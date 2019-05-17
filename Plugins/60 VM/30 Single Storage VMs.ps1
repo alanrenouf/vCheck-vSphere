@@ -17,9 +17,9 @@ $LDSDoNotInclude = "Local|datastore1"
 $LVMDoNotInclude = Get-vCheckSetting $Title "LVMDoNotInclude" $LVMDoNotInclude
 $LDSDoNotInclude = Get-vCheckSetting $Title "LDSDoNotInclude" $LDSDoNotInclude
 
-$unSharedDatastore = $storageviews | Where-Object {$_.Name -notmatch $LDSDoNotInclude -and -not $_.summary.multiplehostaccess} | Select-Object -Expand Name
+$unSharedDatastore = $storageviews | Where-Object {($LDSDoNotInclude -eq "" -or $_.Name -notmatch $LDSDoNotInclude) -and -not $_.summary.multiplehostaccess} | Select-Object -Expand Name
 
-$FullVM | Where-Object {$_.Name -notmatch $LVMDoNotInclude} | Where-Object {$_.Runtime.ConnectionState -notmatch "invalid|orphaned"} | Foreach-Object {$_.layoutex.file} | Where-Object {$_.type -ne "log" -and $_.name -notmatch ".vswp$" -And $unSharedDatastore -contains $_.name.Split(']')[0].Split('[')[1]} | Select-Object Name
+$FullVM | Where-Object {($LVMDoNotInclude -eq "" -or $_.Name -notmatch $LVMDoNotInclude)} | Where-Object {$_.Runtime.ConnectionState -notmatch "invalid|orphaned"} | Foreach-Object {$_.layoutex.file} | Where-Object {$_.type -ne "log" -and $_.name -notmatch ".vswp$" -And $unSharedDatastore -contains $_.name.Split(']')[0].Split('[')[1]} | Select-Object Name
 
 # Change Log
 ## 1.4 : Added Get-vCheckSetting

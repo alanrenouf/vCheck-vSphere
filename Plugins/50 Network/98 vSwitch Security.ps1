@@ -3,7 +3,7 @@ $Header = "vSwitch and portgroup security settings"
 $Comments = "All security options for standard and distributed switches and port groups should be set to REJECT unless explicitly required, except for ForgedTrasmits which is required on vDS uplink port groups."
 $Display = "Table"
 $Author = "Justin Mercier, Sam McGeown, John Sneddon, Ben Hocker, Dan Barr"
-$PluginVersion = 1.5
+$PluginVersion = 1.6
 $PluginCategory = "vSphere"
 
 # Start of Settings
@@ -13,12 +13,15 @@ $AllowPromiscuousPolicy = $true
 $ForgedTransmitsPolicy = $true
 # Warn for MacChanges enabled?
 $MacChangesPolicy = $true
+# Switch or port group names to ignore (regex)
+$IgnoreNets = "vSwitchiDRACvusb"
 # End of Settings
 
 # Update settings where there is an override
 $AllowPromiscuousPolicy = Get-vCheckSetting $Title "AllowPromiscuousPolicy" $AllowPromiscuousPolicy
 $ForgedTransmitsPolicy = Get-vCheckSetting $Title "ForgedTransmitsPolicy" $ForgedTransmitsPolicy
 $MacChangesPolicy = Get-vCheckSetting $Title "MacChangesPolicy" $MacChangesPolicy
+$IgnoreNets = Get-vCheckSetting $Title "IgnoreNets" $IgnoreNets
 
 # Check Power CLI version. Build must be at least 1012425 (5.1 Release 2) to contain Get-VDPortGroup cmdlet
 $VersionOK = $false
@@ -45,7 +48,7 @@ if (((Get-PowerCLIVersion) -match "VMware.* PowerCLI (.*) build ([0-9]+)")) {
 if ($VersionOK) {
     [array] $results = $null
 
-    Get-VirtualSwitch | ForEach-Object {
+    Get-VirtualSwitch | Where-Object { $_.Name -notmatch $IgnoreNets } | ForEach-Object {
         $Output = "" | Select-Object Host, Type, vSwitch, Portgroup, AllowPromiscuous, ForgedTransmits, MacChanges
         if ($_.ExtensionData.Summary -ne $null) {
             $Output.Type = "vDS"
@@ -63,7 +66,7 @@ if ($VersionOK) {
         $results += $Output
     }
 
-    Get-VDPortGroup | ForEach-Object {
+    Get-VDPortGroup | Where-Object { $_.Name -notmatch $IgnoreNets } | ForEach-Object {
         $Output = "" | Select-Object Host, Type, vSwitch, Portgroup, AllowPromiscuous, ForgedTransmits, MacChanges
         $Output.Host = "*"
         if ($_.ExtensionData.Config.Uplink -eq $true) {
@@ -82,7 +85,7 @@ if ($VersionOK) {
 
     $VMH | Where-Object { $_.ConnectionState -eq "Connected" } | ForEach-Object {
         $VMHost = $_
-        Get-VirtualPortGroup -VMHost $_ -Standard | ForEach-Object {
+        Get-VirtualPortGroup -VMHost $_ -Standard | Where-Object { $_.Name -notmatch $IgnoreNets } | ForEach-Object {
             $Output = "" | Select-Object Host, Type, vSwitch, Portgroup, AllowPromiscuous, ForgedTransmits, MacChanges
             $Output.Host = $VMHost.Name
             $Output.Type = "vSS Port Group"
@@ -109,3 +112,4 @@ else {
 ## 1.3 : Add Get-vCheckSetting
 ## 1.4 : Fix Version checking for PowerCLI 6.5 - vSphere is no longer in the product name (Issue #514)
 ## 1.5 : Ignore ForgedTransmits on vDS Uplink port groups, removed redundant plugin variable block, fixed logic bugs
+## 1.6 : Add vSwitch & Port Group names to exclude from report

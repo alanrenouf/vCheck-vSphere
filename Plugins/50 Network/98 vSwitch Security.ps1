@@ -27,7 +27,6 @@ $VersionOK = $false
 $Revision=(Get-Module VMWare.PowerCLI -listavailable).Version.Revision
 
 if ($Revision) {
-
     if ($Revision -ge 1012425) {
         $VersionOK = $true
         if ($Revision -ge 2548067) {

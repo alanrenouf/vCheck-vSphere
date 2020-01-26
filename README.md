@@ -35,7 +35,8 @@
 [*Back to top*](#Title)
 
 Only Forked do built-in some Docker and Linux compatibility, and rewrite some Plugins for that.
-May the force be with you ...
+
+May the force be with you.
 
 vCheck is a PowerShell HTML framework script, the script is designed to run as a scheduled task before you get into the office to present you with key information via an email directly to your inbox in a nice easily readable format.
 

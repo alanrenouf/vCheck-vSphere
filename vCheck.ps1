@@ -75,6 +75,7 @@ $Date = Get-Date
 $ScriptPath = (Split-Path ((Get-Variable MyInvocation).Value).MyCommand.Path)
 #$PluginsFolder = $ScriptPath + "Plugins\"
 if($uname -match '^Darwin|^Linux'){
+$ENV:Computername = hostname
 $PluginsFolder = $ScriptPath + "/Plugins/"
 }
 else

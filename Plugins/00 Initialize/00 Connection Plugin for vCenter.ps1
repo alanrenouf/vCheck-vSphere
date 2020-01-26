@@ -8,7 +8,7 @@ $PluginCategory = "vSphere"
 
 # Start of Settings
 # Please Specify the address (and optional port) of the vCenter server to connect to [servername(:port)]
-$Server = "vcsa.local.lab"
+$Server = $VIServer 
 # End of Settings
 
 # Update settings where there is an override
@@ -154,7 +154,7 @@ if($OpenConnection.IsConnected) {
    $VIConnection = $OpenConnection
 } else {
    Write-CustomOut ( "{0}: {1}" -f $pLang.connOpen, $Server )
-   $VIConnection = Connect-VIServer -Server $VIServer -Port $Port
+   $VIConnection = Connect-VIServer -Server $VIServer -User $VIUser -Pass $ViPassword -Port $Port
 }
 
 if (-not $VIConnection.IsConnected) {

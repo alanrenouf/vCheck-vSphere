@@ -19,6 +19,7 @@
 
 |Navigation|
 |-----------------|
+|[Status](#Status)|
 |[About](#About)|
 |[Features](#Features)|
 |[Installing](#Installing)|
@@ -28,6 +29,14 @@
 |[Styles](#Styles)|
 |[Jobs & Settings](#JobsSettings)|
 |[More Info](#More)|
+
+<a name="Status">
+
+# Status
+[*Back to top*](#Title)
+- Runs in Docker (if you use the powerclicore image)
+- Runs on Some Linux Distributions
+- Notes: Not every Plugin is working as expected (some cmdlets/ functions didn't exist atm in powerclicore)
 
 <a name="About">
 

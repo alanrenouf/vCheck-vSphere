@@ -8,6 +8,11 @@ $ChartBackground = "FFFFFF"
 $ChartSize = "200x200"
 
 # Header Images
+if($uname -match '^Darwin|^Linux'){
+Add-ReportResource "Header-vCheck" ($StylePath + "/Header.jpg") -Used $true
+}
+else
+{
 Add-ReportResource "Header-vCheck" ($StylePath + "\Header.jpg") -Used $true
 
 # Hash table of key/value replacements

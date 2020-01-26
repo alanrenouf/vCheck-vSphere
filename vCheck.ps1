@@ -73,18 +73,30 @@ $Date = Get-Date
 
 # Setup all paths required for script to run
 $ScriptPath = (Split-Path ((Get-Variable MyInvocation).Value).MyCommand.Path)
+#$PluginsFolder = $ScriptPath + "Plugins\"
+if($uname -match '^Darwin|^Linux'){
+$PluginsFolder = $ScriptPath + "/Plugins/"
+}
+else
+{
 $PluginsFolder = $ScriptPath + "\Plugins\"
-
+}
 #region Internationalization
 ################################################################################
 #                             Internationalization                             #
 ################################################################################
 # Default language en-US
-Import-LocalizedData -BaseDirectory ($ScriptPath + '\lang') -BindingVariable lang -UICulture en-US -ErrorAction SilentlyContinue
-
+if($uname -match '^Darwin|^Linux'){
+Import-LocalizedData -BaseDirectory ($ScriptPath + '/Lang') -BindingVariable lang -UICulture en-US -ErrorAction SilentlyContinue
 # Override the default (en-US) if it exists in lang directory
-Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable lang -ErrorAction SilentlyContinue
-
+Import-LocalizedData -BaseDirectory ($ScriptPath + "/Lang") -BindingVariable lang -ErrorAction SilentlyContinue
+}
+else
+{
+Import-LocalizedData -BaseDirectory ($ScriptPath + '\Lang') -BindingVariable lang -UICulture en-US -ErrorAction SilentlyContinue
+# Override the default (en-US) if it exists in lang directory
+Import-LocalizedData -BaseDirectory ($ScriptPath + "\Lang") -BindingVariable lang -ErrorAction SilentlyContinue
+}
 #endregion Internationalization
 
 #region functions
@@ -171,9 +183,13 @@ Function Invoke-Settings {
 			$PluginName = (Get-PluginID $Filename).Title
 			
 			If ($PluginName.EndsWith(".ps1", 1)) {
-				
+				if($uname -match '^Darwin|^Linux'){				
+				$PluginName = ($PluginName.split("/")[-1]).split(".")[0]
+				}
+				else 
+				{
 				$PluginName = ($PluginName.split("\")[-1]).split(".")[0]
-				
+				}				
 			} # end if
 			
 			Write-Warning -Message "`n$PluginName"
@@ -264,8 +280,14 @@ Function Invoke-HTMLSettings {
 			$PluginName = $PluginInfo.Title
 			
 			$htmlOutput = ""
-			If ($PluginName.EndsWith(".ps1", 1)) {				
+			If ($PluginName.EndsWith(".ps1", 1)) {
+			if($uname -match '^Darwin|^Linux'){
+				$PluginName = ($PluginName.split("/")[-1]).split(".")[0]
+			}
+			else
+			{
 				$PluginName = ($PluginName.split("\")[-1]).split(".")[0]				
+			}
 			} # end if
 
 			$htmlOutput += "<table>"
@@ -744,8 +766,16 @@ if ($job) {
 	# Use GlobalVariables path if it is valid, otherwise use default
 	if (Test-Path $jobConfig.vCheck.globalVariables) {
 		$GlobalVariables = (Get-Item $jobConfig.vCheck.globalVariables).FullName
-	} else {
+	}
+	}
+	else {
+		if($uname -match '^Darwin|^Linux'){
+		$GlobalVariables = $ScriptPath + "/GlobalVariables.ps1"
+		}
+		else
+		{
 		$GlobalVariables = $ScriptPath + "\GlobalVariables.ps1"
+		}
 		Write-Warning ($lang.gvInvalid -f $GlobalVariables)
 	}
 	
@@ -757,8 +787,15 @@ if ($job) {
 				$PluginPaths += (Get-Item $PluginPath).Fullname
 				$PluginPaths += Get-Childitem $PluginPath -Recurse | ?{ $_.PSIsContainer } | Select-Object -ExpandProperty FullName
 			} else {
+				if($uname -match '^Darwin|^Linux'){
+				$PluginPaths += $ScriptPath + "/Plugins"
+				Write-Warning ($lang.pluginpathInvalid -f $PluginPath, ($ScriptPath + "/Plugins"))
+				}
+				else
+				{
 				$PluginPaths += $ScriptPath + "\Plugins"
 				Write-Warning ($lang.pluginpathInvalid -f $PluginPath, ($ScriptPath + "\Plugins"))
+				}
 			}
 		}
 		$PluginPaths = $PluginPaths | Sort-Object -unique
@@ -769,8 +806,15 @@ if ($job) {
 			$testedPaths = 0
 			foreach ($PluginPath in $PluginPaths) {
 				$testedPaths++
+				if($uname -match '^Darwin|^Linux'){
+				if (Test-Path ("{0}/{1}" -f $PluginPath, $plugin)) {
+					$vCheckPlugins += Get-Item ("{0}/{1}" -f $PluginPath, $plugin)
+				}
+				else
+				{
 				if (Test-Path ("{0}\{1}" -f $PluginPath, $plugin)) {
 					$vCheckPlugins += Get-Item ("{0}\{1}" -f $PluginPath, $plugin)
+				}
 					break;
 				}
 				# Plugin not found in any search path
@@ -790,7 +834,13 @@ if ($job) {
 	$PluginsSubFolder = Get-ChildItem -Path $PluginsFolder | Where-Object { ($_.PSIsContainer) -and ($_.Name -notmatch "initialize") -and ($_.Name -notmatch "finish") }
 	$vCheckPlugins += $PluginsSubFolder | % { Get-ChildItem -Path $_.FullName -filter "*.ps1" | Sort-Object $ToNatural }
 	$vCheckPlugins += Get-ChildItem -Path $PluginsFolder -filter "*.ps1" -Recurse | Where-Object { $_.Directory -match "finish" } | Sort-Object $ToNatural
+	if($uname -match '^Darwin|^Linux'){
+	$GlobalVariables = $ScriptPath + "/GlobalVariables.ps1"
+	}
+	else
+	{
 	$GlobalVariables = $ScriptPath + "\GlobalVariables.ps1"
+	}
 }
 
 ## Determine if the setup wizard needs to run
@@ -814,17 +864,35 @@ foreach ($vcvar in $vcvars) {
 $global:ReportResources = @{ }
 
 ## Set the StylePath and include it
+if($uname -match '^Darwin|^Linux'){
+$StylePath = $ScriptPath + "/Styles/" + $Style
+}
+else
+{
 $StylePath = $ScriptPath + "\Styles\" + $Style
+}
 if (!(Test-Path ($StylePath))) {
 	# The path is not valid
 	# Use the default style
 	Write-Warning "Style path ($($StylePath)) is not valid"
+	if($uname -match '^Darwin|^Linux'){
+	$StylePath = $ScriptPath + "/Styles/VMware"
+	}
+	else
+	{
 	$StylePath = $ScriptPath + "\Styles\VMware"
+	}
 	Write-Warning "Using $($StylePath)"
 }
 
 # Import the Style
+if($uname -match '^Darwin|^Linux'){
+. ("$($StylePath)/Style.ps1")
+}
+else
+{
 . ("$($StylePath)\Style.ps1")
+}
 
 
 if ($SetupSetting -or $config -or $GUIConfig) {	
@@ -839,7 +907,13 @@ if ($SetupSetting -or $config -or $GUIConfig) {
 
 		# Set the output filename 
 		if (-not (Test-Path -PathType Container $Outputpath)) { New-Item $Outputpath -type directory | Out-Null }
+		if($uname -match '^Darwin|^Linux'){
+		$Filename = ("{0}/{1}_vCheck-Config_{2}.html" -f $Outputpath, $Server, (Get-Date -Format "yyyyMMdd_HHmm"))
+		}
+		else
+		{
 		$Filename = ("{0}\{1}_vCheck-Config_{2}.html" -f $Outputpath, $Server, (Get-Date -Format "yyyyMMdd_HHmm"))
+		}
 
 		#$configHTML = "<table>"
 		#$configHTML += Invoke-HTMLSettings -Filename $GlobalVariables
@@ -990,7 +1064,13 @@ if (-not $GUIConfig) {
 
 	# Set the output filename 
 	if (-not (Test-Path -PathType Container $Outputpath)) { New-Item $Outputpath -type directory | Out-Null }
+	if($uname -match '^Darwin|^Linux'){
+	$Filename = ("{0}/{1}_vCheck_{2}.htm" -f $Outputpath, $VIServer, (Get-Date -Format "yyyyMMdd_HHmm"))
+	}
+	else
+	{
 	$Filename = ("{0}\{1}_vCheck_{2}.htm" -f $Outputpath, $VIServer, (Get-Date -Format "yyyyMMdd_HHmm"))
+	}
 
 	# Always generate the report with embedded images
 	$embedReport = $MyReport
@@ -1055,8 +1135,16 @@ if (-not $GUIConfig) {
 	}
 
 	# Run EndScript once everything else is complete
+	if($uname -match '^Darwin|^Linux'){
 	if (Test-Path ($ScriptPath + "\EndScript.ps1")) {
 		. ($ScriptPath + "\EndScript.ps1")
+	}
+	}
+	else
+	{
+	if (Test-Path ($ScriptPath + "\EndScript.ps1")) {
+		. ($ScriptPath + "\EndScript.ps1")
+	}
 	}
 
 	#endregion output

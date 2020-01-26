@@ -37,7 +37,13 @@ $pLang = DATA {
 '@
 }
 # Override the default (en) if it exists in lang directory
-Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable pLang -ErrorAction SilentlyContinue
+if($uname -match '^Darwin|^Linux'){
+Import-LocalizedData -BaseDirectory ($ScriptPath + "/Lang") -BindingVariable pLang -ErrorAction SilentlyContinue
+}
+else
+{
+Import-LocalizedData -BaseDirectory ($ScriptPath + "/Lang") -BindingVariable pLang -ErrorAction SilentlyContinue
+}
 
 # Find the VI Server and port from the global settings file
 $VIServer = ($Server -Split ":")[0]
@@ -81,10 +87,10 @@ function Get-CorePlatform {
         if($uname -match '^Darwin|^Linux'){
             $osDetected = $true
             $osFamily = $uname
-            $osName = "$(uname -v)"
+            $osName = "$(uname -o)"
             $osVersion = "$(uname -r)"
             $nodeName = "$(uname -n)"
-            $architecture = "$(uname -p)"
+            $architecture = "$(uname -m)"
         }
         # Other
         else

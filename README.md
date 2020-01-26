@@ -1,6 +1,6 @@
 <a name="Title">
 
-# vCheck Daily Report for vSphere
+# vCheck Daily Report for vSphere - runs on Linux and Docker
 [![stars badge]][stars]
 [![forks badge]][forks]
 [![issues badge]][issues]

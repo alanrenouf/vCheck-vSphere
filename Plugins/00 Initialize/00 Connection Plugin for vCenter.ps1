@@ -1,6 +1,6 @@
 $Title = "Connection settings for vCenter"
-$Author = "Alan Renouf"
-$PluginVersion = 1.20
+$Author = "Alan Renouf, Felix Longardt"
+$PluginVersion = 1.25
 $Header = "Connection Settings"
 $Comments = "Connection Plugin for connecting to vSphere"
 $Display = "None"

@@ -45,7 +45,7 @@ $VIServer = "MyVcenter"
 $VIUser = "MyReadOnlyUser@vsphere.local"
 $VIPassword = "MyPassword"
 $VIExtraOps = ""
-#$VIExtraOps = "-Force -AllLinked"
+#$VIExtraOps = "-Force -Alllinked"
 # End of Settings
 
 # End of Global Variables

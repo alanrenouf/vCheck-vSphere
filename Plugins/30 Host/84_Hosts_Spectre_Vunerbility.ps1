@@ -168,4 +168,4 @@ Function Verify-ESXiMicrocodePatch {
     $results 
 }
 
-Verify-ESXiMicrocodePatch | Where-Object {$_.HypervisorAssistedGuestAffected -match "$true"} | FT * 
+Verify-ESXiMicrocodePatch | Where-Object {$_.HypervisorAssistedGuestAffected -match "$true"} | Select * 

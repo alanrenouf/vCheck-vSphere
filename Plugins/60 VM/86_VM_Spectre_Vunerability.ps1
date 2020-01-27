@@ -81,4 +81,4 @@ Function Verify-ESXiMicrocodePatchAndVM {
     $results
 }
 
-Verify-ESXiMicrocodePatchAndVM | Where-Object {$_.HypervisorAssistedGuestAffected -match "$true"} | FT *
+Verify-ESXiMicrocodePatchAndVM | Where-Object {$_.HypervisorAssistedGuestAffected -match "$true"} | Select *

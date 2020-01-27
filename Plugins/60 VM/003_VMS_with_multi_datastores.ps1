@@ -1,9 +1,6 @@
 $Title = "VMS with multiple Datastores"
 # 1.0 - Initiale Version (written on powerclicore)
 $Header = "VMS with multiple Datastores: [count]"
-# End of Settings
-$Title = "VMS with multiple Datastores"
-$Header = "VMS with multiple Datastores: [count]"
 $Display = "Table"
 $Author = "Felix Longardt"
 $PluginVersion = 1.0
@@ -15,6 +12,7 @@ $BlacklistVM = " "
 $DatastoreCount = "2"
 # Round Used Space up to n [default=3]
 $RoundSizetoLast = "3"
+# End of Settings
 
 Get-VM | Where-Object {$_.Name -notlike $BlacklistVM} | 
 	     Where-Object {

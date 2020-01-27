@@ -15,7 +15,7 @@ $ChartBackground = "FFFFFF"
 $ChartSize = "200x200"
 
 # Header Images
-if($uname -match '^Darwin|^Linux'){
+if($osFamily -match '^Darwin|^Linux'){
 Add-ReportResource "Header-vCheck" ($StylePath + "/Header.jpg") -Used $true
 Add-ReportResource "Header-VMware" ($StylePath + "/Header-vmware.png") -Used $true
 }

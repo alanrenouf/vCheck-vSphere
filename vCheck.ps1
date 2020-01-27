@@ -71,11 +71,54 @@ param (
 $vCheckVersion = "6.25"
 $Date = Get-Date
 
+#region Platform Detection
+function Get-CorePlatform {
+    [cmdletbinding()]
+    param()
+    #Thanks to @Lucd22 (Lucd.info) for this great function!
+    $osDetected = $false
+    try{
+        $os = Get-CimInstance -ClassName Win32_OperatingSystem
+        Write-Verbose -Message 'Windows detected'
+        $osDetected = $true
+        $osFamily = 'Windows'
+        $osName = $os.Caption
+        $osVersion = $os.Version
+        $nodeName = $os.CSName
+        $architecture = $os.OSArchitecture
+    }
+    catch{
+        Write-Verbose -Message 'Possibly Linux or Mac'
+        $uname = "$(uname)"
+        if($uname -match '^Darwin|^Linux'){
+            $osDetected = $true
+            $osFamily = $uname
+            $osName = "$(uname -o)"
+            $osVersion = "$(uname -r)"
+            $nodeName = "$(uname -n)"
+            $architecture = "$(uname -m)"
+        }
+        # Other
+        else
+        {
+            Write-Warning -Message "Kernel $($uname) not covered"
+        }
+    }
+    [ordered]@{
+        OSDetected = $osDetected
+        OSFamily = $osFamily
+        OS = $osName
+        Version = $osVersion
+        Hostname = $nodeName
+        Architecture = $architecture
+    }
+}
+
 # Setup all paths required for script to run
 $ScriptPath = (Split-Path ((Get-Variable MyInvocation).Value).MyCommand.Path)
 #$PluginsFolder = $ScriptPath + "Plugins\"
-if($uname -match '^Darwin|^Linux'){
-$ENV:Computername = hostname
+if($osFamily -match '^Darwin|^Linux'){
+$ENV:Computername = $nodeName
 $PluginsFolder = $ScriptPath + "/Plugins/"
 }
 else
@@ -87,7 +130,7 @@ $PluginsFolder = $ScriptPath + "\Plugins\"
 #                             Internationalization                             #
 ################################################################################
 # Default language en-US
-if($uname -match '^Darwin|^Linux'){
+if($osFamily -match '^Darwin|^Linux'){
 Import-LocalizedData -BaseDirectory ($ScriptPath + '/Lang') -BindingVariable lang -UICulture en-US -ErrorAction SilentlyContinue
 # Override the default (en-US) if it exists in lang directory
 Import-LocalizedData -BaseDirectory ($ScriptPath + "/Lang") -BindingVariable lang -ErrorAction SilentlyContinue
@@ -126,12 +169,21 @@ function Get-vCheckSetting
 
 <# Search $file_content for name/value pair with ID_Name and return value #>
 Function Get-ID-String ($file_content, $ID_name) {
+#if($osFamily -match '^Darwin|^Linux'){
+	#if ($file_content | Select-String -Pattern "$+$ID_name\s*=") {
+	#	$value = (($file_content | Select-String -pattern "\$+${ID_name}\s*=").toString().split("=")[1]).Trim(' "')
+	#	$value = (($file_content | Select-String -pattern "$+${ID_name}\s*=").toString().split("=")[1]).Trim(' "')
+	#	return ($value)
+#	}
+	#}
+	#else {
 	if ($file_content | Select-String -Pattern "\$+$ID_name\s*=") {
 		$value = (($file_content | Select-String -pattern "\$+${ID_name}\s*=").toString().split("=")[1]).Trim(' "')
 		return ($value)
-	}
 }
-
+#}
+#}
+}
 <# Get basic information abount a plugin #>
 Function Get-PluginID ($Filename) {
 	# Get the identifying information for a plugin script
@@ -184,7 +236,7 @@ Function Invoke-Settings {
 			$PluginName = (Get-PluginID $Filename).Title
 			
 			If ($PluginName.EndsWith(".ps1", 1)) {
-				if($uname -match '^Darwin|^Linux'){				
+				if($osFamily -match '^Darwin|^Linux'){				
 				$PluginName = ($PluginName.split("/")[-1]).split(".")[0]
 				}
 				else 
@@ -282,7 +334,7 @@ Function Invoke-HTMLSettings {
 			
 			$htmlOutput = ""
 			If ($PluginName.EndsWith(".ps1", 1)) {
-			if($uname -match '^Darwin|^Linux'){
+			if($osFamily -match '^Darwin|^Linux'){
 				$PluginName = ($PluginName.split("/")[-1]).split(".")[0]
 			}
 			else
@@ -770,7 +822,7 @@ if ($job) {
 	}
 	}
 	else {
-		if($uname -match '^Darwin|^Linux'){
+		if($osFamily -match '^Darwin|^Linux'){
 		$GlobalVariables = $ScriptPath + "/GlobalVariables.ps1"
 		}
 		else
@@ -788,7 +840,7 @@ if ($job) {
 				$PluginPaths += (Get-Item $PluginPath).Fullname
 				$PluginPaths += Get-Childitem $PluginPath -Recurse | ?{ $_.PSIsContainer } | Select-Object -ExpandProperty FullName
 			} else {
-				if($uname -match '^Darwin|^Linux'){
+				if($osFamily -match '^Darwin|^Linux'){
 				$PluginPaths += $ScriptPath + "/Plugins"
 				Write-Warning ($lang.pluginpathInvalid -f $PluginPath, ($ScriptPath + "/Plugins"))
 				}
@@ -807,7 +859,7 @@ if ($job) {
 			$testedPaths = 0
 			foreach ($PluginPath in $PluginPaths) {
 				$testedPaths++
-				if($uname -match '^Darwin|^Linux'){
+				if($osFamily -match '^Darwin|^Linux'){
 				if (Test-Path ("{0}/{1}" -f $PluginPath, $plugin)) {
 					$vCheckPlugins += Get-Item ("{0}/{1}" -f $PluginPath, $plugin)
 				}
@@ -835,7 +887,7 @@ if ($job) {
 	$PluginsSubFolder = Get-ChildItem -Path $PluginsFolder | Where-Object { ($_.PSIsContainer) -and ($_.Name -notmatch "initialize") -and ($_.Name -notmatch "finish") }
 	$vCheckPlugins += $PluginsSubFolder | % { Get-ChildItem -Path $_.FullName -filter "*.ps1" | Sort-Object $ToNatural }
 	$vCheckPlugins += Get-ChildItem -Path $PluginsFolder -filter "*.ps1" -Recurse | Where-Object { $_.Directory -match "finish" } | Sort-Object $ToNatural
-	if($uname -match '^Darwin|^Linux'){
+	if($osFamily -match '^Darwin|^Linux'){
 	$GlobalVariables = $ScriptPath + "/GlobalVariables.ps1"
 	}
 	else
@@ -865,7 +917,7 @@ foreach ($vcvar in $vcvars) {
 $global:ReportResources = @{ }
 
 ## Set the StylePath and include it
-if($uname -match '^Darwin|^Linux'){
+if($osFamily -match '^Darwin|^Linux'){
 $StylePath = $ScriptPath + "/Styles/" + $Style
 }
 else
@@ -876,7 +928,7 @@ if (!(Test-Path ($StylePath))) {
 	# The path is not valid
 	# Use the default style
 	Write-Warning "Style path ($($StylePath)) is not valid"
-	if($uname -match '^Darwin|^Linux'){
+	if($osFamily -match '^Darwin|^Linux'){
 	$StylePath = $ScriptPath + "/Styles/VMware"
 	}
 	else
@@ -887,7 +939,7 @@ if (!(Test-Path ($StylePath))) {
 }
 
 # Import the Style
-if($uname -match '^Darwin|^Linux'){
+if($osFamily -match '^Darwin|^Linux'){
 . ("$($StylePath)/Style.ps1")
 }
 else
@@ -908,7 +960,7 @@ if ($SetupSetting -or $config -or $GUIConfig) {
 
 		# Set the output filename 
 		if (-not (Test-Path -PathType Container $Outputpath)) { New-Item $Outputpath -type directory | Out-Null }
-		if($uname -match '^Darwin|^Linux'){
+		if($osFamily -match '^Darwin|^Linux'){
 		$Filename = ("{0}/{1}_vCheck-Config_{2}.html" -f $Outputpath, $Server, (Get-Date -Format "yyyyMMdd_HHmm"))
 		}
 		else
@@ -1065,7 +1117,7 @@ if (-not $GUIConfig) {
 
 	# Set the output filename 
 	if (-not (Test-Path -PathType Container $Outputpath)) { New-Item $Outputpath -type directory | Out-Null }
-	if($uname -match '^Darwin|^Linux'){
+	if($osFamily -match '^Darwin|^Linux'){
 	$Filename = ("{0}/{1}_vCheck_{2}.htm" -f $Outputpath, $VIServer, (Get-Date -Format "yyyyMMdd_HHmm"))
 	}
 	else
@@ -1136,7 +1188,7 @@ if (-not $GUIConfig) {
 	}
 
 	# Run EndScript once everything else is complete
-	if($uname -match '^Darwin|^Linux'){
+	if($osFamily -match '^Darwin|^Linux'){
 	if (Test-Path ($ScriptPath + "\EndScript.ps1")) {
 		. ($ScriptPath + "\EndScript.ps1")
 	}

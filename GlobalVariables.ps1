@@ -41,11 +41,11 @@ $ListEnabledPluginsFirst = $true
 $TimeToRun = $true
 # Report on plugins that take longer than the following amount of seconds
 $PluginSeconds = 30
-$VIServer = "MyVcenter"
-$VIUser = "MyReadOnlyUser@vsphere.local"
+$VIServer = "MyHost"
+$VIUser = "readonly@vsphere.local"
 $VIPassword = "MyPassword"
+#$VIExtraOps = "-Protocol https -Force"
 $VIExtraOps = ""
-#$VIExtraOps = "-Force -Alllinked"
 # End of Settings
 
 # End of Global Variables

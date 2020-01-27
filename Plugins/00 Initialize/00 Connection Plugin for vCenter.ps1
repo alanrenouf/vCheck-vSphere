@@ -66,48 +66,6 @@ $Credfile = $ScriptPath + "\Windowscreds.xml"
 # 2) Module + PSSnapin (-gt 5.8R1/-lt 6.5R1)
 # 3) Module (-ge 6.5R1)
 
-function Get-CorePlatform {
-    [cmdletbinding()]
-    param()
-    #Thanks to @Lucd22 (Lucd.info) for this great function!
-    $osDetected = $false
-    try{
-        $os = Get-CimInstance -ClassName Win32_OperatingSystem
-        Write-Verbose -Message 'Windows detected'
-        $osDetected = $true
-        $osFamily = 'Windows'
-        $osName = $os.Caption
-        $osVersion = $os.Version
-        $nodeName = $os.CSName
-        $architecture = $os.OSArchitecture
-    }
-    catch{
-        Write-Verbose -Message 'Possibly Linux or Mac'
-        $uname = "$(uname)"
-        if($uname -match '^Darwin|^Linux'){
-            $osDetected = $true
-            $osFamily = $uname
-            $osName = "$(uname -o)"
-            $osVersion = "$(uname -r)"
-            $nodeName = "$(uname -n)"
-            $architecture = "$(uname -m)"
-        }
-        # Other
-        else
-        {
-            Write-Warning -Message "Kernel $($uname) not covered"
-        }
-    }
-    [ordered]@{
-        OSDetected = $osDetected
-        OSFamily = $osFamily
-        OS = $osName
-        Version = $osVersion
-        Hostname = $nodeName
-        Architecture = $architecture
-    }
-}
-
 $Platform = Get-CorePlatform
 switch ($platform.OSFamily) {
     "Darwin" { 
@@ -155,10 +113,10 @@ if($OpenConnection.IsConnected) {
 } else {
    Write-CustomOut ( "{0}: {1}" -f $pLang.connOpen, $Server )
    if ($VIExtraOps -eq $null -or $VIExtraOps -eq ""){
-   $VIConnection = Connect-VIServer -Server $VIServer -User $VIUser -Pass $ViPassword -Port $Port
+   $VIConnection = Connect-VIServer -Server $VIServer -User $VIUser -Pass $VIPassword -Port $Port 
    }
    else {
-   $VIConnection = Connect-VIServer -Server $VIServer -User $VIUser -Pass $ViPassword -Port $Port $VIExtraOps
+   $VIConnection = Invoke-Expression "Connect-VIServer -Server $VIServer -User $VIUser -Pass $VIPassword -Port $Port $VIExtraOps"
    }
 }
 

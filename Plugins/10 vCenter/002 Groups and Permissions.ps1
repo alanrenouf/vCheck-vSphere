@@ -1,13 +1,11 @@
 $Title = "Groups and Permissions"
 # 1.1 - add unique to work with multiple vcenters inside the same sso-domain
 $Header = "Groups and Permissions"
-# End of Settings
-$Title = "Groups and Permissions"
-$Header = "Groups and Permissions"
 $Display = "Table"
 $Author = "Felix Longardt"
 $PluginVersion = 1.1
 $PluginCategory = "vSphere"
+# End of Settings
 
 $BlacklistGroup = ""
 # i.e. $BlacklistGroup = "Administrators","VMUsers"

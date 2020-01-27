@@ -1,5 +1,5 @@
 $Title = "Raw Device Mappings"
-$Comments = ("The following RDMs can prevent the VMs from cloning Operations")
+$Comments = "The following RDMs can prevent the VMs from cloning Operations"
 $Header = "Raw Device Mappings: [count]"
 $Display = "Table"
 $Author = "Felix Longardt"

@@ -1,14 +1,12 @@
 $Title = "Removable Media Issues"
 ## 2.1 : add some power filter
 $Header = "Removable Media Issues: [count]"
-# End of Settings
-$Title = "Removable Media Issues"
-$Header = "Removable Media Issues: [count]"
 $Comments = "The following VMs have removable media connected, this may cause issues if this machine needs to be migrated to a different host"
 $Display = "Table"
 $Author = "Felix Longardt"
 $PluginVersion = 2.1
 $PluginCategory = "vSphere"
+# End of Settings
 
 # BlacklistVM 1 or more VM from beeing checked i.e. "VM1","VM2"
 $BlacklistVM = ""

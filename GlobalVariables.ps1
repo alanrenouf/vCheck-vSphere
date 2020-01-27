@@ -44,6 +44,8 @@ $PluginSeconds = 30
 $VIServer = "MyVcenter"
 $VIUser = "MyReadOnlyUser@vsphere.local"
 $VIPassword = "MyPassword"
+$VIExtraOps = ""
+#$VIExtraOps = "-Force -AllLinked"
 # End of Settings
 
 # End of Global Variables

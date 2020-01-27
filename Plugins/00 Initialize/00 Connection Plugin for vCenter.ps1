@@ -154,7 +154,12 @@ if($OpenConnection.IsConnected) {
    $VIConnection = $OpenConnection
 } else {
    Write-CustomOut ( "{0}: {1}" -f $pLang.connOpen, $Server )
+   if ($VIExtraOps -eq $null -or $VIExtraOps -eq ""){
    $VIConnection = Connect-VIServer -Server $VIServer -User $VIUser -Pass $ViPassword -Port $Port
+   }
+   else {
+   $VIConnection = Connect-VIServer -Server $VIServer -User $VIUser -Pass $ViPassword -Port $Port $VIExtraOps
+   }
 }
 
 if (-not $VIConnection.IsConnected) {

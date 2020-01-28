@@ -97,6 +97,8 @@ function Get-CorePlatform {
             $osVersion = "$(uname -r)"
             $nodeName = "$(uname -n)"
             $architecture = "$(uname -m)"
+	    $global:osFamily = $osFamily
+	    $global:nodeName = $nodeName
         }
         # Other
         else
@@ -113,12 +115,11 @@ function Get-CorePlatform {
         Architecture = $architecture
     }
 }
-
 # Setup all paths required for script to run
 $ScriptPath = (Split-Path ((Get-Variable MyInvocation).Value).MyCommand.Path)
 #$PluginsFolder = $ScriptPath + "Plugins\"
 if($osFamily -match '^Darwin|^Linux'){
-$ENV:Computername = $nodeName
+$ENV:Computername = $global:nodeName
 $PluginsFolder = $ScriptPath + "/Plugins/"
 }
 else
@@ -1189,8 +1190,8 @@ if (-not $GUIConfig) {
 
 	# Run EndScript once everything else is complete
 	if($osFamily -match '^Darwin|^Linux'){
-	if (Test-Path ($ScriptPath + "\EndScript.ps1")) {
-		. ($ScriptPath + "\EndScript.ps1")
+	if (Test-Path ($ScriptPath + "/EndScript.ps1")) {
+		. ($ScriptPath + "/EndScript.ps1")
 	}
 	}
 	else

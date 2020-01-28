@@ -72,24 +72,9 @@ $vCheckVersion = "6.25"
 $Date = Get-Date
 
 #region Platform Detection
-function Get-CorePlatform {
-    [cmdletbinding()]
-    param()
-    #Thanks to @Lucd22 (Lucd.info) for this great function!
-    $osDetected = $false
-    try{
-        $os = Get-CimInstance -ClassName Win32_OperatingSystem
-        Write-Verbose -Message 'Windows detected'
-        $osDetected = $true
-        $osFamily = 'Windows'
-        $osName = $os.Caption
-        $osVersion = $os.Version
-        $nodeName = $os.CSName
-        $architecture = $os.OSArchitecture
-    }
-    catch{
-        Write-Verbose -Message 'Possibly Linux or Mac'
-        $uname = "$(uname)"
+
+if ($ENV:Computername -match $null -or $ENV:Computername -match ""){
+ $uname = "$(uname)"
         if($uname -match '^Darwin|^Linux'){
             $osDetected = $true
             $osFamily = $uname
@@ -97,29 +82,13 @@ function Get-CorePlatform {
             $osVersion = "$(uname -r)"
             $nodeName = "$(uname -n)"
             $architecture = "$(uname -m)"
-	    $global:osFamily = $osFamily
-	    $global:nodeName = $nodeName
+	    $ENV:Computername = $nodeName
         }
-        # Other
-        else
-        {
-            Write-Warning -Message "Kernel $($uname) not covered"
-        }
-    }
-    [ordered]@{
-        OSDetected = $osDetected
-        OSFamily = $osFamily
-        OS = $osName
-        Version = $osVersion
-        Hostname = $nodeName
-        Architecture = $architecture
-    }
 }
 # Setup all paths required for script to run
 $ScriptPath = (Split-Path ((Get-Variable MyInvocation).Value).MyCommand.Path)
 #$PluginsFolder = $ScriptPath + "Plugins\"
 if($osFamily -match '^Darwin|^Linux'){
-$ENV:Computername = $global:nodeName
 $PluginsFolder = $ScriptPath + "/Plugins/"
 }
 else

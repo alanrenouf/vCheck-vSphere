@@ -15,7 +15,7 @@ $ChartBackground = "FFFFFF"
 $ChartSize = "200x200"
 
 # Header Images
-if($osFamily -match '^Darwin|^Linux'){
+if($IsLinux -eq $true -or $IsMacOS -eq $true){
 Add-ReportResource "Header-vCheck" ($StylePath + "/Header.jpg") -Used $true
 Add-ReportResource "Header-VMware" ($StylePath + "/Header-vmware.png") -Used $true
 }
@@ -24,6 +24,7 @@ else
 Add-ReportResource "Header-vCheck" ($StylePath + "\Header.jpg") -Used $true
 Add-ReportResource "Header-VMware" ($StylePath + "\Header-vmware.png") -Used $true
 }
+
 # Hash table of key/value replacements
 if ($GUIConfig) {
     $StyleReplace = @{"_HEADER_" = ("'$reportHeader'");

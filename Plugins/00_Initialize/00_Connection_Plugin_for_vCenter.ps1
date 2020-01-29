@@ -13,7 +13,7 @@ $Server = $VIServer
 
 # Update settings where there is an override
 $Server = Get-vCheckSetting $Title "Server" $Server
-$ErrorActionPreference= 'silentlycontinue'
+#$ErrorActionPreference= 'silentlycontinue'
 
 # Setup plugin-specific language table
 $pLang = DATA {
@@ -38,14 +38,13 @@ $pLang = DATA {
 '@
 }
 # Override the default (en) if it exists in lang directory
-if($uname -match '^Darwin|^Linux'){
-Import-LocalizedData -BaseDirectory ($ScriptPath + "/Lang") -BindingVariable pLang -ErrorAction SilentlyContinue
+if($PSUICulture -match $null -or ""){
+Import-LocalizedData -BaseDirectory ($ScriptPath + "/Lang") -BindingVariable pLang -UICulture en-US -ErrorAction SilentlyContinue
 }
 else
 {
-Import-LocalizedData -BaseDirectory ($ScriptPath + "/Lang") -BindingVariable pLang -ErrorAction SilentlyContinue
+Import-LocalizedData -BaseDirectory ($ScriptPath + "/Lang") -BindingVariable pLang -UICulture $PSUICulture -ErrorAction SilentlyContinue
 }
-
 # Find the VI Server and port from the global settings file
 $VIServer = ($Server -Split ":")[0]
 if (($server -split ":")[1]) {

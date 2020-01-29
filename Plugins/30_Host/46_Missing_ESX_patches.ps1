@@ -13,6 +13,10 @@ $PluginCategory = "vSphere"
 # https://communities.vmware.com/community/vmtn/automationtools/powercli/updatemanager
 # (Current version 5.1 locks up in PowerShell v3; use "-version 2" when launching.)
 
+if($PSEdition -eq "core"){
+$Comments = "This Plugin is not supported on powerclicore"
+}
+else {
 If (Get-PSSnapin Vmware.VumAutomation -ErrorAction SilentlyContinue) {
    foreach($esx in $VMH){
       foreach($baseline in (Get-Compliance -Entity $esx -Detailed | Where-Object {$_.Status -eq "NotCompliant"})){
@@ -22,4 +26,5 @@ If (Get-PSSnapin Vmware.VumAutomation -ErrorAction SilentlyContinue) {
          @{N="KB";E={(Select-String "(?<url>http://[\w|\.|/]*\w{1})" -InputObject $_.Description).Matches[0].Groups['url'].Value}}
       }
    }
+}
 }

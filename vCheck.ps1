@@ -73,7 +73,7 @@ $Date = Get-Date
 
 #region Platform Detection
 
-if ($ENV:Computername -match $null -or $ENV:Computername -match ""){
+if ($ENV:Computername -eq $null -or $ENV:Computername -eq "" -or $ENV:COMPUTERNAME -eq $null -or $ENV:COMPUTERNAME -eq ""){
  $uname = "$(uname)"
         if($uname -match '^Darwin|^Linux'){
             $osDetected = $true
@@ -670,7 +670,13 @@ function Get-ReportResource {
 			if (Test-Path $data[1] -ErrorAction SilentlyContinue) {
 				if ($ReturnType -eq "embed") {
 					# return a MIME/Base64 combo for embedding in HTML
+					if ($PSVersionTable.PSVersion.Major -ge 6){
 					$imgData = Get-Content ($data[1]) -AsByteStream
+					}
+					else
+					{
+					$imgData = Get-Content ($data[1]) -Encoding Byte
+					}	
 					$type = $data[1].substring($data[1].LastIndexOf(".") + 1)
 					return ("data:image/{0};base64,{1}" -f $type, [System.Convert]::ToBase64String($imgData))
 				}

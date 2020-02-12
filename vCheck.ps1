@@ -30,7 +30,7 @@
 .NOTES 
    File Name  : vCheck.ps1 
    Author     : Alan Renouf - @alanrenouf
-   Version    : 6.24
+   Version    : 6.25
 
    Thanks to all who have commented on my blog to help improve this project
    all beta testers and previous contributors to this script.
@@ -68,7 +68,7 @@ param (
 	[string]$job
 )
 
-$vCheckVersion = "6.23"
+$vCheckVersion = "6.25"
 $Date = Get-Date
 
 # Setup all paths required for script to run
@@ -79,44 +79,11 @@ $PluginsFolder = $ScriptPath + "\Plugins\"
 ################################################################################
 #                             Internationalization                             #
 ################################################################################
-$lang = DATA {
-	ConvertFrom-StringData @' 
-      setupMsg01  = 
-      setupMsg02  = Welcome to vCheck by Virtu-Al http://virtu-al.net
-      setupMsg03  = =================================================
-      setupMsg04  = This is the first time you have run this script or you have re-enabled the setup wizard.
-      setupMsg05  =
-      setupMsg06  = To re-run this wizard in the future please use vCheck.ps1 -Config
-      setupMsg07  = To get usage information, please use Get-Help vCheck.ps1
-      setupMsg08  =
-      setupMsg09  = Please complete the following questions or hit Enter to accept the current setting
-      setupMsg10  = After completing this wizard the vCheck report will be displayed on the screen.
-      setupMsg11  =
-      configMsg01 = After you have exported the new settings from the configuration interface,
-      configMsg02  = import the settings CSV file using Import-vCheckSettings -csvfile C:\\path\\to\\vCheckSettings.csv
-      configMsg03  = NOTE: If vCheckSettings.csv is stored in the vCheck folder, simply run Import-vCheckSettings
-      resFileWarn = Image File not found for {0}!
-      pluginInvalid = Plugin does not exist: {0}
-      pluginpathInvalid = Plugin path "{0}" is invalid, defaulting to {1}
-      gvInvalid   = Global Variables path invalid in job specification, defaulting to {0}
-      varUndefined = Variable `${0} is not defined in GlobalVariables.ps1
-      pluginActivity = Evaluating plugins
-      pluginStatus = [{0} of {1}] {2}
-      Complete = Complete
-      pluginBegin = \nBegin Plugin Processing
-      pluginStart  = ..start calculating {0} by {1} v{2} [{3} of {4}]
-      pluginEnd    = ..finished calculating {0} by {1} v{2} [{3} of {4}]
-      repTime     = This report took {0} minutes to run all checks, completing on {1} at {2}
-      repPRTitle = Plugin Report
-      repTTRTitle = Time to Run
-      slowPlugins = The following plugins took longer than {0} seconds to run, there may be a way to optimize these or remove them if not needed
-      emailSend   = ..Sending Email
-      emailAtch   = vCheck attached to this email
-      HTMLdisp    = ..Displaying HTML results
-'@
-}
+# Default language en-US
+Import-LocalizedData -BaseDirectory ($ScriptPath + '\Lang') -BindingVariable lang -UICulture en-US -ErrorAction SilentlyContinue
 
-Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable lang -ErrorAction SilentlyContinue
+# Override the default (en-US) if it exists in lang directory
+Import-LocalizedData -BaseDirectory ($ScriptPath + "\Lang") -BindingVariable lang -ErrorAction SilentlyContinue
 
 #endregion Internationalization
 
@@ -255,7 +222,7 @@ Function Invoke-Settings {
 				$out[$SetupLine] = '$SetupWizard = $False'				
 			}  # end if
 			
-			$out | Out-File $Filename
+			$out | Set-Content $Filename
 			
 		} # end if
 		
@@ -658,13 +625,17 @@ function Get-ReportResource {
 			if (Test-Path $data[1] -ErrorAction SilentlyContinue) {
 				if ($ReturnType -eq "embed") {
 					# return a MIME/Base64 combo for embedding in HTML
-					$imgData = Get-Content ($data[1]) -Encoding Byte
+					if (((Get-Command get-content).Parameters).Keys -contains "AsByteStream") {
+						$imgData = Get-Content ($data[1]) -AsByteStream
+					} else {
+						$imgData = Get-Content ($data[1]) -Encoding Byte
+					}
 					$type = $data[1].substring($data[1].LastIndexOf(".") + 1)
 					return ("data:image/{0};base64,{1}" -f $type, [System.Convert]::ToBase64String($imgData))
 				}
 				if ($ReturnType -eq "linkedresource") {
 					# return a linked resource to be added to mail message
-					$lr = New-Object system.net.mail.LinkedResource($data[1])
+					$lr = New-Object system.net.mail.LinkedResource(Convert-Path $data[1])
 					$lr.ContentId = $cid
 					return $lr;
 				}
@@ -764,13 +735,44 @@ function Get-ConfigScripts {
 			}
 		}"
 }
+
+<# Prompts for and stores vCenter credentials in a secure manner.
+   The username is saved in cleartext. The password is saved as a SecureString.
+   The output file is XML.
+ #>
+function Set-vCenterCredentials ($OutputFile)
+{
+    $NewCredential = Get-Credential -Message @"
+Enter the username and password for vCenter server '$Server'.
+These credentials will be stored securely at '$OutputFile'."
+"@
+    if ($NewCredential -eq $null) {
+        Write-Warning "No credentials were provided! Exiting."
+        Exit 1
+    }
+    $export = "" | Select-Object Username, EncryptedPassword 
+    $export.Username = $NewCredential.Username 
+    $export.EncryptedPassword = $NewCredential.Password | ConvertFrom-SecureString 
+    $export | Export-Clixml $OutputFile
+    Write-Host -foregroundcolor green "Credentials saved to: " -noNewLine 
+    Get-Item $OutputFile
+}
+
+<# Retrieves the securely stored vCenter credentials from a file on disk. #>
+function Get-vCenterCredentials ($InputFile)
+{
+    $credentials = Import-Clixml $InputFile
+    $import = "" | Select-Object Username, Password 
+    $import.Username = $credentials.Username
+    $import.Password = $credentials.EncryptedPassword | ConvertTo-SecureString
+    Return $import
+}
 #endregion functions
 
 #region initialization
 ################################################################################
 #                                Initialization                                #
 ################################################################################
-
 # if we have the job parameter set, get the paths from the config file.
 if ($job) {
 	[xml]$jobConfig = Get-Content $job
@@ -836,6 +838,14 @@ $SetupSetting = Invoke-Expression (($file[$SetupLine]).Split("="))[1]
 
 ## Include GlobalVariables and validate settings (at the moment just check they exist)
 . $GlobalVariables
+
+if ($SetupSetting -or $config) {
+    Set-vCenterCredentials($vCenterCredentialsFile)
+        
+    Write-Warning -Message "Configuration is complete. You can now re-run vCheck to use the stored configuration."
+
+    Exit 0;
+}
 
 $vcvars = @("SetupWizard", "reportHeader", "SMTPSRV", "EmailFrom", "EmailTo", "EmailSubject", "DisplaytoScreen", "SendEmail", "SendAttachment", "TimeToRun", "PluginSeconds", "Style", "Date")
 foreach ($vcvar in $vcvars) {

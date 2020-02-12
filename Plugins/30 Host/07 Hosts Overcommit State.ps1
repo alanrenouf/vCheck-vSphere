@@ -21,7 +21,7 @@ $pLang = DATA {
 '@
 }
 # Override the defaults (en) if language file exists in lang driectory
-Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable pLang -ErrorAction SilentlyContinue
+Import-LocalizedData -BaseDirectory ($ScriptPath + "\Lang") -BindingVariable pLang -ErrorAction SilentlyContinue
 
 $OverCommit = @()
 $i = 0

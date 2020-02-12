@@ -32,7 +32,7 @@ $EmailReportEvenIfEmpty = $true
 # If you would prefer the HTML file as an attachment then enable the following:
 $SendAttachment = $false
 # Set the style template to use.
-$Style = "VMware"
+$Style = "Clarity"
 # Do you want to include plugin details in the report?
 $reportOnPlugins = $true
 # List Enabled plugins first in Plugin Report?
@@ -41,6 +41,8 @@ $ListEnabledPluginsFirst = $true
 $TimeToRun = $true
 # Report on plugins that take longer than the following amount of seconds
 $PluginSeconds = 30
+# Specify the location to save the vCenter credentials (with the password encrypted as a SecureString) on disk
+$vCenterCredentialsFile = "${ScriptPath}\vCenterCreds.xml"
 # End of Settings
 
 # End of Global Variables

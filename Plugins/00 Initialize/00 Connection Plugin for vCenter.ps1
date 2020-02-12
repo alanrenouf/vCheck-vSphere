@@ -49,7 +49,7 @@ else
    $port = 443
 }
 
-# Path to credentials file which is automatically created if needed
+# Path to Windows credentials file which is automatically created if needed
 $Credfile = $ScriptPath + "\Windowscreds.xml"
 
 #
@@ -148,7 +148,14 @@ if($OpenConnection.IsConnected) {
    $VIConnection = $OpenConnection
 } else {
    Write-CustomOut ( "{0}: {1}" -f $pLang.connOpen, $Server )
-   $VIConnection = Connect-VIServer -Server $VIServer -Port $Port
+   if ( (Get-ChildItem $vCenterCredentialsFile).length -ne 0) {
+      $vCenterCredentials = Get-vCenterCredentials($vCenterCredentialsFile)
+      $Credentials = new-object -typename System.Management.Automation.PSCredential -argumentlist $vCenterCredentials.Username,$vCenterCredentials.Password
+      $VIConnection = Connect-VIServer -Server $VIServer -Port $Port -Credential $Credentials
+   }
+   else {
+      $VIConnection = Connect-VIServer -Server $VIServer -Port $Port
+   }
 }
 
 if (-not $VIConnection.IsConnected) {
@@ -348,4 +355,231 @@ function Get-VIEventPlus {
       
       $events
    }
+}
+
+function Get-FriendlyUnit{
+<#
+.SYNOPSIS  Convert numbers into smaller binary multiples
+.DESCRIPTION The function accepts a value and will convert it
+into the biggest binary unit available.
+.NOTES  Author:  Luc Dekens
+.PARAMETER Value
+The value you want to convert.
+This number must be positive.
+.PARAMETER IEC
+A switch to indicate if the function shall return the IEC
+unit names, or the more commonly used unit names.
+The default is to use the commonly used unit names.
+.EXAMPLE
+PS> Get-FriendlyUnit -Value 123456
+.EXAMPLE
+PS> 123456 | Get-FriendlyUnit -IEC
+.EXAMPLE
+PS> Get-FriendlyUnit -Value 123456,789123, 45678
+#>
+
+    param(
+        [CmdletBinding()]
+        [parameter(Mandatory = $true, ValueFromPipeline = $true)]
+        [double[]]$Value,
+        [switch]$IEC
+    )
+
+    begin{
+        $OldUnits = "B","KB","MB","GB","TB","PB","EB","ZB","YB"
+        $IecUnits = "B","KiB","MiB","GiB","TiB","PiB","EiB","ZiB","YiB"
+        if($IEC){$units = $IecUnits}else{$units=$OldUnits}
+    }
+
+    process{
+        $Value | %{
+            if($_ -lt 0){
+                write-Error "Numbers must be positive."
+                break
+            }
+            if($value -gt 0){
+                $modifier = [math]::Floor([Math]::Log($_,1KB))
+            }
+            else{
+                $modifier = 0
+            }
+            New-Object PSObject -Property @{
+                Value = $_ / [math]::Pow(1KB,$modifier)
+                Unit = &{if($modifier -lt $units.Count){$units[$modifier]}else{"1KB E{0}" -f $modifier}}
+            }
+        }
+    }
+}
+
+function Get-HttpDatastoreItem{
+<#
+.SYNOPSIS  Get file and folder info from datastore
+.DESCRIPTION This function will retrieve a file and folders
+list from a datastore. The function uses the HTTP access to
+a datastore to obtain the list.
+.NOTES  Author:  Luc Dekens
+.PARAMETER Datastore
+The datastore for which to retrieve the list
+.PARAMETER Path
+The folder path from where to start listing files and folders.
+The default is to start from the root of the datastore.
+.EXAMPLE
+.PARAMETER Credential
+A credential for an account that has access to the datastore
+.PARAMETER Recurse
+A switch that defines if the files and folders list shall be recursive
+.PARAMETER IncludeRoot
+A switch to indicate if the root of the search path shall be included
+.PARAMETER Unit
+A switch that defines if the filesize shall be returned in friendly units.
+Requires the Get-FriednlyUnit function
+.EXAMPLE
+PS> Get-HttpDatastoreItem -Datastore DS1 -Credential $cred
+.EXAMPLE
+PS> Get-Datastore | Get-HttpDatastoreItem -Credential $cred
+.EXAMPLE
+PS> Get-Datastore | Get-HttpDatastoreItem -Credential $cred -Recurse
+#>
+
+    [cmdletbinding()]
+    param(
+        [VMware.VimAutomation.ViCore.Types.V1.VIServer]$Server = $global:DefaultVIServer,
+        [parameter(Mandatory=$true,ValueFromPipelineByPropertyName,ParameterSetName="Datastore")]
+        [Alias('Name')]
+        [string]$Datastore,
+        [parameter(Mandatory=$true,ParameterSetName="Path")]
+        [string]$Path = '',
+        [PSCredential]$Credential,
+        [Switch]$Recurse = $false,
+        [Switch]$IncludeRoot = $false,
+        [Switch]$Unit = $false
+    )
+
+    Begin{
+        $regEx = [RegEx]'<tr><td><a.*?>(?<Filename>.*?)</a></td><td.*?>(?<Timestamp>.*?)</td><td.*?>(?<Filesize>[0-9]+|[ -]+)</td></tr>'
+    }
+
+    Process{
+        Write-Verbose -Message "$(Get-Date) $($s = Get-PSCallStack;">Entering {0}" -f $s[0].FunctionName)"
+        Write-Verbose -Message "$(Get-Date) Datastore:$($Datastore)  Path:$($Path)"
+        Write-Verbose -Message "$(Get-Date) Recurse:$($Recurse.IsPresent)"
+
+        Switch($PSCmdlet.ParameterSetName){
+            'Datastore' {
+                $Folder = ''
+            }
+            'Path' {
+                $Datastore,$folderQualifier = $Path.Split('\[\] /',[System.StringSplitOptions]::RemoveEmptyEntries)
+
+                if(-not $folderQualifier){
+                    $lastParent = ''
+                    $lastQualifier = ''
+                }
+                else{
+                    if($folderQualifier.Count -eq 1){
+                        $lastParent = ''
+                        $lastQualifier = "$($folderQualifier)$(if($Path -match "/$"){'/'})"
+                    }
+                    else{
+                        $lastQualifier = "$($folderQualifier[-1])$(if($Path -match "/$"){'/'})"
+                        $lastParent = "$($folderQualifier[0..($folderQualifier.Count-2)] -join '/')/"
+                    }
+                }
+            }
+            Default {
+                Throw "Invalid parameter combination"
+            }                                                                                                                                                                        
+        }
+        $folderQualifier = $folderQualifier -join '/'
+        if($Path -match "/$" -and $folderQualifier -notmatch "/$"){
+            $folderQualifier += '/'
+        }
+        $stack = Get-PSCallStack | Select -ExpandProperty Command
+        if(($stack | Group-Object -AsHashTable -AsString)[$stack[0]].Count -eq 1){
+            Write-Verbose "First call"
+            $sDFile = @{
+                Server = $Server
+                Credential = $Credential
+                Path = "[$($Datastore)]$(if($lastParent){"" $($lastParent)""})"
+                Recurse = $Recurse.IsPresent
+                IncludeRoot = $IncludeRoot.IsPresent
+                Unit = $Unit.IsPresent
+            }
+            $allEntry = Get-HttpDatastoreItem @sDFile
+            $entry = $allEntry | where{$_.Name -match "^$($lastQualifier)/*$"}
+            if($entry.Name -match "\/$"){
+            # It's a folder
+                if($lastQualifier -notmatch "/$"){
+                    $folderQualifier += '/'
+                }
+                if($IncludeRoot.IsPresent){
+                    $entry
+                }
+            }
+            else{
+            # It's a file
+                $entry
+            }
+        }
+
+        if($folderQualifier -match "\/$" -or -not $folderQualifier){
+            $ds = Get-Datastore -Name $Datastore -Server $Server -Verbose:$false
+            $dc = Get-VMHost -Datastore $ds -Verbose:$false -Server $Server | Get-Datacenter -Verbose:$false -Server $Server
+            $uri = "https://$($Server.Name)/folder$(if($folderQualifier){'/' + $folderQualifier})?dcPath=$($dc.Name)&dsName=$($ds.Name)"
+            Write-Verbose "Looking at URI: $($uri)"
+            Try{
+                $response = Invoke-WebRequest -Uri $Uri -Method Get -Credential $Credential 
+            }
+            Catch{
+                $errorMsg = "`n$(Get-Date -Format 'yyyyMMdd HH:mm:ss') HTTP $($_.Exception.Response.ProtocolVersion)" +
+                    " $($_.Exception.Response.Method) $($_.Exception.Response.StatusCode.Value__)" +
+                    " $($_.Exception.Response.StatusDescription)`n" +
+                    "$(Get-Date -Format 'yyyyMMdd HH:mm:ss') Uri $($_.Exception.Response.ResponseUri)`n "
+                Write-Error -Message $errorMsg
+                break
+            }
+            foreach($entry in $response){
+                $regEx.Matches($entry.Content) | 
+                Where{$_.Success -and $_.Groups['Filename'].Value -notmatch 'Parent Datacenter|Parent Directory'} | %{
+                    Write-Verbose "`tFound $($_.Groups['Filename'].Value)"
+                    $fName = $_.Groups['Filename'].Value
+                    $obj = [ordered]@{
+                        Name = $_.Groups['Filename'].Value
+                        FullName = "[$($ds.Name)] $($folderQualifier)$(if($folderQualifier -notmatch '/$' -and $folderQualifier){'/'})$($_.Groups['Filename'].Value)"
+                        Timestamp = [DateTime]$_.Groups['Timestamp'].Value
+                    }
+                    if($fName -notmatch "/$"){
+                        $tSize = $_.Groups['Filesize'].Value
+                        if($Unit.IsPresent){
+                            $friendly = $tSize | Get-FriendlyUnit
+                            $obj.Add('Size',[Math]::Round($friendly.Value,0))
+                            $obj.Add('Unit',$friendly.Unit)
+                        }
+                        else{
+                            $obj.Add('Size',$tSize)
+                        }
+                    }
+                    else{
+                        $obj.Add('Size','')
+                        if($Unit.IsPresent){
+                            $obj.Add('Unit','')
+                        }
+                    }
+                    New-Object PSObject -Property $obj
+                    if($_.Groups['Filename'].Value -match "/$" -and $Recurse.IsPresent){
+                        $sDFile = @{
+                            Server = $Server
+                            Credential = $Credential
+                            Path = "[$($ds.Name)] $($folderQualifier)$(if($folderQualifier -notmatch '/$' -and $folderQualifier){'/'})$($_.Groups['Filename'].Value)"
+                            Recurse = $Recurse.IsPresent
+                            IncludeRoot = $IncludeRoot
+                            Unit = $Unit.IsPresent
+                        }
+                        Get-HttpDatastoreItem @sDFile
+                    }
+                }
+            }
+        }
+        Write-Verbose -Message "$(Get-Date) $($s = Get-PSCallStack;"<Leaving {0}" -f $s[0].FunctionName)"
+    }
 }

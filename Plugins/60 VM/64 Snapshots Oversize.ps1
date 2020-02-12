@@ -2,15 +2,17 @@ $Title = "Snapshots Oversize"
 $Header = "Snapshots Oversize"
 $Comments = "VMware snapshots which are kept for a long period of time may cause issues, filling up datastores and also may impact performance of the virtual machine."
 $Display = "Table"
-$Author = "Raphael Schitz, Shawn Masterson"
-$PluginVersion = 1.4
+$Author = "Raphael Schitz, Shawn Masterson, Fabio Freire, Bill Wall"
+$PluginVersion = 1.5
 $PluginCategory = "vSphere"
 
 # Start of Settings 
+# VMs not to report on (regex)
+$IgnoredVMs = "WEBMAIL"
 # End of Settings 
 
 $snapp = @()
-Foreach ($vmg in ($VM | Where-Object {$_.ExtensionData.Snapshot})) {
+Foreach ($vmg in ($VM | Where-Object {$_.ExtensionData.Snapshot -and $_.Name -notmatch $IgnoredVMs})) {
    $hddsize = ($vmg | Get-HardDisk | Measure-Object -sum CapacityGB).sum
    $snapInfo = $vmg | Get-Snapshot | Measure-Object -Sum SizeGB
 
@@ -33,3 +35,4 @@ $snapp | Select-Object VM, vmdkSizeGB, SnapSizeGB, SnapCount, @{N="OverSize %";E
 # Changelog
 ## 1.3 : Rewritten to cleanup and compare vmdk size to only snapshot size
 ## 1.4 : Code refactor
+## 1.5 : Added IgnoredVMs parameter

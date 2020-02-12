@@ -54,7 +54,8 @@ foreach ($cluv in ($clusviews | Where-Object {$_.Summary.NumHosts -gt 0 } | Sort
 
    # vCPU to pCPU ratio
    if ($cluvmlist){
-      $vCPUpCPUratio = ("1:{0}" -f [math]::round(($cluvmlist|Measure-Object -Sum -Property NumCpu).sum / $cluv.summary.NumCpuThreads,1))
+      $vCPUCPUthreadratio = ("1:{0}" -f [math]::round(($cluvmlist|Measure-Object -Sum -Property NumCpu).sum / $cluv.summary.NumCpuThreads,1))
+	   $vCPUpCPUratio = ("1:{0}" -f [math]::round(($cluvmlist|Measure-Object -Sum -Property NumCpu).sum / $cluv.summary.NumCpuCores,1))
       $VMVMHostRatio = ("1:{0}" -f [math]::round(($cluvmlist).count/$cluv.Summary.NumHosts,1))
    }
    else 
@@ -68,8 +69,9 @@ foreach ($cluv in ($clusviews | Where-Object {$_.Summary.NumHosts -gt 0 } | Sort
       ClusterName = [System.Web.HttpUtility]::UrlDecode($cluv.name)
       "Estimated Num VM Left (CPU)" = $CpuVmLeft
       "Estimated Num VM Left (MEM)" = $MemVmLeft
-      "vCPU/pCPU ratio" =  $vCPUpCPUratio
-      "VMHost/VM ratio" = $VMVMHostRatio
+      "vCPU/pCPU Core ratio" =  $vCPUpCPUratio
+	   "vCPU/pCPU Thread ratio" =  $vCPUCPUthreadratio
+      "VM/VMHost ratio" = $VMVMHostRatio
    }
    
    $capacityinfo += $clucapacity

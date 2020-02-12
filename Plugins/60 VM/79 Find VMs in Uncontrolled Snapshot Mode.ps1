@@ -14,15 +14,16 @@ $Title = "VMs in uncontrolled snapshot mode"
 $Header = "VMs in uncontrolled snapshot mode: [count]"
 $Comments = "The following VMs are in snapshot mode, but vCenter isn't aware of it. See http://kb.vmware.com/kb/1002310"
 $Display = "Table"
-$Author = "Rick Glover, Matthias Koehler, Dan Rowe"
-$PluginVersion = 1.5
+$Author = "Rick Glover, Matthias Koehler, Dan Rowe, Bill Wall"
+$PluginVersion = 1.6
 $PluginCategory = "vSphere"
 
 # Start of Settings
+$ExcludeDS = "ExcludeMe"
 # End of Settings
 
 $i=0;
-foreach ($eachDS in ($Datastores | Where-Object {$_.State -eq "Available"})) {
+foreach ($eachDS in ($Datastores | Where-Object {$_.Name -notmatch $ExcludeDS} | Where-Object {$_.State -eq "Available"})) {
    Write-Progress -ID 2 -Parent 1 -Activity $pLang.pluginActivity -Status ($pLang.pluginStatus -f $i, $Datastores.count, $eachDS.Name) -PercentComplete ($i*100/$Datastores.count)
    
    $FilePath = $eachDS.DatastoreBrowserPath + '\*\*delta.vmdk*'
@@ -49,3 +50,6 @@ foreach ($eachDS in ($Datastores | Where-Object {$_.State -eq "Available"})) {
    }
 }
 Write-Progress -ID 1 -Activity $pLang.pluginActivity -Status $pLang.Complete -Completed
+
+# Changelog
+## 1.6 : Added setting to exclude DS

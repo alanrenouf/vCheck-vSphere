@@ -3,7 +3,7 @@ $Header = "Active Directory Authentication"
 $Comments = "Active Directory configuration and status for each host. (Domain: $ADDomainName, Admin Group: $ADAdminGroup, Display all results: $ADDisplayOK)"
 $Display = "Table"
 $Author = "Bill Wall, Dan Barr"
-$PluginVersion = 1.2
+$PluginVersion = 1.3
 $PluginCategory = "vSphere"
 
 # Start of Settings
@@ -19,7 +19,7 @@ $ADAdminGroup = "ESX Admins"
 $ADFailedHosts = @()
 $ADOKHosts = @()
 
-ForEach ($ADHost in $VMH | Where-Object {$_.Connectionstate -eq "Connected"}) {
+ForEach ($ADHost in $VMH | Where-Object {$_.ConnectionState -match "Connected|Maintenance"}) {
 	# Get authetication settings
 	$myADAuth = $ADHost | Get-VMHostAuthentication
 	# Get Admin Group settings
@@ -41,3 +41,4 @@ $ADFailedHosts
 
 # Changelog
 ## 1.2 : Only check Connected hosts since Disconnected and Not Responding produce empty data
+## 1.3 : Check Connected and Maintenance VMH

@@ -10,6 +10,5 @@
 *.xml text eol=crlf
 
 # Ignore plugins.xml in exports
-plugins.xml export-ignore
 .gitAttributes export-ignore
 .gitIgnore export-ignore

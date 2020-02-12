@@ -1,3 +1,12 @@
+$Title = "QuickStats Capacity Planning"
+$Header = "QuickStats Capacity Planning"
+$Comments = "The following gives brief capacity information for each cluster based on QuickStats CPU/Mem usage and counting for HA failover requirements"
+$Display = "Table"
+$Author = "Raphael Schitz, Frederic Martin"
+$PluginVersion = 1.8
+$PluginCategory = "vSphere"
+
+
 # Start of Settings 
 # Max CPU usage for non HA cluster
 $limitResourceCPUClusNonHA = 0.6
@@ -5,8 +14,13 @@ $limitResourceCPUClusNonHA = 0.6
 $limitResourceMEMClusNonHA = 0.6
 # End of Settings
 
+# Update settings where there is an override
+$limitResourceCPUClusNonHA = Get-vCheckSetting $Title "limitResourceCPUClusNonHA" $limitResourceCPUClusNonHA
+$limitResourceMEMClusNonHA = Get-vCheckSetting $Title "limitResourceMEMClusNonHA" $limitResourceMEMClusNonHA
+
+Add-Type -AssemblyName System.Web
 $capacityinfo = @()
-foreach ($cluv in ($clusviews | Where {$_.Summary.NumHosts -gt 0 } | Sort Name)) {
+foreach ($cluv in ($clusviews | Where-Object {$_.Summary.NumHosts -gt 0 } | Sort-Object Name)) {
    
    if ( $cluv.Configuration.DasConfig.Enabled -eq $true ) {
       $DasRealCpuCapacity = $cluv.Summary.EffectiveCpu - (($cluv.Summary.EffectiveCpu * $cluv.Configuration.DasConfig.FailoverLevel)/$cluv.Summary.NumHosts)
@@ -16,7 +30,7 @@ foreach ($cluv in ($clusviews | Where {$_.Summary.NumHosts -gt 0 } | Sort Name))
       $DasRealMemCapacity = $cluv.Summary.EffectiveMemory * $limitResourceMEMClusNonHA
    }
    
-   $cluvmlist = $VM | where { $cluv.Host -contains $_.VMHost.Id  }
+   $cluvmlist = $VM | Where-Object { $cluv.Host -contains $_.VMHost.Id  }
 
    #CPU
    $CluCpuUsage = (get-view $cluv.ResourcePool).Summary.runtime.cpu.OverallUsage
@@ -32,10 +46,10 @@ foreach ($cluv in ($clusviews | Where {$_.Summary.NumHosts -gt 0 } | Sort Name))
    $CluMemUsage = (get-view $cluv.ResourcePool).Summary.runtime.memory.OverallUsage
    $CluMemUsageAvg = $CluMemUsage/1MB
    if ($cluvmlist -and $cluv.host -and $CluMemUsageAvg -gt 100){
-      $VmMemAverage = $CluMemUsageAvg/(Get-Cluster $cluv.name|Get-VM).count
+      $VmMemAverage = $CluMemUsageAvg/(Get-Cluster -Id $cluv.MoRef|Get-VM).count
       $MemVmLeft = [math]::round(($DasRealMemCapacity-$CluMemUsageAvg)/$VmMemAverage,0)
    }
-   elseif ($CluMemUsageAvg -lt 100) {$CluMemUsageAvg = "N/A"}
+   elseif ($CluMemUsageAvg -lt 100) {$MemVmLeft = "N/A"}
    else{$MemVmLeft = 0}
 
    # vCPU to pCPU ratio
@@ -51,7 +65,7 @@ foreach ($cluv in ($clusviews | Where {$_.Summary.NumHosts -gt 0 } | Sort Name))
 
    $clucapacity = [PSCustomObject] @{
       Datacenter = (Get-VIObjectByVIView -MoRef $cluv.Parent).Parent.Name
-      ClusterName = $cluv.name
+      ClusterName = [System.Web.HttpUtility]::UrlDecode($cluv.name)
       "Estimated Num VM Left (CPU)" = $CpuVmLeft
       "Estimated Num VM Left (MEM)" = $MemVmLeft
       "vCPU/pCPU ratio" =  $vCPUpCPUratio
@@ -61,12 +75,8 @@ foreach ($cluv in ($clusviews | Where {$_.Summary.NumHosts -gt 0 } | Sort Name))
    $capacityinfo += $clucapacity
 }
 
-$capacityinfo | Sort Datacenter, ClusterName
+$capacityinfo | Sort-Object Datacenter, ClusterName
 
-$Title = "QuickStats Capacity Planning"
-$Header = "QuickStats Capacity Planning"
-$Comments = "The following gives brief capacity information for each cluster based on QuickStats CPU/Mem usage and counting for HA failover requirements"
-$Display = "Table"
-$Author = "Raphael Schitz, Frederic Martin"
-$PluginVersion = 1.7
-$PluginCategory = "vSphere"
+# Changelog
+## 1.8 : Use 'Get-Cluster -Id' and [System.Web.HttpUtility]::UrlDecode to handle special characters in cluster name.
+##       Fix bug where $MemVmLeft was not getting reset and displays value from previous cluster.

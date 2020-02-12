@@ -10,9 +10,9 @@ $proxy = "$false"
 
 . $ScriptPath\vcheckutils.ps1 | Out-Null
 if ($proxy -eq "$false"){
-	$NotInstalled = Get-vCheckPlugin | Where {$_.Category -eq "vSphere" -and ($_.status -eq "Not Installed" -or $_.status -match "New Version Available")} | Select Name, version, Status, Description
+	$NotInstalled = Get-vCheckPlugin | Where-Object {$_.Category -eq "vSphere" -and ($_.status -eq "Not Installed" -or $_.status -match "New Version Available")} | Select-Object Name, version, Status, Description
 } else {
-	$NotInstalled = Get-vCheckPlugin -Proxy $proxy | Where {$_.Category -eq "vSphere" -and ($_.status -eq "Not Installed" -or $_.status -match "New Version Available")} | Select Name, version, Status, Description
+	$NotInstalled = Get-vCheckPlugin -Proxy $proxy | Where-Object {$_.Category -eq "vSphere" -and ($_.status -eq "Not Installed" -or $_.status -match "New Version Available")} | Select-Object Name, version, Status, Description
 }
 $NotInstalled
 

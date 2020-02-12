@@ -1,15 +1,28 @@
 <a name="Title">
+
 # vCheck Daily Report for vSphere
+[![stars badge]][stars]
+[![forks badge]][forks]
+[![issues badge]][issues]
+
+[stars badge]:https://img.shields.io/github/stars/alanrenouf/vCheck-vSphere.svg
+[forks badge]:https://img.shields.io/github/forks/alanrenouf/vCheck-vSphere.svg
+[issues badge]:https://img.shields.io/github/issues/alanrenouf/vCheck-vSphere.svg
+
+[stars]:https://github.com/alanrenouf/vCheck-vSphere/stargazers
+[forks]:https://github.com/alanrenouf/vCheck-vSphere/network
+[issues]:https://github.com/alanrenouf/vCheck-vSphere/issues
+
 [Join the VMware Code and #vCheck channel on slack and ask questions here!](https://code.vmware.com/slack/)
 
-![Alt text](http://www.virtu-al.net/wp-content/uploads/2014/02/vCheck619.jpg "vCheck Sample")
+![Alt text](http://www.virtu-al.net/wp-content/uploads/2017/10/vCheck_Clarity.jpg "vCheck Sample")
 
 |Navigation|
 |-----------------|
 |[About](#About)|
 |[Features](#Features)|
+|[Installing](#Installing)|
 |[Enhancements](#Enhancements)|
-|[Release Notes](#ReleaseNotes)|
 |[Contributing](#Contributing)|
 |[Plugins](#Plugins)|
 |[Styles](#Styles)|
@@ -17,6 +30,7 @@
 |[More Info](#More)|
 
 <a name="About">
+
 # About
 [*Back to top*](#Title)
 
@@ -30,6 +44,7 @@ This script is not to be confused with an Audit script, although the reporting f
 
 
 <a name="Features">
+
 # What is checked for in the vSphere version ?
 [*Back to top*](#Title)
 
@@ -87,7 +102,16 @@ The following items are included as part of the vCheck vSphere download, they ar
 - Inaccessible VMs
 - Much, Much more.......
 
+<a name="Installing">
+  
+# Installing
+[*Back to top*](#Title)
+
+Copy  the vCheck files to the desired location. Run the script 'vCheck.ps1' -Config to do initial configuration of the script. 
+<!--Copy the vCheck files to the desired location. Run the script `vCheckUtils.ps1` and call the function `Schedule-vCheck`. Answer the prompts to configure the scheduled job.-->
+
 <a name="Enhancements">
+
 # Enhancements
 [*Back to top*](#Title)
 
@@ -99,53 +123,15 @@ The following items are included as part of the vCheck vSphere download, they ar
 
 In the meantime, don't hesitate to pop over to the [#vCheck channel on slack](https://code.vmware.com/slack/) and join in on active conversations about anything you see- or don't see- here!
 
-<a name="ReleaseNotes">
-# Release Notes
-[*Back to top*](#Title)
-
-* 6.22 - Fixes to VMware style. Consolidating plugins. Updates to style handling.
-* 6.21 - Added support for charts. New plugins. Support non-standard vCenter Ports. Bugfixes
-* 6.20 - First tagged release. Bugfixes. Email resource support added.
-* 6.19 - Bugfixes.
-* 6.18 - Added Job parameter to allow job specifications via XML file
-* 6.17 - Basic Internationalization (i18n) support
-* 6.16 - Table formatting rules
-* 6.15 - Added Category to all plugins and features to vCheckUtils script for Categorys.
-* 6.14 - Fixed a bug where a plugin was resetting the $VM variable so later plugins were not working :(
-* 6.13 - Fixed issue with plugins 63 and 65 not using the days
-* 6.12 - Changed Version to PluginVersion in each Plugin as the word Version is very hard to isolate!
-* 6.11 - Fixed a copy and paste mistake and plugin issues.
-* 6.10 - Fixed multiple spelling mistakes and small plugin issues
-* 6.9 - Fixed VMKernel logs but had to remove date/Time parser due to inconsistent VMKernel Log entries
-* 6.8 - Added Creator of snapshots back in due to popular demand
-* 6.7 - Added Multiple plugins from contributors - Thanks!
-* 6.6 - Tech Support Mode Plugin fixed to work with 5.0 hosts
-* 6.5 - HW Version plugin fixed due to string output
-* 6.4 - Added a 00 plugin and VeryLastPlugin for vCenter connection info to separate the report entirely from VMware if needed.
-* 6.3 - Changed the format of each Plugin so you can include a count for each header and altered plugin layout for each plugin.
-* 6.2 - Added Time to Run section based on TimeToBuild by Frederic Martin
-* 6.1 - Bug fixes, filter for ps1 files only in the plugins folder so other files can be kept in the plugins folder.
-* 6.0 - Moved plugins into seperate scripts to make it easier to expand vCheck and fixed issues + lots lots more !
-* 5.1 - Code Fixes and ability to change colour for title text to fix issue with Outlook 2007/10 not displaying correctly
-* 5.0 - Changed the order and a few titles etc, tidy up !
-* 4.9 - Added Inacessable VMs
-* 4.8 - Added HA VM restarts and resets
-* 4.7 - VMTools Issues
-* 4.6 - Added VCB Garbage
-* 4.5 - Added Host config issues
-* 4.4 - Added Disk Overcommit check
-* 4.3 - Added vSwitch free ports check
-* 4.2 - Added General Capacity Information based on CPU and MEM ussage per cluster
-* 4.1 - Added the ability to change the colours of the report.
-* 4.0 - HTML Tidy up, comments added for each item and the ability to enable/disable comments.
-
 <a name="Contributing">
+
 # Contributing
 [*Back to top*](#Title)
 
 See out [Contributions](CONTRIBUTING.md) guidelines
 
 <a name="Plugins">
+
 # Plugins
 [*Back to top*](#Title)
 
@@ -247,6 +233,7 @@ $TableFormat = @{"PercentFree" = @(@{ "-le 25" = "Row,class|warning"; }, @{ "-le
 Here we see the rules that apply to two different columns, with rules applied to the values in a fashion similar to Example 1.
 
 <a name="Styles">
+
 # Styles
 [*Back to top*](#Title)
 
@@ -271,6 +258,7 @@ Additionally, if the style is to define colours to be used by charts, the follow
 To include image resources, you may call Add-ReportResource, specifying CID and data. As these are not referenced by table formatting rules, this will need to be called with the `-Used $true` parameter.
 
 <a name="JobsSettings">
+
 # Jobs & Settings
 [*Back to top*](#Title)
 
@@ -341,6 +329,7 @@ PS E:\scripts\vCheck-vSphere> Import-vCheckSettings -csvfile E:\MyvCheckSettings
 If new settings or plugins have been added to the new build you will be asked to answer the questions, similar to running the initial config. During the import, the initial config is disabled, so once the import is complete you are ready to run your new build.
 
 <a name="More">
+
 # More Info
 [*Back to top*](#Title)
 

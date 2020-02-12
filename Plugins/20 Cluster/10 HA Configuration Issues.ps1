@@ -33,7 +33,7 @@ $pLang = DATA {
 '@
 }
 # Override the default (en) if it exists in lang directory
-Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable pLang -ErrorAction SilentlyContinue
+Import-LocalizedData -BaseDirectory ($ScriptPath + "\Lang") -BindingVariable pLang -ErrorAction SilentlyContinue
 
 # Clusters with HA disabled
 $HAIssues = @()

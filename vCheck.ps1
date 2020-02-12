@@ -80,10 +80,10 @@ $PluginsFolder = $ScriptPath + "\Plugins\"
 #                             Internationalization                             #
 ################################################################################
 # Default language en-US
-Import-LocalizedData -BaseDirectory ($ScriptPath + '\lang') -BindingVariable lang -UICulture en-US -ErrorAction SilentlyContinue
+Import-LocalizedData -BaseDirectory ($ScriptPath + '\Lang') -BindingVariable lang -UICulture en-US -ErrorAction SilentlyContinue
 
 # Override the default (en-US) if it exists in lang directory
-Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable lang -ErrorAction SilentlyContinue
+Import-LocalizedData -BaseDirectory ($ScriptPath + "\Lang") -BindingVariable lang -ErrorAction SilentlyContinue
 
 #endregion Internationalization
 
@@ -625,13 +625,17 @@ function Get-ReportResource {
 			if (Test-Path $data[1] -ErrorAction SilentlyContinue) {
 				if ($ReturnType -eq "embed") {
 					# return a MIME/Base64 combo for embedding in HTML
-					$imgData = Get-Content ($data[1]) -Encoding Byte
+					if (((Get-Command get-content).Parameters).Keys -contains "AsByteStream") {
+						$imgData = Get-Content ($data[1]) -AsByteStream
+					} else {
+						$imgData = Get-Content ($data[1]) -Encoding Byte
+					}
 					$type = $data[1].substring($data[1].LastIndexOf(".") + 1)
 					return ("data:image/{0};base64,{1}" -f $type, [System.Convert]::ToBase64String($imgData))
 				}
 				if ($ReturnType -eq "linkedresource") {
 					# return a linked resource to be added to mail message
-					$lr = New-Object system.net.mail.LinkedResource($data[1])
+					$lr = New-Object system.net.mail.LinkedResource(Convert-Path $data[1])
 					$lr.ContentId = $cid
 					return $lr;
 				}

@@ -16,7 +16,7 @@ $MEMHotAdd = $true
 $CPUHotAdd = Get-vCheckSetting $Title "CPUHotAdd" $CPUHotAdd
 $MEMHotAdd = Get-vCheckSetting $Title "MEMHotAdd" $MEMHotAdd
 
-$VMs | Select-Object Name, @{N="CPU Hot Plug Enabled"; E={$_.ExtensionData.config.CpuHotAddEnabled}}, @{N="Memory Hot Add Enabled"; E={$_.ExtensionData.config.MemoryHotAddEnabled}} | Where-Object {$_."CPU Hot Plug Enabled" -ne $CPUHotAdd -or $_."Memory Hot Add Enabled" -ne $MEMHotAdd}
+$VM | Select-Object Name, @{N="CPU Hot Plug Enabled"; E={$_.ExtensionData.config.CpuHotAddEnabled}}, @{N="Memory Hot Add Enabled"; E={$_.ExtensionData.config.MemoryHotAddEnabled}} | Where-Object {$_."CPU Hot Plug Enabled" -ne $CPUHotAdd -or $_."Memory Hot Add Enabled" -ne $MEMHotAdd}
 
 # Create variables with unexpected values, for use in the plugin comment
 $CPUNotExpected = if ($CPUHotAdd) { "disabled" } else { "enabled" }

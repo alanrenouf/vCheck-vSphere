@@ -18,7 +18,7 @@ $pLang = DATA {
 }
 
 # Override the default (en) if it exists in lang directory
-Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable pLang -ErrorAction SilentlyContinue
+Import-LocalizedData -BaseDirectory ($ScriptPath + "\Lang") -BindingVariable pLang -ErrorAction SilentlyContinue
 
 # Update settings where there is an override
 $PercCPUReady = Get-vCheckSetting $Title "PercCPUReady" $PercCPUReady
@@ -29,7 +29,7 @@ ForEach ($v in ($VM | Where-Object {$_.PowerState -eq "PoweredOn"})){
    For ($cpunum = 0; $cpunum -lt $v.NumCpu; $cpunum++){
       $PercReady = [Math]::Round((($v | Get-Stat -ErrorAction SilentlyContinue -Stat Cpu.Ready.Summation -Realtime | Where-Object {$_.Instance -eq $cpunum} | Measure-Object -Property Value -Average).Average)/200,1)
       
-      if ($_.PercReady -gt $PercCPUReady)
+      if ($PercReady -gt $PercCPUReady)
       {
          New-Object -TypeName PSObject -Property @{
             VM = $v.Name

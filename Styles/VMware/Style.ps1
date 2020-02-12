@@ -79,26 +79,28 @@ function Get-PluginHTML {
    Generate table of contents
 #>
 function Get-ReportTOC {
-   $TOCHTML = "<table><tr>"
+   if ($ShowTOC) {
+      $TOCHTML = "<table><tr>"
 
-   $i = 0
-   foreach ($pr in ($PluginResult | Where-Object {$_.Details})) {
-      $TOCHTML += ("<td style='padding-left: 10px'><a style='font-size: 8pt' href='#{0}'>{1}</a></td>" -f $pr.PluginID, $pr.Title)
+      $i = 0
+      foreach ($pr in ($PluginResult | Where-Object {$_.Details})) {
+            $TOCHTML += ("<td style='padding-left: 10px'><a style='font-size: 8pt' href='#{0}'>{1}</a></td>" -f $pr.PluginID, $pr.Title)
 
-      $i++
-      # We have hit the end of the line
-      if ($i%$ToCColumns -eq 0) {
-         $TOCHTML +="</tr><tr>"
+            $i++
+            # We have hit the end of the line
+            if ($i%$ToCColumns -eq 0) {
+            $TOCHTML +="</tr><tr>"
+            }
       }
-   }
-   # If the row is unfinished, need to pad it out with a cell
-   if ($i%$ToCColumns -gt 0) {
-      $TOCHTML += ("<td colspan='{0}'>&nbsp;</td>" -f ($ToCColumns-($i%$ToCColumns)))
-   }
+      # If the row is unfinished, need to pad it out with a cell
+      if ($i%$ToCColumns -gt 0) {
+            $TOCHTML += ("<td colspan='{0}'>&nbsp;</td>" -f ($ToCColumns-($i%$ToCColumns)))
+      }
 
-   $TOCHTML += "</tr></table>"
+      $TOCHTML += "</tr></table>"
 
-   return $TOCHTML
+      return $TOCHTML
+   }
 }
 #endregion
 
@@ -172,10 +174,16 @@ $PluginHTML = @"
    <!-- Plugin Start - _TITLE_ -->
       <div style='height: 10px; font-size: 10px;'>&nbsp;</div>
       <a name="_PLUGINID_" />
-      <table width='100%' style='padding: 0px; border-collapse: collapse;'><tr><td style='background-color: #1D6325; border: 1px solid #1D6325; font-family: Tahoma, sans-serif; font-weight: bold; font-size: 8pt; color: #FFFFFF; text-indent: 10px; height: 30px; vertical-align: middle;'>_TITLE_</td></tr>
+      <table width='100%' style='padding: 0px; border-collapse: collapse;'><tr><td style='background-color: #1D6325; border: 1px solid #1D6325; font-family: Tahoma, sans-serif; font-weight: bold; font-size: 8pt; color: #FFFFFF; text-indent: 10px; height: 30px; vertical-align: middle;'><a  onclick="toggleRow(this);">_TITLE_</td></tr>
          <tr><td style='margin: 0px; background-color: #f4f7fc; color: #000000; font-style: italic; font-size: 8pt; text-indent: 10px; vertical-align: middle; border-right: 1px solid #bbbbbb; border-left: 1px solid #bbbbbb;'>_COMMENTS_</td></tr>
          <tr><td style='margin: 0px; padding: 0px; background-color: #f9f9f9; color: #000000; font-size: 8pt; border: #bbbbbb 1px solid;'>_PLUGINCONTENT_</td></tr>
          <tr><td style="text-align: right; background: #FFFFFF"><a href="#top" style="color: black">Back To Top</a>
       </table>
+	<script>
+		function toggleRow(e) {
+        var subRow = e.parentNode.parentNode.nextElementSibling.nextElementSibling;
+		subRow.style.display = subRow.style.display === 'none' ? 'table-row' : 'none';    	
+		}
+    </script>
    <!-- Plugin End -->
 "@

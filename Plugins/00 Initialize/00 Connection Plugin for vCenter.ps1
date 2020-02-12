@@ -8,7 +8,7 @@ $PluginCategory = "vSphere"
 
 # Start of Settings
 # Please Specify the address (and optional port) of the vCenter server to connect to [servername(:port)]
-$Server = "vcsa.local.lab"
+$Server = "192.168.0.0"
 # End of Settings
 
 # Update settings where there is an override

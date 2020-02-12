@@ -11704,9 +11704,15 @@ $PluginHTML = @"
    <!-- Plugin Start - _TITLE_ -->
       <div style='height: 10px;'>&nbsp;</div>
       <a name="_PLUGINID_" /></a>
-      <table class="table"><tr><td class="left"><b>_TITLE_</b></td></tr>
+      <table class="table"><tr><td class="left"><a  onclick="toggleRow(this);"><b>_TITLE_</b></td></tr>
          <tr><td class="left" style='background-color: #f4f7fc; color: #000000; font-style: italic'>_COMMENTS_</td></tr>
          <tr><td class="left">_PLUGINCONTENT_</td></tr>
       </table>
+	<script>
+		function toggleRow(e) {
+        var subRow = e.parentNode.parentNode.nextElementSibling.nextElementSibling;
+		subRow.style.display = subRow.style.display === 'none' ? 'table-row' : 'none';    	
+		}
+    </script>
    <!-- Plugin End -->
 "@

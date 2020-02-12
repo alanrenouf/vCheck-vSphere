@@ -2,8 +2,8 @@ $Title = "vSwitch Security"
 $Header = "vSwitch and portgroup security settings"
 $Comments = "All security options for standard and distributed switches and port groups should be set to REJECT unless explicitly required, except for ForgedTrasmits which is required on vDS uplink port groups."
 $Display = "Table"
-$Author = "Justin Mercier, Sam McGeown, John Sneddon, Ben Hocker, Dan Barr"
-$PluginVersion = 1.6
+$Author = "Justin Mercier, Sam McGeown, John Sneddon, Ben Hocker, Dan Barr, Jason Gersekowski"
+$PluginVersion = 1.5
 $PluginCategory = "vSphere"
 
 # Start of Settings
@@ -25,13 +25,14 @@ $IgnoreNets = Get-vCheckSetting $Title "IgnoreNets" $IgnoreNets
 
 # Check Power CLI version. Build must be at least 1012425 (5.1 Release 2) to contain Get-VDPortGroup cmdlet
 $VersionOK = $false
-if (((Get-PowerCLIVersion) -match "VMware vSphere PowerCLI (.*) build ([0-9]+)") -or ((Get-PowerCLIVersion) -match "VMware PowerCLI (.*) build ([0-9]+)"))
-{
-    if ([int]($Matches[2]) -ge 1012425)
-    {
+
+# Obtain the Revision number of the VMWare.PowerCLI modules
+$Revision=(Get-Module VMWare.PowerCLI -listavailable).Version.Revision
+
+if ($Revision) {
+    if ($Revision -ge 1012425) {
         $VersionOK = $true
-        if ([int]($Matches[2]) -ge 2548067)
-        {
+        if ($Revision -ge 2548067) {
             #PowerCLI 6+
             if (!(Get-Module -Name VMware.VimAutomation.Vds -ErrorAction SilentlyContinue))
             {

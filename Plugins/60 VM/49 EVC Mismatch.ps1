@@ -1,4 +1,5 @@
 # Start of Settings
+$ExcludeVMs = "Guest Introspection|ExcludeMe"
 # End of Settings
 
 # For Each Host
@@ -10,7 +11,7 @@ ForEach ($EVCHost in $VMH) {
 		$myHostEVCCluster = $EVCHost.Parent.Name
 
 		## Get VMs on current host | Filter by Powered On and VM EVC not equal to host EVC | Select VM, Host and Cluster information and concatenate into array 
-		Get-VM -Location $EVCHost | Where-Object {($_.PowerState -eq "PoweredOn") -and ($_.ExtensionData.Summary.Runtime.MinRequiredEVCModeKey -ne $myHostEVCMode)} | Select-Object Name,@{Name='VM EVC';Expression = {$_.ExtensionData.Summary.Runtime.MinRequiredEVCModeKey}},@{Name='Host';Expression = {$EVCHost.Name}},@{Name='Host EVC';Expression = {$myHostEVCMode}},@{Name='Cluster';Expression = {$myHostEVCCluster}}
+		Get-VM -Location $EVCHost | Where-Object {$_.Name -notmatch $ExcludeVMs} | Where-Object {($_.PowerState -eq "PoweredOn") -and ($_.ExtensionData.Summary.Runtime.MinRequiredEVCModeKey -ne $myHostEVCMode)} | Select-Object Name,@{Name='VM EVC';Expression = {$_.ExtensionData.Summary.Runtime.MinRequiredEVCModeKey}},@{Name='Host';Expression = {$EVCHost.Name}},@{Name='Host EVC';Expression = {$myHostEVCMode}},@{Name='Cluster';Expression = {$myHostEVCCluster}}
 }
 
 $PluginCategory = "vSphere"
@@ -19,4 +20,7 @@ $Header = "EVC Mismatch"
 $Comments = "List of VMs for which the EVC mode does not match the Host/Cluster. This can negatively impact performance."
 $Display = "Table"
 $Author = "Bill Wall"
-$PluginVersion = 1.0
+$PluginVersion = 1.1
+
+# ChangeLog
+## 1.1 : Added VM exclusion option because some silly companies (like VMware) can't seem to get their EAM appliances to match current EVC.

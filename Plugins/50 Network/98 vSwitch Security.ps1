@@ -13,12 +13,15 @@ $AllowPromiscuousPolicy = $true
 $ForgedTransmitsPolicy = $true
 # Warn for MacChanges enabled?
 $MacChangesPolicy = $true
+# Switch or port group names to ignore (regex)
+$IgnoreNets = "vSwitchiDRACvusb"
 # End of Settings
 
 # Update settings where there is an override
 $AllowPromiscuousPolicy = Get-vCheckSetting $Title "AllowPromiscuousPolicy" $AllowPromiscuousPolicy
 $ForgedTransmitsPolicy = Get-vCheckSetting $Title "ForgedTransmitsPolicy" $ForgedTransmitsPolicy
 $MacChangesPolicy = Get-vCheckSetting $Title "MacChangesPolicy" $MacChangesPolicy
+$IgnoreNets = Get-vCheckSetting $Title "IgnoreNets" $IgnoreNets
 
 # Check Power CLI version. Build must be at least 1012425 (5.1 Release 2) to contain Get-VDPortGroup cmdlet
 $VersionOK = $false
@@ -31,29 +34,35 @@ if ($Revision) {
         $VersionOK = $true
         if ($Revision -ge 2548067) {
             #PowerCLI 6+
-            if (!(Get-Module -Name VMware.VimAutomation.Vds -ErrorAction SilentlyContinue)) {
+            if (!(Get-Module -Name VMware.VimAutomation.Vds -ErrorAction SilentlyContinue))
+            {
                 Import-Module VMware.VimAutomation.Vds
             }
-        }
-        else {
-            # Add required Snap-In
-            if (!(Get-PSSnapin -name VMware.VimAutomation.Vds -ErrorAction SilentlyContinue)) {
-                Add-PSSnapin VMware.VimAutomation.Vds
+            else
+            {
+                # Add required Snap-In
+                if (!(Get-PSSnapin -name VMware.VimAutomation.Vds -ErrorAction SilentlyContinue))
+                {
+                    Add-PSSnapin VMware.VimAutomation.Vds
+                }
             }
         }
     }
 }
 
-if ($VersionOK) {
+if ($VersionOK)
+{
     [array] $results = $null
 
-    Get-VirtualSwitch | ForEach-Object {
+    Get-VirtualSwitch | Where-Object { $_.Name -notmatch $IgnoreNets } | ForEach-Object {
         $Output = "" | Select-Object Host, Type, vSwitch, Portgroup, AllowPromiscuous, ForgedTransmits, MacChanges
-        if ($_.ExtensionData.Summary -ne $null) {
+        if ($_.ExtensionData.Summary -ne $null)
+        {
             $Output.Type = "vDS"
             $Output.Host = "*"
         }
-        else {
+        else
+        {
             $Output.Type = "vSS"
             $Output.Host = $_.VMHost
         }
@@ -65,13 +74,15 @@ if ($VersionOK) {
         $results += $Output
     }
 
-    Get-VDPortGroup | ForEach-Object {
+    Get-VDPortGroup | Where-Object { $_.Name -notmatch $IgnoreNets } | ForEach-Object {
         $Output = "" | Select-Object Host, Type, vSwitch, Portgroup, AllowPromiscuous, ForgedTransmits, MacChanges
         $Output.Host = "*"
-        if ($_.ExtensionData.Config.Uplink -eq $true) {
+        if ($_.ExtensionData.Config.Uplink -eq $true)
+        {
             $Output.Type = "vDS Uplink Port Group"
         }
-        else {
+        else
+        {
             $Output.Type = "vDS Port Group"
         }
         $Output.vSwitch = $_.VDSwitch
@@ -84,7 +95,7 @@ if ($VersionOK) {
 
     $VMH | Where-Object { $_.ConnectionState -eq "Connected" } | ForEach-Object {
         $VMHost = $_
-        Get-VirtualPortGroup -VMHost $_ -Standard | ForEach-Object {
+        Get-VirtualPortGroup -VMHost $_ -Standard | Where-Object { $_.Name -notmatch $IgnoreNets } | ForEach-Object {
             $Output = "" | Select-Object Host, Type, vSwitch, Portgroup, AllowPromiscuous, ForgedTransmits, MacChanges
             $Output.Host = $VMHost.Name
             $Output.Type = "vSS Port Group"
@@ -99,9 +110,10 @@ if ($VersionOK) {
 
     if ($results.Host) { $results | Where-Object { ($_.AllowPromiscuous -and $AllowPromiscuousPolicy) -or ($_.ForgedTransmits -and $ForgedTransmitsPolicy -and $_.Type -ne "vDS Uplink Port Group") -or ($_.MacChanges -and $MacChangesPolicy) } | Sort-Object vSwitch, PortGroup }
 }
-else {
+else
+{
     Write-Warning "PowerCLi version installed is lower than 5.1 Release 2"
-    New-Object PSObject -Property @{"Message" = "PowerCLi version installed is lower than 5.1 Release 2, please update to use this plugin"}
+    New-Object PSObject -Property @{"Message" = "PowerCLi version installed is lower than 5.1 Release 2, please update to use this plugin" }
 }
 
 # Changelog
@@ -111,3 +123,4 @@ else {
 ## 1.3 : Add Get-vCheckSetting
 ## 1.4 : Fix Version checking for PowerCLI 6.5 - vSphere is no longer in the product name (Issue #514)
 ## 1.5 : Ignore ForgedTransmits on vDS Uplink port groups, removed redundant plugin variable block, fixed logic bugs
+## 1.6 : Add vSwitch & Port Group names to exclude from report

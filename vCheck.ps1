@@ -80,10 +80,10 @@ $PluginsFolder = $ScriptPath + "\Plugins\"
 #                             Internationalization                             #
 ################################################################################
 # Default language en-US
-Import-LocalizedData -BaseDirectory ($ScriptPath + '\lang') -BindingVariable lang -UICulture en-US -ErrorAction SilentlyContinue
+Import-LocalizedData -BaseDirectory ($ScriptPath + '\Lang') -BindingVariable lang -UICulture en-US -ErrorAction SilentlyContinue
 
 # Override the default (en-US) if it exists in lang directory
-Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable lang -ErrorAction SilentlyContinue
+Import-LocalizedData -BaseDirectory ($ScriptPath + "\Lang") -BindingVariable lang -ErrorAction SilentlyContinue
 
 #endregion Internationalization
 
@@ -222,7 +222,7 @@ Function Invoke-Settings {
 				$out[$SetupLine] = '$SetupWizard = $False'				
 			}  # end if
 			
-			$out | Out-File $Filename
+			$out | Set-Content $Filename
 			
 		} # end if
 		
@@ -625,13 +625,17 @@ function Get-ReportResource {
 			if (Test-Path $data[1] -ErrorAction SilentlyContinue) {
 				if ($ReturnType -eq "embed") {
 					# return a MIME/Base64 combo for embedding in HTML
-					$imgData = Get-Content ($data[1]) -Encoding Byte
+					if (((Get-Command get-content).Parameters).Keys -contains "AsByteStream") {
+						$imgData = Get-Content ($data[1]) -AsByteStream
+					} else {
+						$imgData = Get-Content ($data[1]) -Encoding Byte
+					}
 					$type = $data[1].substring($data[1].LastIndexOf(".") + 1)
 					return ("data:image/{0};base64,{1}" -f $type, [System.Convert]::ToBase64String($imgData))
 				}
 				if ($ReturnType -eq "linkedresource") {
 					# return a linked resource to be added to mail message
-					$lr = New-Object system.net.mail.LinkedResource($data[1])
+					$lr = New-Object system.net.mail.LinkedResource(Convert-Path $data[1])
 					$lr.ContentId = $cid
 					return $lr;
 				}
@@ -731,6 +735,38 @@ function Get-ConfigScripts {
 			}
 		}"
 }
+
+<# Prompts for and stores vCenter credentials in a secure manner.
+   The username is saved in cleartext. The password is saved as a SecureString.
+   The output file is XML.
+ #>
+function Set-vCenterCredentials ($OutputFile)
+{
+    $NewCredential = Get-Credential -Message @"
+Enter the username and password for vCenter server '$Server'.
+These credentials will be stored securely at '$OutputFile'."
+"@
+    if ($NewCredential -eq $null) {
+        Write-Warning "No credentials were provided! Exiting."
+        Exit 1
+    }
+    $export = "" | Select-Object Username, EncryptedPassword 
+    $export.Username = $NewCredential.Username 
+    $export.EncryptedPassword = $NewCredential.Password | ConvertFrom-SecureString 
+    $export | Export-Clixml $OutputFile
+    Write-Host -foregroundcolor green "Credentials saved to: " -noNewLine 
+    Get-Item $OutputFile
+}
+
+<# Retrieves the securely stored vCenter credentials from a file on disk. #>
+function Get-vCenterCredentials ($InputFile)
+{
+    $credentials = Import-Clixml $InputFile
+    $import = "" | Select-Object Username, Password 
+    $import.Username = $credentials.Username
+    $import.Password = $credentials.EncryptedPassword | ConvertTo-SecureString
+    Return $import
+}
 #endregion functions
 
 #region initialization
@@ -802,6 +838,14 @@ $SetupSetting = Invoke-Expression (($file[$SetupLine]).Split("="))[1]
 
 ## Include GlobalVariables and validate settings (at the moment just check they exist)
 . $GlobalVariables
+
+if ($SetupSetting -or $config) {
+    Set-vCenterCredentials($vCenterCredentialsFile)
+        
+    Write-Warning -Message "Configuration is complete. You can now re-run vCheck to use the stored configuration."
+
+    Exit 0;
+}
 
 $vcvars = @("SetupWizard", "reportHeader", "SMTPSRV", "EmailFrom", "EmailTo", "EmailSubject", "DisplaytoScreen", "SendEmail", "SendAttachment", "TimeToRun", "PluginSeconds", "Style", "Date")
 foreach ($vcvar in $vcvars) {

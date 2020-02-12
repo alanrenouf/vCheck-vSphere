@@ -8,7 +8,7 @@ $PluginCategory = "vSphere"
 
 # Start of Settings
 # Please Specify the address (and optional port) of the vCenter server to connect to [servername(:port)]
-$Server = "vcsa.local.lab"
+$Server = "192.168.0.0"
 # End of Settings
 
 # Update settings where there is an override
@@ -37,7 +37,7 @@ $pLang = DATA {
 '@
 }
 # Override the default (en) if it exists in lang directory
-Import-LocalizedData -BaseDirectory ($ScriptPath + "\Lang") -BindingVariable pLang -ErrorAction SilentlyContinue
+Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable pLang -ErrorAction SilentlyContinue
 
 # Find the VI Server and port from the global settings file
 $VIServer = ($Server -Split ":")[0]
@@ -49,7 +49,7 @@ else
    $port = 443
 }
 
-# Path to credentials file which is automatically created if needed
+# Path to Windows credentials file which is automatically created if needed
 $Credfile = $ScriptPath + "\Windowscreds.xml"
 
 #
@@ -110,8 +110,8 @@ switch ($platform.OSFamily) {
         Get-Module -ListAvailable PowerCLI* | Import-Module
     }
     "Linux" { 
-        $templocation = "/tmp"
         $Outputpath = $templocation
+        $templocation = "/tmp"
         Get-Module -ListAvailable PowerCLI* | Import-Module
     }
     "Windows" { 
@@ -148,7 +148,14 @@ if($OpenConnection.IsConnected) {
    $VIConnection = $OpenConnection
 } else {
    Write-CustomOut ( "{0}: {1}" -f $pLang.connOpen, $Server )
-   $VIConnection = Connect-VIServer -Server $VIServer -Port $Port
+   if ( (Get-ChildItem $vCenterCredentialsFile).length -ne 0) {
+      $vCenterCredentials = Get-vCenterCredentials($vCenterCredentialsFile)
+      $Credentials = new-object -typename System.Management.Automation.PSCredential -argumentlist $vCenterCredentials.Username,$vCenterCredentials.Password
+      $VIConnection = Connect-VIServer -Server $VIServer -Port $Port -Credential $Credentials
+   }
+   else {
+      $VIConnection = Connect-VIServer -Server $VIServer -Port $Port
+   }
 }
 
 if (-not $VIConnection.IsConnected) {

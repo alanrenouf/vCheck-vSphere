@@ -217,7 +217,7 @@ New-VIProperty -Name "HWVersion" -ObjectType VirtualMachine -Value {
 } -BasedOnExtensionProperty "Config.Version" -Force | Out-Null
 
 Write-CustomOut $pLang.collectVM
-if ($IncludeSRMPlaceholders) {
+if (-not $IncludeSRMPlaceholders) {
     $VM = Get-VM | Where-Object {$_.ExtensionData.Config.ManagedBy.Type -ne "placeholderVm"} | Sort-Object Name
 }
 else {
@@ -230,7 +230,7 @@ $Clusters = Get-Cluster | Sort-Object Name
 Write-CustomOut $pLang.collectDatastore
 $Datastores = Get-Datastore | Sort-Object Name
 Write-CustomOut $pLang.collectDVM
-if ($IncludeSRMPlaceholders) {
+if (-not $IncludeSRMPlaceholders) {
   $FullVM = Get-View -ViewType VirtualMachine | Where-Object {-not $_.Config.Template -and $_.Config.ManagedBy.ExtensionKey -ne 'com.vmware.vcDr'}
 }
 else {

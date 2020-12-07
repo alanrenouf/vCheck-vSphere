@@ -9,6 +9,9 @@ $PluginCategory = "vSphere"
 # Start of Settings
 # Please Specify the address (and optional port) of the vCenter server to connect to [servername(:port)]
 $Server = "192.168.0.0"
+
+# Include SRM placeholder VMs in report?
+$IncludeSRMPlaceholders = $false
 # End of Settings
 
 # Update settings where there is an override
@@ -214,7 +217,12 @@ New-VIProperty -Name "HWVersion" -ObjectType VirtualMachine -Value {
 } -BasedOnExtensionProperty "Config.Version" -Force | Out-Null
 
 Write-CustomOut $pLang.collectVM
-$VM = Get-VM | Sort-Object Name
+if ($IncludeSRMPlaceholders) {
+    $VM = Get-VM | Where-Object {$_.ExtensionData.Config.ManagedBy.Type -ne "placeholderVm"} | Sort-Object Name
+}
+else {
+  $VM = Get-VM | Sort-Object Name
+}
 Write-CustomOut $pLang.collectHost
 $VMH = Get-VMHost | Sort-Object Name
 Write-CustomOut $pLang.collectCluster
@@ -222,7 +230,13 @@ $Clusters = Get-Cluster | Sort-Object Name
 Write-CustomOut $pLang.collectDatastore
 $Datastores = Get-Datastore | Sort-Object Name
 Write-CustomOut $pLang.collectDVM
-$FullVM = Get-View -ViewType VirtualMachine | Where-Object {-not $_.Config.Template}
+if ($IncludeSRMPlaceholders) {
+  $FullVM = Get-View -ViewType VirtualMachine | Where-Object {-not $_.Config.Template -and $_.Config.ManagedBy.ExtensionKey -ne 'com.vmware.vcDr'}
+}
+else {
+  $FullVM = Get-View -ViewType VirtualMachine | Where-Object {-not $_.Config.Template}
+}
+
 Write-CustomOut $pLang.collectTemplate 
 $VMTmpl = Get-Template
 Write-CustomOut $pLang.collectDVIO

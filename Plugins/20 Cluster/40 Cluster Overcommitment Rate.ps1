@@ -9,8 +9,6 @@ $PluginVersion = "1.0"
 $PluginCategory = "vSphere"
 $Display = "Table"
 
-$result = @()
-
 foreach ($cluv in ($clusviews | Where-Object {$_.Summary.NumHosts -gt 0 } | Sort-Object Name)) {
     $cluvmlist = $VM | Where-Object { $cluv.Host -contains $_.VMHost.Id  }
 
@@ -28,7 +26,5 @@ foreach ($cluv in ($clusviews | Where-Object {$_.Summary.NumHosts -gt 0 } | Sort
     $clusterInfo.CommittedMem = $committedMem
     $clusterInfo.OverCommitmentRateCpu = [math]::Round($committedCpu / $totalCpu * 100, 2)
     $clusterInfo.OverCommitmentRateMem = [math]::Round($committedMem / $totalMem * 100, 2)
-    $result += $clusterInfo
+    $clusterInfo
 }
-
-$result

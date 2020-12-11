@@ -2,7 +2,7 @@ $Title = "VM Logging"
 $Header = "VMs with improper logging settings: [count]"
 $Display = "Table"
 $Author = "Bob Cote"
-$PluginVersion = 1.1
+$PluginVersion = 1.2
 $PluginCategory = "vSphere"
 
 # Start of Settings 
@@ -23,6 +23,7 @@ $VM | Foreach-Object {
    If ($VMKeepOld -ne $KeepOld -Or $VMRotateSize -ne $RotateSize) {
       New-Object -TypeName PSObject -Property @{
          Name = $_.Name
+         LoggingEnabled = $_.ExtensionData.Config.Flags.EnableLogging
          KeepOld = $VMKeepOld
          RotateSize = $VMRotateSize
       }
@@ -34,3 +35,4 @@ $Comments = ("The following virtual machines are not configured to rotate logs a
 # Change Log
 ## 1.0 : Initial Release
 ## 1.1 : Added Get-vCheckSetting, code refactor
+## 1.2 : Add LoggingEnabled column (#632)

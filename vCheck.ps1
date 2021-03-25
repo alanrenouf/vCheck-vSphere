@@ -53,6 +53,9 @@
 
 .PARAMETER job
    This parameter lets you specify an xml config file for this invokation
+
+.PARAMETER VMFolder
+   This parameter lets you filter VMs based on a certain vCenter folder
 #>
 #Requires -Version 3.0
 [CmdletBinding()]
@@ -65,7 +68,9 @@ param (
 	[string]$Outputpath=$Env:TEMP,
 
 	[ValidateScript({ Test-Path $_ -PathType 'Leaf' })]
-	[string]$job
+	[string]$job,
+
+	[string]$VMFolder
 )
 
 $vCheckVersion = "6.25"

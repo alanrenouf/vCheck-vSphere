@@ -186,7 +186,7 @@ Function Invoke-Settings {
 				$Var = $Split[0]
 				$CurSet = $Split[1].Trim()
 				
-				# Check if the current setting is in speech marks
+				# Check if the current setting is quoted
 				$String = $false
 				if ($CurSet -match '"') {					
 					$String = $true
@@ -754,8 +754,8 @@ These credentials will be stored securely at '$OutputFile'."
     $export.Username = $NewCredential.Username 
     $export.EncryptedPassword = $NewCredential.Password | ConvertFrom-SecureString 
     $export | Export-Clixml $OutputFile
-    Write-Host -foregroundcolor green "Credentials saved to: " -noNewLine 
-    Get-Item $OutputFile
+    Write-Host -foregroundcolor green "Credentials saved to: $OutputFile"
+    Return $NewCredential
 }
 
 <# Retrieves the securely stored vCenter credentials from a file on disk. #>
@@ -839,14 +839,6 @@ $SetupSetting = Invoke-Expression (($file[$SetupLine]).Split("="))[1]
 ## Include GlobalVariables and validate settings (at the moment just check they exist)
 . $GlobalVariables
 
-if ($SetupSetting -or $config) {
-    Set-vCenterCredentials($vCenterCredentialsFile)
-        
-    Write-Warning -Message "Configuration is complete. You can now re-run vCheck to use the stored configuration."
-
-    Exit 0;
-}
-
 $vcvars = @("SetupWizard", "reportHeader", "SMTPSRV", "EmailFrom", "EmailTo", "EmailSubject", "DisplaytoScreen", "SendEmail", "SendAttachment", "TimeToRun", "PluginSeconds", "Style", "Date")
 foreach ($vcvar in $vcvars) {
 	if (!($(Get-Variable -Name "$vcvar" -Erroraction 'SilentlyContinue'))) {
@@ -908,7 +900,7 @@ if ($SetupSetting -or $config -or $GUIConfig) {
 			Write-Warning -Message "$($_.value)"
 		}
 
-	} elseif ($config) {
+	} elseif ($SetupSetting -or $config) {
 		Invoke-Settings -Filename $GlobalVariables -GB $true
 		Foreach ($plugin in $vCheckPlugins) {
 			Invoke-Settings -Filename $plugin.Fullname

@@ -1,4 +1,4 @@
-﻿$Title = "Check Fibre Channel Link failures and CRC errors on HBA cards"
+$Title = "Check Fibre Channel Link failures and CRC errors on HBA cards"
 $Comments = "Fibre Channel Link failures and CRC errors can effect storage performance in a FC SAN environment"
 $Display = "Table"
 $Author = "Wim Baars"

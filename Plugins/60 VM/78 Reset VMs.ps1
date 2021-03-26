@@ -12,7 +12,7 @@ $VMsResetAge = 1
 # Update settings where there is an override
 $VMsResetAge = Get-vCheckSetting $Title "VMsResetAge" $VMsResetAge
 
-Get-VIEventPlus -Start ((get-date).adddays(-$VMsResetAge)) -EventType "VmResettingEvent" | Select-Object createdTime, UserName, fullFormattedMessage
+Get-VIEventPlus -Start ((get-date).adddays(-$VMsResetAge)) -EventType "VmResettingEvent" | Where-Object { $_.Info.EntityName -in $VM.Name } | Select-Object createdTime, UserName, fullFormattedMessage
 
 $Header = ("VMs Reset (Last {0} Day(s)) : [count]" -f $VMsResetAge)
 $Comments = ("The following VMs have been reset over the last {0} days" -f $VMsResetAge)

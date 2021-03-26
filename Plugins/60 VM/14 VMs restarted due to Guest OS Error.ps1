@@ -13,7 +13,7 @@ $HAVMresetold = 5
 # Update settings where there is an override
 $HAVMresetold = Get-vCheckSetting $Title "HAVMresetold" $HAVMresetold
 
-Get-VIEventPlus -Start ($Date).AddDays(-$HAVMresetold) -EventType "VmDasBeingResetEvent","VmDasBeingResetWithScreenshotEvent" | 
+Get-VIEventPlus -Start ($Date).AddDays(-$HAVMresetold) -EventType "VmDasBeingResetEvent","VmDasBeingResetWithScreenshotEvent" | Where-Object { $_.Info.EntityName -in $VM.Name }
 Select-Object CreatedTime,FullFormattedMessage | Sort-Object CreatedTime -Descending
 
 $Comments = ("The following VMs have been restarted by HA in the last {0} days" -f $HAVMresetold)

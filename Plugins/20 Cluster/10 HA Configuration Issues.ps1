@@ -23,6 +23,10 @@ $CLusterHAShouldBeEnabled = Get-vCheckSetting $CLusterHAShouldBeEnabled "vMotion
 $ClusterHAHostMonitoringShouldBeEnabled = Get-vCheckSetting $Title "ClusterHAHostMonitoringShouldBeEnabled" $ClusterHAHostMonitoringShouldBeEnabled
 $ClusterHAAdmissionControlShouldBeEnabled = Get-vCheckSetting $Title "ClusterHAAdmissionControlShouldBeEnabled" $ClusterHAAdmissionControlShouldBeEnabled
 
+# Update settings if there is a csv file with a name matching the plugin ps1 file name.
+if (Test-Path -Path (($MyInvocation).MyCommand.Source).Replace("ps1", "csv")) {
+	Import-Csv (($MyInvocation).MyCommand.Source).Replace("ps1", "csv") | ForEach-Object { Set-Variable -Name $_.Name -Value $_.Value }
+}
 
 # Setup plugin-specific language table
 $pLang = DATA {
@@ -33,7 +37,7 @@ $pLang = DATA {
 '@
 }
 # Override the default (en) if it exists in lang directory
-Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable pLang -ErrorAction SilentlyContinue
+Import-LocalizedData -BaseDirectory ($ScriptPath + "\Lang") -BindingVariable pLang -ErrorAction SilentlyContinue
 
 # Clusters with HA disabled
 $HAIssues = @()

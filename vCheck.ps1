@@ -53,6 +53,9 @@
 
 .PARAMETER job
    This parameter lets you specify an xml config file for this invokation
+
+.PARAMETER VMFolder
+   This parameter lets you filter VMs based on a certain vCenter folder
 #>
 #Requires -Version 3.0
 [CmdletBinding()]
@@ -65,7 +68,9 @@ param (
 	[string]$Outputpath=$Env:TEMP,
 
 	[ValidateScript({ Test-Path $_ -PathType 'Leaf' })]
-	[string]$job
+	[string]$job,
+
+	[string]$VMFolder
 )
 
 $vCheckVersion = "6.25"
@@ -80,10 +85,10 @@ $PluginsFolder = $ScriptPath + "\Plugins\"
 #                             Internationalization                             #
 ################################################################################
 # Default language en-US
-Import-LocalizedData -BaseDirectory ($ScriptPath + '\lang') -BindingVariable lang -UICulture en-US -ErrorAction SilentlyContinue
+Import-LocalizedData -BaseDirectory ($ScriptPath + '\Lang') -BindingVariable lang -UICulture en-US -ErrorAction SilentlyContinue
 
 # Override the default (en-US) if it exists in lang directory
-Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable lang -ErrorAction SilentlyContinue
+Import-LocalizedData -BaseDirectory ($ScriptPath + "\Lang") -BindingVariable lang -ErrorAction SilentlyContinue
 
 #endregion Internationalization
 
@@ -186,7 +191,7 @@ Function Invoke-Settings {
 				$Var = $Split[0]
 				$CurSet = $Split[1].Trim()
 				
-				# Check if the current setting is in speech marks
+				# Check if the current setting is quoted
 				$String = $false
 				if ($CurSet -match '"') {					
 					$String = $true
@@ -222,7 +227,7 @@ Function Invoke-Settings {
 				$out[$SetupLine] = '$SetupWizard = $False'				
 			}  # end if
 			
-			$out | Out-File $Filename
+			$out | Set-Content $Filename
 			
 		} # end if
 		
@@ -625,13 +630,17 @@ function Get-ReportResource {
 			if (Test-Path $data[1] -ErrorAction SilentlyContinue) {
 				if ($ReturnType -eq "embed") {
 					# return a MIME/Base64 combo for embedding in HTML
-					$imgData = Get-Content ($data[1]) -Encoding Byte
+					if (((Get-Command get-content).Parameters).Keys -contains "AsByteStream") {
+						$imgData = Get-Content ($data[1]) -AsByteStream
+					} else {
+						$imgData = Get-Content ($data[1]) -Encoding Byte
+					}
 					$type = $data[1].substring($data[1].LastIndexOf(".") + 1)
 					return ("data:image/{0};base64,{1}" -f $type, [System.Convert]::ToBase64String($imgData))
 				}
 				if ($ReturnType -eq "linkedresource") {
 					# return a linked resource to be added to mail message
-					$lr = New-Object system.net.mail.LinkedResource($data[1])
+					$lr = New-Object system.net.mail.LinkedResource(Convert-Path $data[1])
 					$lr.ContentId = $cid
 					return $lr;
 				}
@@ -730,6 +739,38 @@ function Get-ConfigScripts {
 				}
 			}
 		}"
+}
+
+<# Prompts for and stores vCenter credentials in a secure manner.
+   The username is saved in cleartext. The password is saved as a SecureString.
+   The output file is XML.
+ #>
+function Set-vCenterCredentials ($OutputFile)
+{
+    $NewCredential = Get-Credential -Message @"
+Enter the username and password for vCenter server '$Server'.
+These credentials will be stored securely at '$OutputFile'."
+"@
+    if ($NewCredential -eq $null) {
+        Write-Warning "No credentials were provided! Exiting."
+        Exit 1
+    }
+    $export = "" | Select-Object Username, EncryptedPassword 
+    $export.Username = $NewCredential.Username 
+    $export.EncryptedPassword = $NewCredential.Password | ConvertFrom-SecureString 
+    $export | Export-Clixml $OutputFile
+    Write-Host -foregroundcolor green "Credentials saved to: $OutputFile"
+    Return $NewCredential
+}
+
+<# Retrieves the securely stored vCenter credentials from a file on disk. #>
+function Get-vCenterCredentials ($InputFile)
+{
+    $credentials = Import-Clixml $InputFile
+    $import = "" | Select-Object Username, Password 
+    $import.Username = $credentials.Username
+    $import.Password = $credentials.EncryptedPassword | ConvertTo-SecureString
+    Return $import
 }
 #endregion functions
 
@@ -864,7 +905,7 @@ if ($SetupSetting -or $config -or $GUIConfig) {
 			Write-Warning -Message "$($_.value)"
 		}
 
-	} elseif ($config) {
+	} elseif ($SetupSetting -or $config) {
 		Invoke-Settings -Filename $GlobalVariables -GB $true
 		Foreach ($plugin in $vCheckPlugins) {
 			Invoke-Settings -Filename $plugin.Fullname

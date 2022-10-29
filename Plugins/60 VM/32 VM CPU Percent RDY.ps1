@@ -18,7 +18,7 @@ $pLang = DATA {
 }
 
 # Override the default (en) if it exists in lang directory
-Import-LocalizedData -BaseDirectory ($ScriptPath + "\lang") -BindingVariable pLang -ErrorAction SilentlyContinue
+Import-LocalizedData -BaseDirectory ($ScriptPath + "\Lang") -BindingVariable pLang -ErrorAction SilentlyContinue
 
 # Update settings where there is an override
 $PercCPUReady = Get-vCheckSetting $Title "PercCPUReady" $PercCPUReady

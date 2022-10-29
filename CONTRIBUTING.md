@@ -87,7 +87,7 @@ We are in the process of adding/consolidating more detailed documentation around
 
 We are in the process of adding/consolidating more detailed documentation around this. In the meantime, you can review the documentation that we do have inside the [README.md](README.md) file for the repo.
 
-## Internation Language Support
+## International Language Support
 
 To add support for a specific language to the vCheck, you will have to do the following:
 

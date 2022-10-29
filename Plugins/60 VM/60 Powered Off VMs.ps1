@@ -1,15 +1,17 @@
 $Title = "Powered Off VMs"
 $Header = "VMs Powered Off - Number of Days"
 $Display = "Table"
-$Author = "Adam Schwartzberg"
-$PluginVersion = 1.5
+$Author = "Adam Schwartzberg, Fabio Freire"
+$PluginVersion = 1.6
 $PluginCategory = "vSphere"
 
 # Start of Settings 
-# VMs not to report on
-$IgnoredVMs = "Windows7*"
-#VmPathName not to report on
+# VMs not to report on (regex)
+$IgnoredVMs = "TEMPLATE|BUILD"
+# VmPathName not to report on
 $IgnoredVMpath = "-backup-"
+# VmFolder not to report on
+$IgnoredVMFolder = "Templates"
 # Report VMs powered off over this many days
 $PoweredOffDays = 7
 # End of Settings
@@ -23,6 +25,7 @@ $VM | Where-Object {$_.ExtensionData.Config.ManagedBy.ExtensionKey -ne 'com.vmwa
                 $_.PowerState -eq "PoweredOff" -and 
                 $_.LastPoweredOffDate -lt $date.AddDays(-$PoweredOffDays) -and
                 $_.Name -notmatch $IgnoredVMs -and 
+                $_.Folder.Name -notmatch $IgnoredVMFolder -and
                 $_.ExtensionData.Config.Files.VmPathName -notmatch $IgnoredVMpath} |
   Select-Object -Property Name, LastPoweredOffDate, @{l = 'Folder'; e = {$_.Folder.Name}}, Notes |
   Sort-Object -Property LastPoweredOffDate
@@ -32,3 +35,4 @@ $Comments = ("May want to consider deleting VMs that have been powered off for m
 # Change Log 
 ## 1.4 : Added Get-vCheckSetting, $PoweredOffDays 
 ## 1.5 : Select-Object now returns Folder as a string; Added IgnoredVMpath
+## 1.6 : Added IgnoredVMFolder

@@ -20,5 +20,4 @@ ForEach ($Object in $FullVM){
 }
 
 # Changelog
-## 1.0 : Initial Version
 ## 1.1 : Fixed bug where it would mess up plugins that came after it 

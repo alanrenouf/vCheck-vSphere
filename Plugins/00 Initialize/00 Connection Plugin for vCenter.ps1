@@ -9,7 +9,6 @@ $PluginCategory = "vSphere"
 # Start of Settings
 # Please Specify the address (and optional port) of the vCenter server to connect to [servername(:port)]
 $Server = "192.168.0.0"
-
 # Include SRM placeholder VMs in report?
 $IncludeSRMPlaceholders = $false
 # End of Settings
@@ -115,8 +114,8 @@ switch ($platform.OSFamily) {
         Get-Module -ListAvailable PowerCLI* | Import-Module
     }
     "Linux" { 
-        $Outputpath = $templocation
         $templocation = "/tmp"
+        $Outputpath = $templocation
         Get-Module -ListAvailable PowerCLI* | Import-Module
     }
     "Windows" { 
@@ -149,22 +148,15 @@ switch ($platform.OSFamily) {
 
 $OpenConnection = $global:DefaultVIServers | Where-Object { $_.Name -eq $VIServer }
 if($OpenConnection.IsConnected) {
-   Write-CustomOut ( "{0}: {1}" -f $pLang.connReuse, $Server )
-   $VIConnection = $OpenConnection
+    Write-CustomOut ( "{0}: {1}" -f $pLang.connReuse, $Server )
+    $VIConnection = $OpenConnection
 } else {
-  If (Test-Path $vCentercredfile) {
-    $LoadedCredentials = Import-Clixml $vCentercredfile
-    $vCentercreds = New-Object System.Management.Automation.PsCredential($LoadedCredentials.Username,($LoadedCredentials.Password | ConvertTo-SecureString))
-  } Else {
-    Write-Host "Please enter credentials to connect to vCenter, these will be stored in an encrypted file: $vCentercredfile" 
-       $vCentercreds = Get-Credential
-       $Pass = $vCentercreds.Password | ConvertFrom-SecureString
-       $Username = $vCentercreds.UserName
-       $Store = "" | Select-Object Username, Password
-       $Store.Username = $Username
-       $Store.Password = $Pass
-       $Store | Export-Clixml $vCentercredfile
-  }
+    If (Test-Path $vCentercredfile) {
+        $LoadedCredentials = Get-vCenterCredentials($vCentercredfile)
+    } Else {
+        $LoadedCredentials = Set-vCenterCredentials($vCentercredfile)
+    }
+    $vCentercreds = New-Object System.Management.Automation.PsCredential($LoadedCredentials.Username, $LoadedCredentials.Password)
     Write-CustomOut ( "{0}: {1}" -f $pLang.connOpen, $Server )
     $VIConnection = Connect-VIServer -Server $VIServer -Port $Port -Credential $vCentercreds
 }
@@ -466,10 +458,10 @@ PS> Get-Datastore | Get-HttpDatastoreItem -Credential $cred -Recurse
     [cmdletbinding()]
     param(
         [VMware.VimAutomation.ViCore.Types.V1.VIServer]$Server = $global:DefaultVIServer,
-        [parameter(Mandatory=$true,ValueFromPipelineByPropertyName,ParameterSetName=Datastore)]
+        [parameter(Mandatory=$true,ValueFromPipelineByPropertyName,ParameterSetName='Datastore')]
         [Alias('Name')]
         [string]$Datastore,
-        [parameter(Mandatory=$true,ParameterSetName=Path)]
+        [parameter(Mandatory=$true,ParameterSetName='Path')]
         [string]$Path = '',
         [PSCredential]$Credential,
         [Switch]$Recurse = $false,

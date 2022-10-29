@@ -11,7 +11,7 @@ ForEach ($EVCHost in $VMH) {
 		$myHostEVCCluster = $EVCHost.Parent.Name
 
 		## Get VMs on current host | Filter by Powered On and VM EVC not equal to host EVC | Select VM, Host and Cluster information and concatenate into array 
-		Get-VM -Location $EVCHost | Where-Object {$_.Name -notmatch $ExcludeVMs} | Where-Object {($_.PowerState -eq "PoweredOn") -and ($_.ExtensionData.Summary.Runtime.MinRequiredEVCModeKey -ne $myHostEVCMode)} | Select-Object Name,@{Name='VM EVC';Expression = {$_.ExtensionData.Summary.Runtime.MinRequiredEVCModeKey}},@{Name='Host';Expression = {$EVCHost.Name}},@{Name='Host EVC';Expression = {$myHostEVCMode}},@{Name='Cluster';Expression = {$myHostEVCCluster}}
+		Get-VM -Location $EVCHost | Where-Object {$_.Name -in $VM.Name} | Where-Object {$_.Name -notmatch $ExcludeVMs} | Where-Object {($_.PowerState -eq "PoweredOn") -and ($_.ExtensionData.Summary.Runtime.MinRequiredEVCModeKey -ne $myHostEVCMode)} | Select-Object Name,@{Name='VM EVC';Expression = {$_.ExtensionData.Summary.Runtime.MinRequiredEVCModeKey}},@{Name='Host';Expression = {$EVCHost.Name}},@{Name='Host EVC';Expression = {$myHostEVCMode}},@{Name='Cluster';Expression = {$myHostEVCCluster}}
 }
 
 $PluginCategory = "vSphere"

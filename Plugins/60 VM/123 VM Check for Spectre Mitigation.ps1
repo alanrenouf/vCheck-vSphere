@@ -1,10 +1,8 @@
 # Start of Settings
 # End of Settings
 
-$vms = Get-View -ViewType VirtualMachine -Property Name,Config.Version,Runtime.PowerState,Runtime.FeatureRequirement
-
 $result = @()
-foreach ($vm in $vms | Sort-Object -Property Name) {
+foreach ($vm in $FullVM | Sort-Object -Property Name) {
     # Only check VMs that are powered on
     if($vm.Runtime.PowerState -eq "poweredOn") {
         $vmDisplayName = $vm.Name

@@ -2,11 +2,11 @@
 # End of Settings
 
 $result = @()
-foreach ($vm in $FullVM | Sort-Object -Property Name) {
+foreach ($vmobj in $FullVM | Sort-Object -Property Name) {
     # Only check VMs that are powered on
-    if($vm.Runtime.PowerState -eq "poweredOn") {
-        $vmDisplayName = $vm.Name
-        $vmvHW = $vm.Config.Version
+    if($vmobj.Runtime.PowerState -eq "poweredOn") {
+        $vmDisplayName = $vmobj.Name
+        $vmvHW = $vmobj.Config.Version
 
         $vHWPass = $false
         if($vmvHW -eq "vmx-04" -or $vmvHW -eq "vmx-06" -or $vmvHW -eq "vmx-07" -or $vmvHW -eq "vmx-08") {
@@ -19,7 +19,7 @@ foreach ($vm in $FullVM | Sort-Object -Property Name) {
         $IBPBPass = $false
         $STIBPPass = $false
 
-        $cpuFeatures = $vm.Runtime.FeatureRequirement
+        $cpuFeatures = $vmobj.Runtime.FeatureRequirement
         foreach ($cpuFeature in $cpuFeatures) {
             if($cpuFeature.key -eq "cpuid.IBRS") {
                 $IBRSPass = $true
@@ -57,3 +57,9 @@ $Display = "Table"
 $Author = "William Lam"
 $PluginVersion = 1.0
 $PluginCategory = "vSphere"
+
+
+# Changelog
+## 1.0 : Initial version.
+## 1.2 : The variable $vm has been changed to $vmobj because $vm is defined globally. This modification allows subsequent plugins to run without problems.
+

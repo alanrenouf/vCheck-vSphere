@@ -118,7 +118,7 @@ function Get-vCheckSetting
 
 <# Search $file_content for name/value pair with ID_Name and return value #>
 Function Get-ID-String ($file_content, $ID_name) {
-	if ($file_content | Select-String -Pattern "\$+$ID_name\s*=") {
+	if ($file_content | Select-String -Pattern "\$+${ID_name}\s*=") {
 		$value = (($file_content | Select-String -pattern "\$+${ID_name}\s*=").toString().split("=")[1]).Trim(' "')
 		return ($value)
 	}
@@ -165,14 +165,16 @@ Function Invoke-Settings {
 	
 	PROCESS {
 		
+		$file = $OriginalLine = $EndLine = $null
 		$file = Get-Content $filename
 		$OriginalLine = ($file | Select-String -Pattern "# Start of Settings").LineNumber
 		$EndLine = ($file | Select-String -Pattern "# End of Settings").LineNumber
+		if ($EndLine) { $EndLineActual = $file[$EndLine - 1] }
 		
 		if (!(($OriginalLine + 1) -eq $EndLine)) {
 			
 			$Array = @()
-			$Line = $OriginalLine
+			$Line = $OriginalLine + 1
 			$PluginName = (Get-PluginID $Filename).Title
 			
 			If ($PluginName.EndsWith(".ps1", 1)) {
@@ -185,11 +187,18 @@ Function Invoke-Settings {
 			
 			do {
 				
-				$Question = $file[$Line]
-				$Line++
-				$Split = ($file[$Line]).Split("=")
-				$Var = $Split[0]
+				$NoQuestion = $Question = $Split = $VarWS = $Var = $CurSet = $null
+				if ($file[$Line - 1] -match "^\s*#") {
+					$Question = $file[$Line - 1]
+					$Line++
+				} else {
+					$NoQuestion = $true
+				}
+				$Split = ($file[$Line - 1]).Split("=",2)
+				$VarWS = if ($Split[0] -match "^\s*") { $matches[0] } else { "" }
+				$Var = $Split[0].Trim()
 				$CurSet = $Split[1].Trim()
+				if ($null -eq $Question) { $Question = $Var }
 				
 				# Check if the current setting is quoted
 				$String = $false
@@ -205,23 +214,24 @@ Function Invoke-Settings {
 				} # end if
 				
 				If ($String) {					
-					$Array += $Question
-					$Array += "$Var= `"$NewSet`""					
+					if (-not $NoQuestion) { $Array += $Question }
+					$Array += "${VarWS}${Var} = `"$NewSet`""					
 				} Else {					
-					$Array += $Question
-					$Array += "$Var= $NewSet"					
+					if (-not $NoQuestion) { $Array += $Question }
+					$Array += "${VarWS}${Var} = $NewSet"					
 				} # end if/else
 				
 				$Line++
+
 				
-			} Until ($Line -ge ($EndLine - 1))
+			} Until ($Line -ge $EndLine)
 			
-			$Array += "# End of Settings"
+			$Array += $EndLineActual
 			
 			$out = @()
 			$out = $File[0..($OriginalLine - 1)]
-			$out += $array
-			$out += $File[$Endline..($file.count - 1)]
+			$out += $Array
+			if ($EndLine -lt $file.count) { $out += $File[$Endline..($file.count - 1)] }
 			
 			if ($GB) {				
 				$out[$SetupLine] = '$SetupWizard = $False'				

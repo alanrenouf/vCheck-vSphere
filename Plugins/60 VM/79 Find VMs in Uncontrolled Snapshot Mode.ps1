@@ -19,6 +19,7 @@ $PluginVersion = 1.6
 $PluginCategory = "vSphere"
 
 # Start of Settings
+# Do not report uncontrolled snapshots on VMs that are defined here
 $ExcludeDS = "ExcludeMe"
 # End of Settings
 

@@ -1,4 +1,5 @@
 # Start of Settings
+# List of VMs for which the EVC mode does not match the Host/Cluster, do not report on any VMs who are defined here
 $ExcludeVMs = "Guest Introspection|ExcludeMe"
 # End of Settings
 

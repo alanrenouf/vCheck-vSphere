@@ -29,6 +29,8 @@ foreach ( $Datastore in $Datastores )
       If (!($?)) {
          Write-Host "There was an error getting the files from $folder, please investigate first, this plugin will now Exit" -ForegroundColor Red -BackgroundColor black
          Write-Error $error[0]
+         Set-location "C:" -EA 0 | Out-Null
+         Remove-PSDrive "$($Datastore.Name):" -Force -EA 0 | Out-Null
          Exit 
       }
       foreach ($vmdk in $vmdks)

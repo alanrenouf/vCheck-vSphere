@@ -880,7 +880,7 @@ if ($SetupSetting -or $config -or $GUIConfig) {
 
 		# Set the output filename 
 		if (-not (Test-Path -PathType Container $Outputpath)) { New-Item $Outputpath -type directory | Out-Null }
-		$Filename = ("{0}\{1}_vCheck-Config_{2}.html" -f $Outputpath, $Server, (Get-Date -Format "yyyyMMdd_HHmm"))
+		$Filename = ("{0}{1}{2}_vCheck-Config_{3}.html" -f $Outputpath, [System.IO.Path]::DirectorySeparatorChar, $Server, (Get-Date -Format "yyyyMMdd_HHmm"))
 
 		#$configHTML = "<table>"
 		#$configHTML += Invoke-HTMLSettings -Filename $GlobalVariables

@@ -372,7 +372,10 @@ if ($VIVersion -ge 5) {
    vSphere entities are returned. 
 .PARAMETER EventType
    This parameter limits the returned events to those
-   specified on this parameter. 
+   specified on this parameter.
+.PARAMETER EventCategory
+    This parameter limits the returned events to the
+    specified category. (info, warning, error)
 .PARAMETER Start
    The start date of the events to retrieve 
 .PARAMETER Finish
@@ -404,6 +407,8 @@ function Get-VIEventPlus {
    param(
       [VMware.VimAutomation.ViCore.Types.V1.Inventory.InventoryItem[]]$Entity,
       [string[]]$EventType,
+      [ValidateSet('info','warning','error')]
+      [string[]]$EventCategory,
       [DateTime]$Start,
       [DateTime]$Finish = (Get-Date),
       [switch]$Recurse,
@@ -416,13 +421,14 @@ function Get-VIEventPlus {
 
    process {
       $eventnumber = 100
-      $events = @()
+      $events = New-Object System.Collections.Generic.List[PSObject]
       $eventMgr = Get-View EventManager
       $eventFilter = New-Object VMware.Vim.EventFilterSpec
       $eventFilter.disableFullMessage = ! $FullMessage
       $eventFilter.entity = New-Object VMware.Vim.EventFilterSpecByEntity
       $eventFilter.entity.recursion = &{if($Recurse){"all"}else{"self"}}
       $eventFilter.eventTypeId = $EventType
+      $eventFilter.Category = $EventCategory
       if($Start -or $Finish){
          $eventFilter.time = New-Object VMware.Vim.EventFilterSpecByTime
          if($Start){
@@ -457,16 +463,16 @@ function Get-VIEventPlus {
          $eventCollector = Get-View ($eventMgr.CreateCollectorForEvents($eventFilter))
          $eventsBuffer = $eventCollector.ReadNextEvents($eventnumber)
          while($eventsBuffer){
-            $events += $eventsBuffer
-            $eventsBuffer = $eventCollector.ReadNextEvents($eventnumber)
+            ForEach ($Item in $eventsBuffer) {
+                if (-not $UseUTC) {
+                    $Item.CreatedTime = $Item.CreatedTime.ToLocalTime()
+                }
+                $events.add($Item)
+            }
          }
          $eventCollector.DestroyCollector()
       }
-      if (-not $UseUTC)
-      {
-         $events | % { $_.createdTime = $_.createdTime.ToLocalTime() }
-      }
-      
+
       $events
    }
 }

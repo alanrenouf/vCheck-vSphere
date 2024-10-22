@@ -3,17 +3,17 @@ $Header = "Missing ESX(i) updates and patches: [count]"
 $Comments = "The following updates and/or patches are not applied."
 $Display = "Table"
 $Author = "Luc Dekens"
-$PluginVersion = 1.1
+$PluginVersion = 1.2
 $PluginCategory = "vSphere"
 
-# Start of Settings 
-# End of Settings 
+# Start of Settings
+# End of Settings
 
 # Note: This plugin needs the vCenter Update Manager PowerCLI snap-in installed
 # https://communities.vmware.com/community/vmtn/automationtools/powercli/updatemanager
 # (Current version 5.1 locks up in PowerShell v3; use "-version 2" when launching.)
 
-If (Get-PSSnapin Vmware.VumAutomation -ErrorAction SilentlyContinue) {
+If (Get-Module -ListAvailable Vmware.VumAutomation -ErrorAction SilentlyContinue) {
    foreach($esx in $VMH){
       foreach($baseline in (Get-Compliance -Entity $esx -Detailed | Where-Object {$_.Status -eq "NotCompliant"})){
          $baseline.NotCompliantPatches |
@@ -23,3 +23,7 @@ If (Get-PSSnapin Vmware.VumAutomation -ErrorAction SilentlyContinue) {
       }
    }
 }
+
+# Changelog
+## 1.2 : Replaced Get-PSSnapin with (Get-Module -ListAvailable Vmware.VumAutomation)
+

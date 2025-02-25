@@ -12,7 +12,7 @@ $DvSwitchLeft = 10
 # Update settings where there is an override
 $DvSwitchLeft = Get-vCheckSetting $Title "DvSwitchLeft" $DvSwitchLeft
 
-if ((Get-PSSnapin VMware.VimAutomation.Vds -ErrorAction SilentlyContinue) -or (Get-Module VMware.VimAutomation.Vds -ErrorAction SilentlyContinue))
+if (Get-Module VMware.VimAutomation.Vds -ErrorAction SilentlyContinue)
 {
    if ($vdspg = Get-VDSwitch | Sort-Object -Property Name | Get-VDPortgroup)
     {

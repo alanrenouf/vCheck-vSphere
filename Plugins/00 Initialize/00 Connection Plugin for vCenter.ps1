@@ -420,7 +420,7 @@ function Get-VIEventPlus {
    )
 
    process {
-      $eventnumber = 100
+      $eventnumber = 1000  # Increase the number of events retrieved per call
       $events = New-Object System.Collections.Generic.List[PSObject]
       $eventMgr = Get-View EventManager
       $eventFilter = New-Object VMware.Vim.EventFilterSpec
@@ -469,6 +469,7 @@ function Get-VIEventPlus {
                 }
                 $events.add($Item)
             }
+            $eventsBuffer = $eventCollector.ReadNextEvents($eventnumber)  # Continue reading events
          }
          $eventCollector.DestroyCollector()
       }
